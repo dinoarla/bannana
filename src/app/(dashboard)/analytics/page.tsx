@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { assertSessionUser } from "@/lib/auth/session";
 import { AnalyticsService } from "@/lib/services/AnalyticsService";

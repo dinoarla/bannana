@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { assertSessionUser } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
@@ -12,8 +13,8 @@ export default async function DashboardPage() {
     ? await new AnalyticsService().report(pages[0].id, "30d").catch(() => null)
     : null;
 
-  const totalViews = report?.totalViews ?? 0;
-  const totalClicks = report?.totalClicks ?? 0;
+  const totalViews = report?.totals.views ?? 0;
+  const totalClicks = report?.totals.clicks ?? 0;
   const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : "0.0";
 
   return (
@@ -74,7 +75,7 @@ export default async function DashboardPage() {
           />
           <StatCard
             icon="fa-users" iconBg="#FCE7F3" iconColor="#9D174D"
-            value={report?.uniqueVisitors ? String(report.uniqueVisitors) : "0"}
+            value={report?.totals.uniqueVisitors ? String(report.totals.uniqueVisitors) : "0"}
             label="Pengunjung Unik" badgeUp={false} badgeText="5%"
             fillWidth={42} fillGradient="linear-gradient(90deg,#F9A8D4,#EC4899)"
           />
@@ -128,7 +129,7 @@ export default async function DashboardPage() {
                 {[
                   { val: totalViews > 1000 ? `${(totalViews / 1000).toFixed(1)}K` : String(totalViews), lbl: "Views" },
                   { val: totalClicks > 1000 ? `${(totalClicks / 1000).toFixed(1)}K` : String(totalClicks), lbl: "Klik" },
-                  { val: report?.uniqueVisitors ? String(report.uniqueVisitors) : "0", lbl: "Pengunjung" },
+                  { val: report?.totals.uniqueVisitors ? String(report.totals.uniqueVisitors) : "0", lbl: "Pengunjung" },
                 ].map((s) => (
                   <div key={s.lbl}>
                     <span style={{ fontFamily: "var(--fd)", fontSize: "1.25rem", fontWeight: 700, color: "var(--b-700)", display: "block", textAlign: "center" }}>{s.val}</span>
@@ -156,16 +157,16 @@ export default async function DashboardPage() {
                   { bg: "#E0F2FE", color: "#0369A1", icon: "fa-x-twitter" },
                 ];
                 const c = colors[i % colors.length];
-                const maxClicks = report.topLinks[0]?.clicks ?? 1;
+                const maxClicks = report.topLinks[0]?.clickCount ?? 1;
                 return (
-                  <div key={link.blockId} style={{ display: "flex", alignItems: "center", gap: 9, fontSize: ".82rem", marginBottom: ".625rem" }}>
+                  <div key={link.id} style={{ display: "flex", alignItems: "center", gap: 9, fontSize: ".82rem", marginBottom: ".625rem" }}>
                     <div style={{ width: 28, height: 28, borderRadius: 7, background: c.bg, color: c.color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: ".7rem" }}>
                       <i className={`fa-solid ${c.icon}`} />
                     </div>
                     <span style={{ flex: 1, color: "var(--n-700)" }}>{link.title ?? "Link"}</span>
-                    <span style={{ fontWeight: 700, color: "var(--b-700)", fontSize: ".78rem", minWidth: 36, textAlign: "right" }}>{link.clicks}</span>
+                    <span style={{ fontWeight: 700, color: "var(--b-700)", fontSize: ".78rem", minWidth: 36, textAlign: "right" }}>{link.clickCount}</span>
                     <div style={{ width: 60, height: 5, background: "var(--b-100)", borderRadius: 3, overflow: "hidden" }}>
-                      <div style={{ height: "100%", background: "var(--b-500)", borderRadius: 3, width: `${(link.clicks / maxClicks) * 100}%` }} />
+                      <div style={{ height: "100%", background: "var(--b-500)", borderRadius: 3, width: `${(link.clickCount / maxClicks) * 100}%` }} />
                     </div>
                   </div>
                 );
@@ -228,13 +229,13 @@ function StatCard({ icon, iconBg, iconColor, value, label, badgeUp, badgeText, f
   );
 }
 
-function PageCard({ page }: { page: { id: string; title: string; slug: string; published: boolean; _count?: { blocks?: number } } }) {
+function PageCard({ page }: { page: { id: string; title: string; slug: string; isPublished: boolean; _count?: { blocks?: number } } }) {
   return (
     <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 20, overflow: "hidden" }}>
       <div style={{ height: 112, background: "linear-gradient(160deg,var(--b-50),#fff)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5 }}>
-        <div style={{ position: "absolute", top: 9, right: 9, borderRadius: "9999px", padding: "2px 9px", fontSize: ".62rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 4, background: page.published ? "var(--success-100)" : "var(--n-200)", color: page.published ? "var(--success-700)" : "var(--n-500)" }}>
-          {page.published && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
-          {page.published ? "Live" : "Draft"}
+        <div style={{ position: "absolute", top: 9, right: 9, borderRadius: "9999px", padding: "2px 9px", fontSize: ".62rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 4, background: page.isPublished ? "var(--success-100)" : "var(--n-200)", color: page.isPublished ? "var(--success-700)" : "var(--n-500)" }}>
+          {page.isPublished && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
+          {page.isPublished ? "Live" : "Draft"}
         </div>
         <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem" }}>
           <i className="fa-solid fa-user" />

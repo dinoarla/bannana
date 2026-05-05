@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { assertSessionUser, CSRF_COOKIE } from "@/lib/auth/session";

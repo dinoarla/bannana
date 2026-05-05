@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { assertSessionUser } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";

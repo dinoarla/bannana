@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { BlockFactory } from "@/components/blocks/BlockFactory";

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { cookies } from "next/headers";
 import { assertSessionUser } from "@/lib/auth/session";
 import { CSRF_COOKIE } from "@/lib/auth/session";

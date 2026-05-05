@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { cookies } from "next/headers";
 import { BlockEditor } from "@/components/editor/BlockEditor";
 import { Topbar } from "@/components/shared/Topbar";
@@ -17,7 +18,9 @@ export default async function EditorPage({ params }: Props) {
     <>
       <Topbar title={`Editor: ${page.title}`} publicHref={`/${user.username}`} />
       <BlockEditor
-        csrfToken={jar.get(CSRF_COOKIE)?.value}
+        csrfToken={jar.get(CSRF_COOKIE)?.value ?? ""}
+        username={user.username}
+        bio={user.profile?.bio ?? ""}
         initialPage={{
           id: page.id,
           title: page.title,
