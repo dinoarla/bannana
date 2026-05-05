@@ -2,8 +2,9 @@
 -- Generated from prisma/schema.prisma
 -- No FK constraints: relationMode = "prisma" (Prisma handles referential integrity in app layer)
 
-CREATE DATABASE IF NOT EXISTS `bannana` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `bannana`;
+-- NOTE: Do NOT run CREATE DATABASE here.
+-- On shared hosting (Hostinger etc.), create the database via the control panel first,
+-- then select it before running this file (or use phpMyAdmin and select the DB from the dropdown).
 
 CREATE TABLE `User` (
   `id`            VARCHAR(191)              NOT NULL,
