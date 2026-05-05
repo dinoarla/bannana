@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pengaturan — bannana.id</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="bannana-ds.css">
+<style>
+html,body{height:100%;overflow:hidden}
+.settings-layout{display:grid;grid-template-columns:220px 1fr;gap:1.5rem;max-width:900px}
+.set-nav{background:var(--n-0);border:2px solid var(--n-200);border-radius:16px;padding:.75rem;align-self:start;position:sticky;top:0}
+.set-nav-item{display:flex;align-items:center;gap:9px;padding:.65rem .875rem;border-radius:10px;font-size:.84rem;font-weight:600;color:var(--n-600);cursor:pointer;transition:all 150ms;text-decoration:none}
+.set-nav-item i{width:18px;text-align:center;font-size:.88rem}
+.set-nav-item:hover{background:var(--b-50);color:var(--b-700)}
+.set-nav-item.active{background:var(--b-100);color:var(--b-800)}
+.set-panel{display:flex;flex-direction:column;gap:1.5rem}
+.set-card{background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;overflow:hidden}
+.set-card-head{padding:1.25rem 1.5rem;border-bottom:1px solid var(--n-100);display:flex;align-items:center;justify-content:space-between}
+.set-card-title{font-family:var(--fd);font-size:1.05rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:8px}
+.set-card-title i{color:var(--b-500)}
+.set-card-body{padding:1.5rem}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.field-full{margin-bottom:1rem}
+.form-lbl{font-size:.78rem;font-weight:700;color:var(--b-900);margin-bottom:.35rem;display:block}
+.form-inp{width:100%;height:42px;border:2px solid var(--b-200);border-radius:10px;padding:0 12px;font-family:var(--fb);font-size:.88rem;color:var(--n-800);outline:none;transition:all 150ms;background:var(--n-0)}
+.form-inp:focus{border-color:var(--b-500);box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+.form-ta{height:88px;resize:none;padding:10px 12px;line-height:1.55}
+.form-hint{font-size:.72rem;color:var(--n-400);margin-top:.3rem;line-height:1.5}
+.form-hint a{color:var(--b-700);text-decoration:none;font-weight:600}
+.avatar-section{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--n-100)}
+.avatar-big{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--b-400),var(--b-600));display:flex;align-items:center;justify-content:center;color:var(--b-950);font-size:1.8rem;flex-shrink:0;box-shadow:var(--sh-brand-sm)}
+.avatar-actions{display:flex;flex-direction:column;gap:.5rem}
+.avatar-actions span{font-size:.78rem;color:var(--n-500);line-height:1.5}
+.toggle-setting{display:flex;align-items:center;justify-content:space-between;padding:.875rem 0;border-bottom:1px solid var(--n-100)}
+.toggle-setting:last-child{border-bottom:none}
+.ts-left{flex:1}
+.ts-title{font-size:.88rem;font-weight:600;color:var(--n-800)}
+.ts-desc{font-size:.75rem;color:var(--n-500);margin-top:2px;line-height:1.5}
+.danger-zone{background:#FFF5F5;border-color:#FECDD3}
+.danger-zone .set-card-head{background:#FFF5F5;border-color:#FECDD3}
+.danger-zone .set-card-title{color:var(--danger-600)}
+.danger-zone .set-card-title i{color:var(--danger-600)}
+.danger-row{display:flex;align-items:center;justify-content:space-between;padding:.875rem 0;border-bottom:1px solid #FECDD3}
+.danger-row:last-child{border-bottom:none}
+.danger-title{font-size:.88rem;font-weight:600;color:var(--danger-700)}
+.danger-desc{font-size:.75rem;color:var(--danger-700);margin-top:2px;opacity:.7}
+.plan-badge{display:inline-flex;align-items:center;gap:6px;background:var(--b-100);border:1.5px solid var(--b-300);color:var(--b-800);border-radius:var(--r-full);padding:5px 14px;font-size:.78rem;font-weight:700}
+.plan-badge i{color:var(--b-500)}
+.connected-row{display:flex;align-items:center;gap:12px;padding:.875rem 0;border-bottom:1px solid var(--n-100)}
+.connected-row:last-child{border-bottom:none}
+.conn-ico{width:38px;height:38px;border-radius:10px;background:var(--n-100);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.conn-title{font-size:.88rem;font-weight:600;color:var(--n-800)}
+.conn-sub{font-size:.75rem;color:var(--n-500);margin-top:1px}
+.conn-status-ok{color:var(--success-600);font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:4px;margin-left:auto}
+.set-footer{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-top:1px solid var(--n-100);background:var(--n-50)}
+.set-footer span{font-size:.78rem;color:var(--n-400)}
+@media(max-width:900px){.settings-layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a href="bannana-landing.html" class="sb-logo"><span class="bana">🍌</span> bannana</a>
+    <div class="sb-user"><div class="sb-avatar"><i class="fa-solid fa-user"></i></div><div><div class="sb-uname">Andi Pratama</div><div class="sb-handle">@andi_kreasi</div></div><span class="sb-badge" style="background:var(--b-500);color:var(--b-950)">PRO</span></div>
+    <nav class="sb-nav">
+      <div class="sb-section">Menu Utama</div>
+      <a href="bannana-dashboard.html" class="sb-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="bannana-editor.html" class="sb-item"><i class="fa-solid fa-table-columns"></i> Halaman Saya</a>
+      <a href="bannana-analytics.html" class="sb-item"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+      <div class="sb-section">Kustomisasi</div>
+      <a href="bannana-themes.html" class="sb-item"><i class="fa-solid fa-palette"></i> Tema</a>
+      <div class="sb-section">Akun</div>
+      <a href="#" class="sb-item"><i class="fa-solid fa-key"></i> API Keys</a>
+      <a href="bannana-settings.html" class="sb-item active"><i class="fa-solid fa-gear"></i> Pengaturan</a>
+    </nav>
+  </aside>
+  <div class="main-area">
+    <div class="topbar">
+      <div style="font-family:var(--fd);font-size:1.3rem;font-weight:700;color:var(--b-900)"><i class="fa-solid fa-gear" style="color:var(--b-500);margin-right:8px"></i> Pengaturan Akun</div>
+    </div>
+    <div class="page-content">
+      <div class="settings-layout">
+        <!-- NAV -->
+        <div class="set-nav">
+          <a href="#profil" class="set-nav-item active" onclick="showSection('profil',this)"><i class="fa-solid fa-user"></i> Profil</a>
+          <a href="#akun" class="set-nav-item" onclick="showSection('akun',this)"><i class="fa-solid fa-shield-halved"></i> Akun &amp; Keamanan</a>
+          <a href="#notif" class="set-nav-item" onclick="showSection('notif',this)"><i class="fa-solid fa-bell"></i> Notifikasi</a>
+          <a href="#langganan" class="set-nav-item" onclick="showSection('langganan',this)"><i class="fa-solid fa-crown"></i> Langganan</a>
+          <a href="#integrasi" class="set-nav-item" onclick="showSection('integrasi',this)"><i class="fa-solid fa-plug"></i> Integrasi</a>
+          <a href="#bahaya" class="set-nav-item" style="color:var(--danger-600)" onclick="showSection('bahaya',this)"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</a>
+        </div>
+        <!-- PANELS -->
+        <div class="set-panel">
+          <!-- PROFIL -->
+          <div id="sec-profil" class="set-panel-sec">
+            <div class="set-card">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-user"></i> Informasi Profil</div></div>
+              <div class="set-card-body">
+                <div class="avatar-section">
+                  <div class="avatar-big"><i class="fa-solid fa-user"></i></div>
+                  <div class="avatar-actions">
+                    <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-upload"></i> Upload Foto</button>
+                    <button class="btn btn-ghost btn-sm" style="color:var(--danger-600);border-color:#FECDD3"><i class="fa-solid fa-trash"></i> Hapus Foto</button>
+                    <span>Format: JPG, PNG, WebP. Maks. 2MB.</span>
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div><label class="form-lbl">Nama Depan</label><input class="form-inp" type="text" value="Andi"></div>
+                  <div><label class="form-lbl">Nama Belakang</label><input class="form-inp" type="text" value="Pratama"></div>
+                </div>
+                <div class="field-full"><label class="form-lbl">Username</label><input class="form-inp" type="text" value="andi_kreasi"><div class="form-hint"><i class="fa-solid fa-globe"></i> bannana.id/<strong>andi_kreasi</strong> &mdash; <a href="#">lihat halaman publik</a></div></div>
+                <div class="field-full"><label class="form-lbl">Bio Singkat</label><textarea class="form-inp form-ta">konten kreator · suka kopi & nulis hal-hal random ☕</textarea><div class="form-hint">Tampil di halaman profil publik kamu. Maks. 160 karakter.</div></div>
+                <div class="field-full"><label class="form-lbl">Website / URL Utama</label><input class="form-inp" type="url" placeholder="https://..."></div>
+              </div>
+              <div class="set-footer"><span>Perubahan akan langsung tampil di halaman publikmu.</span><button class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Simpan Profil</button></div>
+            </div>
+          </div>
+          <!-- AKUN -->
+          <div id="sec-akun" class="set-panel-sec" style="display:none">
+            <div class="set-card">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-envelope"></i> Email &amp; Password</div></div>
+              <div class="set-card-body">
+                <div class="field-full"><label class="form-lbl">Alamat Email</label><input class="form-inp" type="email" value="andi@email.com"><div class="form-hint"><i class="fa-solid fa-circle-check" style="color:var(--success-600)"></i> Email sudah terverifikasi</div></div>
+                <div class="field-full" style="border-top:1px solid var(--n-100);padding-top:1rem;margin-top:.25rem">
+                  <div style="font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--b-900);margin-bottom:1rem">Ganti Password</div>
+                  <label class="form-lbl">Password Saat Ini</label><input class="form-inp" type="password" placeholder="••••••••" style="margin-bottom:.875rem">
+                  <label class="form-lbl">Password Baru</label><input class="form-inp" type="password" placeholder="Min. 8 karakter" style="margin-bottom:.875rem">
+                  <label class="form-lbl">Konfirmasi Password Baru</label><input class="form-inp" type="password" placeholder="Ulangi password baru">
+                </div>
+              </div>
+              <div class="set-footer"><span>Kamu akan di-logout dari semua perangkat setelah ganti password.</span><button class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Simpan Perubahan</button></div>
+            </div>
+            <div class="set-card">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-mobile-screen"></i> Sesi Aktif</div></div>
+              <div class="set-card-body">
+                <div style="display:flex;flex-direction:column;gap:.875rem">
+                  <div style="display:flex;align-items:center;gap:12px;padding:.875rem;background:var(--b-50);border:1.5px solid var(--b-200);border-radius:12px"><div style="width:38px;height:38px;border-radius:10px;background:var(--b-100);display:flex;align-items:center;justify-content:center;color:var(--b-700)"><i class="fa-solid fa-desktop"></i></div><div style="flex:1"><div style="font-size:.84rem;font-weight:600;color:var(--n-800)">Chrome · Windows 11</div><div style="font-size:.72rem;color:var(--n-500)">Jakarta · Aktif sekarang</div></div><span class="badge badge-success"><i class="fa-solid fa-circle" style="font-size:.4rem"></i> Ini perangkat kamu</span></div>
+                  <div style="display:flex;align-items:center;gap:12px;padding:.875rem;border:1.5px solid var(--n-200);border-radius:12px"><div style="width:38px;height:38px;border-radius:10px;background:var(--n-100);display:flex;align-items:center;justify-content:center;color:var(--n-600)"><i class="fa-solid fa-mobile-screen"></i></div><div style="flex:1"><div style="font-size:.84rem;font-weight:600;color:var(--n-800)">Safari · iPhone 15</div><div style="font-size:.72rem;color:var(--n-500)">Jakarta · 2 jam lalu</div></div><button class="btn btn-danger btn-sm">Cabut</button></div>
+                </div>
+              </div>
+              <div class="set-footer"><span></span><button class="btn btn-danger btn-sm"><i class="fa-solid fa-right-from-bracket"></i> Logout Semua Sesi Lain</button></div>
+            </div>
+          </div>
+          <!-- NOTIF -->
+          <div id="sec-notif" class="set-panel-sec" style="display:none">
+            <div class="set-card">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-bell"></i> Preferensi Notifikasi</div></div>
+              <div class="set-card-body">
+                <div class="toggle-setting"><div class="ts-left"><div class="ts-title">Notifikasi Email</div><div class="ts-desc">Terima ringkasan mingguan performa halamanmu via email.</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+                <div class="toggle-setting"><div class="ts-left"><div class="ts-title">Alert Klik Tinggi</div><div class="ts-desc">Dapat notifikasi kalau ada lonjakan kunjungan lebih dari 2x.</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+                <div class="toggle-setting"><div class="ts-left"><div class="ts-title">Update Produk</div><div class="ts-desc">Dapat info fitur baru, update sistem, dan promo bannana.id.</div></div><div class="toggle off" onclick="this.classList.toggle('off')"></div></div>
+                <div class="toggle-setting"><div class="ts-left"><div class="ts-title">Tips &amp; Tutorial</div><div class="ts-desc">Email berisi tips untuk meningkatkan performa link page kamu.</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+              </div>
+              <div class="set-footer"><span></span><button class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Simpan Preferensi</button></div>
+            </div>
+          </div>
+          <!-- LANGGANAN -->
+          <div id="sec-langganan" class="set-panel-sec" style="display:none">
+            <div class="set-card">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-crown"></i> Paket Langganan</div></div>
+              <div class="set-card-body">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+                  <div><div style="font-family:var(--fd);font-size:1.4rem;font-weight:700;color:var(--b-900)">Pro Plan</div><div style="font-size:.84rem;color:var(--n-500);margin-top:3px">Rp 37.000 / bulan (dibayar tahunan)</div></div>
+                  <span class="plan-badge"><i class="fa-solid fa-star"></i> AKTIF</span>
+                </div>
+                <div style="background:var(--b-50);border:1.5px solid var(--b-200);border-radius:12px;padding:1rem;margin-bottom:1.5rem">
+                  <div style="font-size:.82rem;font-weight:700;color:var(--b-800);margin-bottom:.625rem"><i class="fa-solid fa-circle-info" style="margin-right:5px"></i> Detail Langganan</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.8rem;color:var(--n-700)">
+                    <div><span style="color:var(--n-400)">Periode saat ini</span><br><strong>1 Jan – 31 Des 2025</strong></div>
+                    <div><span style="color:var(--n-400)">Renewal berikutnya</span><br><strong>1 Jan 2026</strong></div>
+                    <div><span style="color:var(--n-400)">Metode pembayaran</span><br><strong>GoPay ****1234</strong></div>
+                    <div><span style="color:var(--n-400)">Total tagihan per tahun</span><br><strong>Rp 444.000</strong></div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:.75rem">
+                  <button class="btn btn-secondary btn-sm"><i class="fa-solid fa-credit-card"></i> Kelola Pembayaran</button>
+                  <button class="btn btn-ghost btn-sm"><i class="fa-solid fa-file-invoice"></i> Riwayat Invoice</button>
+                  <button class="btn btn-danger btn-sm" style="margin-left:auto"><i class="fa-solid fa-xmark"></i> Cancel Langganan</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- INTEGRASI -->
+          <div id="sec-integrasi" class="set-panel-sec" style="display:none">
+            <div class="set-card">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-plug"></i> Akun Terhubung</div></div>
+              <div class="set-card-body">
+                <div class="connected-row"><div class="conn-ico"><i class="fa-brands fa-google" style="color:#EA4335"></i></div><div><div class="conn-title">Google</div><div class="conn-sub">andipratama@gmail.com</div></div><div class="conn-status-ok"><i class="fa-solid fa-circle-check"></i> Terhubung</div><button class="btn btn-ghost btn-sm" style="margin-left:.75rem">Cabut</button></div>
+                <div class="connected-row"><div class="conn-ico"><i class="fa-brands fa-github" style="color:var(--n-800)"></i></div><div><div class="conn-title">GitHub</div><div class="conn-sub">Belum terhubung</div></div><button class="btn btn-secondary btn-sm" style="margin-left:auto"><i class="fa-solid fa-plus"></i> Hubungkan</button></div>
+              </div>
+            </div>
+            <div class="set-card">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-key"></i> API Keys</div><button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Buat API Key</button></div>
+              <div class="set-card-body">
+                <div style="font-size:.84rem;color:var(--n-600);margin-bottom:1rem;line-height:1.65">Gunakan API Key untuk mengakses bannana.id API secara programatik. Jaga kerahasiaan API key kamu!</div>
+                <div style="display:flex;align-items:center;gap:10px;background:var(--n-50);border:1.5px solid var(--n-200);border-radius:12px;padding:.875rem">
+                  <div style="flex:1"><div style="font-size:.84rem;font-weight:600;color:var(--n-800)">My API Key — Read/Write</div><div style="font-family:var(--fm);font-size:.75rem;color:var(--n-500);margin-top:2px">bna_••••••••••••••••••••Xk3A</div></div>
+                  <button class="btn btn-ghost btn-sm"><i class="fa-solid fa-eye"></i> Tampilkan</button>
+                  <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- BAHAYA -->
+          <div id="sec-bahaya" class="set-panel-sec" style="display:none">
+            <div class="set-card danger-zone">
+              <div class="set-card-head"><div class="set-card-title"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</div></div>
+              <div class="set-card-body">
+                <div class="danger-row"><div><div class="danger-title">Export Semua Data</div><div class="danger-desc">Download semua data akun, halaman, dan analytics dalam format JSON.</div></div><button class="btn btn-ghost btn-sm"><i class="fa-solid fa-download"></i> Export Data</button></div>
+                <div class="danger-row"><div><div class="danger-title">Nonaktifkan Akun Sementara</div><div class="danger-desc">Semua halaman publikmu akan disembunyikan. Kamu bisa aktifkan lagi kapanpun.</div></div><button class="btn btn-ghost btn-sm"><i class="fa-solid fa-eye-slash"></i> Nonaktifkan</button></div>
+                <div class="danger-row"><div><div class="danger-title">Hapus Akun Permanen</div><div class="danger-desc">Akun dan semua data akan dihapus selamanya. Tindakan ini tidak bisa dibatalkan!</div></div><button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> Hapus Akun</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showSection(id,link){
+  document.querySelectorAll('.set-panel-sec').forEach(el=>el.style.display='none');
+  document.querySelectorAll('.set-nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('sec-'+id).style.display='flex';
+  document.getElementById('sec-'+id).style.flexDirection='column';
+  document.getElementById('sec-'+id).style.gap='1.5rem';
+  link.classList.add('active');
+  return false;
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sec-profil').style.display='flex';
+  document.getElementById('sec-profil').style.flexDirection='column';
+  document.getElementById('sec-profil').style.gap='1.5rem';
+});
+</script>
+</body>
+</html>

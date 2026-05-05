@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editor — bannana.id</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="bannana-ds.css">
+<style>
+html,body{height:100%;overflow:hidden}
+/* TOPBAR */
+.editor-top{height:56px;background:var(--n-0);border-bottom:1px solid var(--n-200);display:flex;align-items:center;padding:0 1rem;gap:.625rem;flex-shrink:0;z-index:100}
+.et-back{height:32px;padding:0 .875rem;border-radius:8px;font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:5px;color:var(--n-600);text-decoration:none;border:1.5px solid var(--n-200);background:none;cursor:pointer;transition:all 150ms}
+.et-back:hover{border-color:var(--b-300);color:var(--b-700);background:var(--b-50)}
+.et-divider{width:1px;height:18px;background:var(--n-200)}
+.et-pagename{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 7px;border-radius:6px;transition:background 150ms}
+.et-pagename:hover{background:var(--b-50)}
+.et-saved{font-size:.72rem;color:var(--n-400);display:flex;align-items:center;gap:4px}
+.et-saved i{color:#22C55E;font-size:.55rem}
+.et-actions{margin-left:auto;display:flex;gap:.5rem;align-items:center}
+.et-btn{height:32px;padding:0 .875rem;border-radius:8px;font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:5px;cursor:pointer;border:none;text-decoration:none;transition:all 150ms}
+.et-ghost{background:none;color:var(--n-600);border:1.5px solid var(--n-200)}
+.et-ghost:hover{border-color:var(--b-300);color:var(--b-700);background:var(--b-50)}
+.et-primary{background:var(--b-500);color:var(--b-900);box-shadow:var(--sh-brand-sm)}
+.et-primary:hover{background:var(--b-400);transform:translateY(-1px)}
+.pv-toggle{display:flex;background:var(--n-100);border-radius:7px;padding:2px;gap:2px}
+.pv-btn{width:26px;height:26px;border-radius:5px;border:none;background:none;cursor:pointer;color:var(--n-500);font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all 150ms}
+.pv-btn.act{background:var(--n-0);color:var(--b-700);box-shadow:var(--sh-sm)}
+/* BODY */
+.editor-body{flex:1;display:flex;overflow:hidden}
+/* LEFT */
+.panel-left{width:216px;background:var(--n-0);border-right:1px solid var(--n-200);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.pl-head{padding:.875rem;border-bottom:1px solid var(--n-200)}
+.pl-title{font-family:var(--fd);font-size:.84rem;font-weight:700;color:var(--b-900);margin-bottom:.625rem;display:flex;align-items:center;gap:6px}
+.pl-title i{color:var(--b-500);font-size:.78rem}
+.pl-search-wrap{position:relative}
+.pl-search{width:100%;height:32px;background:var(--n-100);border:1.5px solid transparent;border-radius:8px;padding:0 10px 0 30px;font-size:.78rem;font-family:var(--fb);color:var(--n-700);outline:none;transition:all 150ms}
+.pl-search:focus{background:var(--n-0);border-color:var(--b-300)}
+.pl-search-ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--n-400);font-size:.7rem;pointer-events:none}
+.pl-sec{font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--n-400);padding:.625rem .875rem .25rem}
+.pl-blocks{padding:0 .625rem .625rem;display:flex;flex-direction:column;gap:.3rem}
+.blib-item{display:flex;align-items:center;gap:8px;padding:.55rem .75rem;border-radius:9px;cursor:pointer;transition:all 150ms;border:1.5px solid transparent}
+.blib-item:hover{background:var(--b-50);border-color:var(--b-200)}
+.blib-item:active{transform:scale(.96)}
+.blib-ico{width:30px;height:30px;border-radius:8px;background:var(--b-100);display:flex;align-items:center;justify-content:center;color:var(--b-700);font-size:.78rem;flex-shrink:0}
+.blib-name{font-size:.78rem;font-weight:700;color:var(--n-800)}
+.blib-desc{font-size:.6rem;color:var(--n-400)}
+.new-badge{margin-left:auto;background:var(--b-400);color:var(--b-950);border-radius:var(--r-full);padding:1px 6px;font-size:.56rem;font-weight:800}
+/* CANVAS */
+.canvas-wrap{flex:1;overflow-y:auto;padding:1.5rem;display:flex;justify-content:center;background:var(--n-100)}
+.canvas{width:100%;max-width:580px}
+.canvas-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.canvas-meta-txt{font-size:.72rem;font-weight:700;color:var(--n-400);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:5px}
+.canvas-blocks{display:flex;flex-direction:column;gap:.625rem}
+/* block in canvas */
+.cblock{background:var(--n-0);border:2px solid var(--n-200);border-radius:14px;cursor:pointer;transition:all 200ms var(--ease-spring)}
+.cblock:hover{border-color:var(--b-300);box-shadow:0 4px 12px rgba(245,158,11,.1)}
+.cblock.sel{border-color:var(--b-500);box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+.cblock-bar{display:flex;align-items:center;gap:7px;padding:.55rem .875rem;border-bottom:1px solid var(--n-100)}
+.drag-handle{color:var(--n-300);cursor:grab;font-size:.78rem}
+.drag-handle:active{cursor:grabbing}
+.btype{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--n-400)}
+.btype i{margin-right:4px;color:var(--b-500)}
+.bactions{margin-left:auto;display:flex;gap:.3rem}
+.bact-btn{width:26px;height:26px;border-radius:6px;border:none;background:var(--n-100);color:var(--n-500);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all 150ms}
+.bact-btn:hover{background:var(--b-100);color:var(--b-700)}
+.bact-btn.del:hover{background:#FEE2E2;color:#DC2626}
+.cblock-body{padding:.875rem}
+/* block previews */
+.link-prev{display:flex;align-items:center;gap:10px}
+.lp-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.lp-title{font-weight:700;font-size:.88rem;color:var(--n-800)}
+.lp-url{font-size:.7rem;color:var(--n-400);font-family:var(--fm);margin-top:1px}
+.lp-arr{margin-left:auto;color:var(--n-300);font-size:.8rem}
+.header-prev{text-align:center;padding:.2rem 0}
+.hp-t{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--n-800)}
+.hp-s{font-size:.75rem;color:var(--n-500);margin-top:2px}
+.div-prev{display:flex;align-items:center;gap:.75rem}
+.div-l{flex:1;height:1.5px;background:var(--n-200);border-radius:1px}
+.div-d{width:7px;height:7px;border-radius:50%;background:var(--b-300)}
+.soc-prev{display:flex;flex-wrap:wrap;gap:.4rem}
+.sp-chip{display:flex;align-items:center;gap:5px;background:var(--n-100);border:1.5px solid var(--n-200);border-radius:var(--r-full);padding:4px 9px;font-size:.7rem;font-weight:600;color:var(--n-700)}
+.embed-prev{background:var(--n-100);border-radius:10px;height:76px;display:flex;align-items:center;justify-content:center;gap:.625rem;color:var(--n-400)}
+.embed-prev i{font-size:1.4rem;color:var(--b-400)}
+.embed-prev span{font-size:.78rem;font-weight:600}
+.img-prev{background:var(--n-100);border-radius:10px;height:76px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem;color:var(--n-400);cursor:pointer;border:2px dashed var(--n-200);transition:all 150ms}
+.img-prev:hover{background:var(--b-50);border-color:var(--b-300)}
+.img-prev i{font-size:1.2rem;color:var(--b-300)}
+.img-prev span{font-size:.7rem;font-weight:600}
+.add-block{width:100%;height:42px;border-radius:12px;border:2px dashed var(--b-200);background:var(--b-50);color:var(--b-600);font-size:.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 150ms;margin-top:.625rem}
+.add-block:hover{background:var(--b-100);border-color:var(--b-400);color:var(--b-800)}
+/* RIGHT PANEL */
+.panel-right{width:272px;background:var(--n-0);border-left:1px solid var(--n-200);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.pr-head{padding:.875rem;border-bottom:1px solid var(--n-200)}
+.pr-tabs{display:flex;gap:.3rem;margin-bottom:0}
+.pr-tab{flex:1;height:30px;border-radius:7px;border:1.5px solid var(--n-200);background:none;font-size:.73rem;font-weight:700;cursor:pointer;color:var(--n-500);transition:all 150ms;display:flex;align-items:center;justify-content:center;gap:4px;font-family:var(--fb)}
+.pr-tab.act{background:var(--b-100);border-color:var(--b-300);color:var(--b-800)}
+.pr-body{padding:.875rem;display:flex;flex-direction:column;gap:.875rem;flex:1}
+.pr-sec-title{font-size:.67rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--n-400);margin-bottom:.5rem}
+.form-lbl{font-size:.75rem;font-weight:700;color:var(--b-900)}
+.form-inp{width:100%;height:36px;border:1.5px solid var(--n-200);border-radius:8px;padding:0 10px;font-family:var(--fb);font-size:.82rem;color:var(--n-800);outline:none;transition:border-color 150ms;background:var(--n-0)}
+.form-inp:focus{border-color:var(--b-500);box-shadow:0 0 0 2px rgba(245,158,11,.1)}
+.form-ta{resize:none;height:68px;padding:8px 10px;line-height:1.5}
+.align-row{display:flex;gap:.4rem}
+.align-btn{flex:1;height:32px;border-radius:7px;border:1.5px solid var(--n-200);background:none;cursor:pointer;font-size:.8rem;transition:all 150ms}
+.align-btn:hover{border-color:var(--b-300);background:var(--b-50)}
+.align-btn.act{border-color:var(--b-300);background:var(--b-50);color:var(--b-800)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--n-100)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-row-lbl{font-size:.82rem;font-weight:600;color:var(--n-700);display:flex;align-items:center;gap:6px}
+.toggle-row-lbl i{font-size:.8rem;color:var(--b-500)}
+.color-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.color-sw{width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;transition:all 150ms}
+.color-sw:hover,.color-sw.act{border-color:var(--b-500);transform:scale(1.1)}
+.save-bottom{margin:0 .875rem .875rem;height:40px;background:var(--b-500);color:var(--b-900);font-family:var(--fb);font-size:.875rem;font-weight:800;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--sh-brand-sm);transition:all 150ms}
+.save-bottom:hover{background:var(--b-400);transform:translateY(-1px)}
+/* phone preview in panel */
+.mini-phone{width:152px;border-radius:26px;background:var(--n-0);box-shadow:0 16px 40px rgba(120,53,15,.12),0 0 0 1px rgba(120,53,15,.04),inset 0 0 0 2px rgba(255,255,255,.9);overflow:hidden;position:relative;margin:0 auto}
+.mini-phone::before{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:48px;height:4px;background:var(--n-200);border-radius:2px;z-index:10}
+.mp-inner{padding-top:20px;min-height:310px}
+.mp-screen{background:linear-gradient(160deg,var(--b-50),#fff);padding:10px 9px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.mp-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--b-400),var(--b-600));display:flex;align-items:center;justify-content:center;color:var(--b-950);font-size:.9rem;box-shadow:var(--sh-brand-sm)}
+.mp-name{font-family:var(--fd);font-size:.68rem;font-weight:700;color:var(--b-900)}
+.mp-bio{font-size:.46rem;color:var(--n-500);text-align:center;line-height:1.4}
+.mp-link{width:100%;background:var(--n-0);border:1.5px solid var(--b-100);border-radius:8px;padding:5px 7px;display:flex;align-items:center;gap:5px;box-shadow:var(--sh-sm)}
+.mp-link-ico{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.48rem}
+.mp-link-t{font-size:.5rem;font-weight:700;color:var(--b-900)}
+.mp-link-arr{margin-left:auto;color:var(--n-300);font-size:.42rem}
+</style>
+</head>
+<body style="display:flex;flex-direction:column">
+<div class="editor-top">
+  <a href="bannana-dashboard.html" class="et-back"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+  <div class="et-divider"></div>
+  <div class="et-pagename" onclick="editPageName()">
+    <i class="fa-solid fa-file-pen" style="color:var(--b-500);font-size:.82rem"></i>
+    <span id="pg-name">Link Utama</span>
+  </div>
+  <div class="et-saved"><i class="fa-solid fa-circle"></i> Tersimpan otomatis</div>
+  <div class="et-actions">
+    <div class="pv-toggle"><button class="pv-btn act" id="pvmob" onclick="setPv('mob',this)" title="Mobile"><i class="fa-solid fa-mobile-screen"></i></button><button class="pv-btn" id="pvdesk" onclick="setPv('desk',this)" title="Desktop"><i class="fa-solid fa-desktop"></i></button></div>
+    <button class="et-btn et-ghost" onclick="undoAct()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+    <a href="bannana-public.html" class="et-btn et-ghost" target="_blank"><i class="fa-solid fa-eye"></i> Preview</a>
+    <button class="et-btn et-primary" onclick="publishPage()"><i class="fa-solid fa-upload"></i> Publish</button>
+  </div>
+</div>
+<div class="editor-body">
+  <!-- LEFT -->
+  <div class="panel-left">
+    <div class="pl-head">
+      <div class="pl-title"><i class="fa-solid fa-plus-circle"></i> Tambah Blok</div>
+      <div class="pl-search-wrap"><i class="pl-search-ico fa-solid fa-search"></i><input class="pl-search" type="text" placeholder="Cari blok..."></div>
+    </div>
+    <div class="pl-sec">Dasar</div>
+    <div class="pl-blocks">
+      <div class="blib-item" onclick="addBlock('link')"><div class="blib-ico"><i class="fa-solid fa-link"></i></div><div><div class="blib-name">Link</div><div class="blib-desc">URL + ikon &amp; deskripsi</div></div></div>
+      <div class="blib-item" onclick="addBlock('header')"><div class="blib-ico"><i class="fa-solid fa-heading"></i></div><div><div class="blib-name">Header</div><div class="blib-desc">Judul atau teks besar</div></div></div>
+      <div class="blib-item" onclick="addBlock('divider')"><div class="blib-ico"><i class="fa-solid fa-minus"></i></div><div><div class="blib-name">Divider</div><div class="blib-desc">Garis pemisah visual</div></div></div>
+    </div>
+    <div class="pl-sec">Media</div>
+    <div class="pl-blocks">
+      <div class="blib-item" onclick="addBlock('image')"><div class="blib-ico"><i class="fa-solid fa-image"></i></div><div><div class="blib-name">Gambar</div><div class="blib-desc">Upload foto / banner</div></div></div>
+      <div class="blib-item" onclick="addBlock('embed')"><div class="blib-ico"><i class="fa-solid fa-circle-play"></i></div><div><div class="blib-name">Embed</div><div class="blib-desc">YouTube, Spotify, X</div></div><span class="new-badge">NEW</span></div>
+    </div>
+    <div class="pl-sec">Sosial</div>
+    <div class="pl-blocks">
+      <div class="blib-item" onclick="addBlock('social')"><div class="blib-ico"><i class="fa-solid fa-share-nodes"></i></div><div><div class="blib-name">Sosial Media</div><div class="blib-desc">IG, TikTok, YouTube...</div></div></div>
+    </div>
+  </div>
+  <!-- CANVAS -->
+  <div class="canvas-wrap">
+    <div class="canvas">
+      <div class="canvas-meta"><div class="canvas-meta-txt"><i class="fa-solid fa-grip-vertical"></i> 5 blok aktif</div><div style="font-size:.72rem;color:var(--n-400)">Drag untuk ubah urutan</div></div>
+      <div class="canvas-blocks" id="canvas">
+        <div class="cblock sel" onclick="selBlock(this,'header')" id="cb1"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-heading"></i> Header</span><div class="bactions"><button class="bact-btn" title="Duplikasi"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="header-prev"><div class="hp-t">Halo! Selamat datang di bannana-ku ✨</div><div class="hp-s">Semua link favoritku ada di sini</div></div></div></div>
+        <div class="cblock" onclick="selBlock(this,'link')" id="cb2"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-link"></i> Link</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="link-prev"><div class="lp-ico" style="background:var(--b-100);color:var(--b-700)"><i class="fa-solid fa-star"></i></div><div><div class="lp-title">Portfolio Terbaru</div><div class="lp-url">https://andi.design/portfolio</div></div><div class="lp-arr"><i class="fa-solid fa-chevron-right"></i></div></div></div></div>
+        <div class="cblock" onclick="selBlock(this,'link')" id="cb3"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-link"></i> Link</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="link-prev"><div class="lp-ico" style="background:#FEE2D5;color:#C05621"><i class="fa-brands fa-youtube"></i></div><div><div class="lp-title">YouTube Channel</div><div class="lp-url">youtube.com/@andi_kreasi</div></div><div class="lp-arr"><i class="fa-solid fa-chevron-right"></i></div></div></div></div>
+        <div class="cblock" onclick="selBlock(this,'social')" id="cb4"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-share-nodes"></i> Sosial Media</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="soc-prev"><div class="sp-chip" style="color:#E1306C"><i class="fa-brands fa-instagram"></i> Instagram</div><div class="sp-chip" style="color:#1DA1F2"><i class="fa-brands fa-x-twitter"></i> Twitter</div><div class="sp-chip" style="color:#0A66C2"><i class="fa-brands fa-linkedin"></i> LinkedIn</div></div></div></div>
+        <div class="cblock" onclick="selBlock(this,'divider')" id="cb5"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-minus"></i> Divider</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="div-prev"><div class="div-l"></div><div class="div-d"></div><div class="div-l"></div></div></div></div>
+        <button class="add-block" onclick="showLib()"><i class="fa-solid fa-plus"></i> Tambah Blok Baru</button>
+      </div>
+    </div>
+  </div>
+  <!-- RIGHT -->
+  <div class="panel-right">
+    <div class="pr-head">
+      <div class="pr-tabs">
+        <button class="pr-tab act" id="tab-blok" onclick="switchTab('blok')"><i class="fa-solid fa-cube"></i> Blok</button>
+        <button class="pr-tab" id="tab-hal" onclick="switchTab('hal')"><i class="fa-solid fa-file"></i> Halaman</button>
+        <button class="pr-tab" id="tab-tema" onclick="switchTab('tema')"><i class="fa-solid fa-palette"></i> Tema</button>
+      </div>
+    </div>
+    <!-- Blok settings -->
+    <div class="pr-body" id="s-blok">
+      <div><div class="pr-sec-title">Pengaturan Blok: Header</div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Judul</div><input class="form-inp" type="text" value="Halo! Selamat datang di bannana-ku ✨"></div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Subjudul</div><input class="form-inp" type="text" value="Semua link favoritku ada di sini"></div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Posisi Teks</div><div class="align-row"><button class="align-btn"><i class="fa-solid fa-align-left"></i></button><button class="align-btn act"><i class="fa-solid fa-align-center"></i></button><button class="align-btn"><i class="fa-solid fa-align-right"></i></button></div></div>
+      </div>
+      <div><div class="pr-sec-title">Visibilitas</div>
+        <div class="toggle-row"><span class="toggle-row-lbl"><i class="fa-solid fa-eye"></i> Tampilkan blok</span><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+        <div class="toggle-row"><span class="toggle-row-lbl"><i class="fa-solid fa-mobile-screen"></i> Tampil di mobile</span><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+      </div>
+    </div>
+    <!-- Halaman settings -->
+    <div class="pr-body" id="s-hal" style="display:none">
+      <div><div class="pr-sec-title">Profil Halaman</div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Nama Tampilan</div><input class="form-inp" type="text" value="Andi Pratama"></div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Username</div><input class="form-inp" type="text" value="andi_kreasi"></div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Bio</div><textarea class="form-inp form-ta">konten kreator · suka kopi & nulis hal-hal random ☕</textarea></div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Foto Profil</div><div style="display:flex;gap:.5rem;align-items:center"><div class="sb-avatar"><i class="fa-solid fa-user"></i></div><button style="flex:1;height:32px;border-radius:8px;border:1.5px solid var(--b-300);background:var(--b-50);color:var(--b-700);font-size:.75rem;font-weight:700;cursor:pointer"><i class="fa-solid fa-upload"></i> Upload Foto</button></div></div>
+      </div>
+      <div><div class="pr-sec-title">Preview Mobile</div>
+        <div class="mini-phone"><div class="mp-inner"><div class="mp-screen"><div class="mp-av"><i class="fa-solid fa-user"></i></div><div class="mp-name">@andi_kreasi</div><div class="mp-bio">konten kreator · suka kopi</div><div class="mp-link"><div class="mp-link-ico" style="background:var(--b-100);color:var(--b-700)"><i class="fa-solid fa-star"></i></div><span class="mp-link-t">Portfolio Terbaru</span><div class="mp-link-arr"><i class="fa-solid fa-chevron-right"></i></div></div><div class="mp-link"><div class="mp-link-ico" style="background:#FEE2D5;color:#C05621"><i class="fa-brands fa-youtube"></i></div><span class="mp-link-t">YouTube Channel</span><div class="mp-link-arr"><i class="fa-solid fa-chevron-right"></i></div></div><div class="mp-link"><div class="mp-link-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-bag-shopping"></i></div><span class="mp-link-t">Toko Online</span><div class="mp-link-arr"><i class="fa-solid fa-chevron-right"></i></div></div></div></div></div>
+      </div>
+    </div>
+    <!-- Tema settings -->
+    <div class="pr-body" id="s-tema" style="display:none">
+      <div><div class="pr-sec-title">Tema Aktif</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem">
+          <div style="border-radius:11px;overflow:hidden;border:2px solid var(--b-500);cursor:pointer"><div style="height:48px;background:linear-gradient(160deg,#FFFBEB,#FEF3C7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px"><div style="height:7px;background:var(--b-500);border-radius:3px;width:75%"></div><div style="height:7px;background:var(--b-300);border-radius:3px;width:60%"></div></div><div style="padding:4px 7px;background:white;font-size:.62rem;font-weight:800;color:var(--b-900)"><i class="fa-solid fa-check" style="color:var(--b-500)"></i> Classic</div></div>
+          <div style="border-radius:11px;overflow:hidden;border:2px solid var(--n-200);cursor:pointer"><div style="height:48px;background:linear-gradient(160deg,#1A1409,#2E2210);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px"><div style="height:7px;background:#FBBF24;border-radius:3px;width:75%"></div><div style="height:7px;background:#78350F;border-radius:3px;width:60%"></div></div><div style="padding:4px 7px;background:white;font-size:.62rem;font-weight:700;color:var(--n-600)">Night</div></div>
+          <div style="border-radius:11px;overflow:hidden;border:2px solid var(--n-200);cursor:pointer"><div style="height:48px;background:linear-gradient(160deg,#F0FDF4,#DCFCE7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px"><div style="height:7px;background:#4ADE80;border-radius:3px;width:75%"></div><div style="height:7px;background:#86EFAC;border-radius:3px;width:60%"></div></div><div style="padding:4px 7px;background:white;font-size:.62rem;font-weight:700;color:var(--n-600)">Matcha</div></div>
+          <div style="border-radius:11px;overflow:hidden;border:2px solid var(--n-200);cursor:pointer"><div style="height:48px;background:linear-gradient(160deg,#1E1B4B,#312E81);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px"><div style="height:7px;background:#FACC15;border-radius:3px;width:75%"></div><div style="height:7px;background:#6366F1;border-radius:3px;width:60%"></div></div><div style="padding:4px 7px;background:white;font-size:.62rem;font-weight:700;color:var(--n-600)">Blueberry</div></div>
+        </div>
+        <a href="bannana-themes.html" class="btn btn-ghost btn-sm btn-full"><i class="fa-solid fa-swatchbook"></i> Semua 12 Tema</a>
+      </div>
+      <div><div class="pr-sec-title">Kustomisasi Warna</div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Warna Tombol</div><div class="color-row"><div class="color-sw act" style="background:#F59E0B"></div><div class="color-sw" style="background:#3B82F6"></div><div class="color-sw" style="background:#EF4444"></div><div class="color-sw" style="background:#8B5CF6"></div><div class="color-sw" style="background:#10B981"></div><div class="color-sw" style="background:#EC4899"></div><div class="color-sw" style="background:#1C1917;border:1.5px solid var(--n-200)"></div></div></div>
+        <div style="margin-bottom:.75rem"><div class="form-lbl" style="margin-bottom:.3rem">Font Heading</div><select class="form-inp" style="cursor:pointer"><option>Fredoka (Default)</option><option>Plus Jakarta Sans</option><option>DM Sans</option></select></div>
+      </div>
+      <div><div class="pr-sec-title">Custom CSS</div>
+        <textarea class="form-inp form-ta" style="height:90px;font-family:var(--fm);font-size:.7rem" placeholder="/* Custom CSS hingga 5KB */&#10;.link-card { border-radius: 20px; }"></textarea>
+        <div style="font-size:.68rem;color:var(--n-400);margin-top:3px"><i class="fa-solid fa-circle-info" style="color:var(--b-400)"></i> Fitur Pro · 0 / 5120 byte</div>
+      </div>
+    </div>
+    <button class="save-bottom"><i class="fa-solid fa-check"></i> Simpan Perubahan</button>
+  </div>
+</div>
+<script>
+const tmpls={
+  link:`<div class="cblock" onclick="selBlock(this,'link')"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-link"></i> Link</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="link-prev"><div class="lp-ico" style="background:var(--b-100);color:var(--b-700)"><i class="fa-solid fa-link"></i></div><div><div class="lp-title">Judul Link Baru</div><div class="lp-url">https://example.com</div></div><div class="lp-arr"><i class="fa-solid fa-chevron-right"></i></div></div></div></div>`,
+  header:`<div class="cblock" onclick="selBlock(this,'header')"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-heading"></i> Header</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="header-prev"><div class="hp-t">Heading Baru</div></div></div></div>`,
+  divider:`<div class="cblock" onclick="selBlock(this,'divider')"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-minus"></i> Divider</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="div-prev"><div class="div-l"></div><div class="div-d"></div><div class="div-l"></div></div></div></div>`,
+  image:`<div class="cblock" onclick="selBlock(this,'image')"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-image"></i> Gambar</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="img-prev"><i class="fa-solid fa-cloud-arrow-up"></i><span>Klik untuk upload gambar</span></div></div></div>`,
+  embed:`<div class="cblock" onclick="selBlock(this,'embed')"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-circle-play"></i> Embed</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="embed-prev"><i class="fa-brands fa-youtube"></i><span>Paste URL YouTube / Spotify</span></div></div></div>`,
+  social:`<div class="cblock" onclick="selBlock(this,'social')"><div class="cblock-bar"><i class="drag-handle fa-solid fa-grip-vertical"></i><span class="btype"><i class="fa-solid fa-share-nodes"></i> Sosial Media</span><div class="bactions"><button class="bact-btn"><i class="fa-solid fa-copy"></i></button><div class="toggle" style="width:32px;height:18px" onclick="this.classList.toggle('off');event.stopPropagation()"></div><button class="bact-btn del" onclick="delBlock(this,event)"><i class="fa-solid fa-trash"></i></button></div></div><div class="cblock-body"><div class="soc-prev"><div class="sp-chip" style="color:#E1306C"><i class="fa-brands fa-instagram"></i> Instagram</div></div></div></div>`
+};
+function addBlock(type){
+  const c=document.getElementById('canvas');const btn=c.querySelector('.add-block');
+  const d=document.createElement('div');d.innerHTML=tmpls[type];
+  const b=d.firstChild;b.style.opacity='0';b.style.transform='translateY(14px) scale(.97)';b.style.transition='all 280ms var(--ease-spring)';
+  c.insertBefore(b,btn);requestAnimationFrame(()=>{b.style.opacity='1';b.style.transform=''});
+  selBlock(b,type);
+}
+function selBlock(el,type){
+  document.querySelectorAll('.cblock').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
+  document.getElementById('tab-blok').click();
+}
+function delBlock(btn,e){e.stopPropagation();const b=btn.closest('.cblock');b.style.opacity='0';b.style.transform='scale(.95)';b.style.transition='all 200ms';setTimeout(()=>b.remove(),200)}
+function switchTab(t){
+  ['blok','hal','tema'].forEach(x=>{document.getElementById('tab-'+x).classList.toggle('act',x===t);document.getElementById('s-'+x).style.display=x===t?'flex':'none'});
+}
+function setPv(mode,btn){document.querySelectorAll('.pv-btn').forEach(b=>b.classList.remove('act'));btn.classList.add('act')}
+function undoAct(){const t=document.createElement('div');t.textContent='↩ Undo berhasil';t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--n-900);color:white;padding:8px 18px;border-radius:var(--r-full);font-size:.82rem;font-weight:700;z-index:999';document.body.appendChild(t);setTimeout(()=>t.remove(),2000)}
+function publishPage(){const btn=event.target.closest('button');const orig=btn.innerHTML;btn.innerHTML='<i class="fa-solid fa-check"></i> Published!';btn.style.background='#22C55E';setTimeout(()=>{btn.innerHTML=orig;btn.style.background=''},2000)}
+function showLib(){document.querySelector('.blib-item').scrollIntoView({behavior:'smooth'})}
+function editPageName(){const el=document.getElementById('pg-name');const orig=el.textContent;const inp=document.createElement('input');inp.value=orig;inp.style.cssText='font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--b-900);border:none;outline:none;background:var(--b-50);border-radius:4px;padding:2px 5px;width:160px';el.replaceWith(inp);inp.focus();inp.select();inp.onblur=()=>{const span=document.createElement('span');span.id='pg-name';span.textContent=inp.value||orig;inp.replaceWith(span)};inp.onkeydown=e=>{if(e.key==='Enter')inp.blur()}}
+</script>
+</body>
+</html>

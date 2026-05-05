@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pricing — bannana.id</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="bannana-ds.css">
+<style>
+.navbar{position:sticky}
+.pricing-hero{background:var(--b-50);padding:6rem 2.5rem 4rem;text-align:center;position:relative;overflow:hidden}
+.pricing-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(251,191,36,.2) 0%,transparent 70%)}
+.ph-title{font-family:var(--fd);font-size:clamp(2.2rem,5vw,3.5rem);font-weight:700;color:var(--b-900);line-height:1.15;letter-spacing:-.01em;margin-bottom:1rem;position:relative;z-index:1}
+.ph-sub{font-size:1rem;color:var(--n-500);max-width:480px;margin:0 auto;line-height:1.7;position:relative;z-index:1}
+.toggle-wrap{display:flex;align-items:center;justify-content:center;gap:12px;margin:2.5rem 0 3rem;position:relative;z-index:1}
+.toggle-label{font-size:.875rem;font-weight:600;color:var(--n-500)}
+.toggle-label.act{color:var(--b-800)}
+.save-pill{background:var(--b-500);color:var(--b-950);border-radius:var(--r-full);padding:2px 8px;font-size:.65rem;font-weight:800;margin-left:4px}
+/* pricing cards */
+.pricing-sec{padding:0 2.5rem 6rem}
+.pricing-grid{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.5rem;align-items:start}
+.pc{background:var(--n-0);border:2px solid var(--n-200);border-radius:24px;padding:2rem;transition:all 250ms var(--ease-spring);position:relative}
+.pc:hover{transform:translateY(-5px);box-shadow:var(--sh-xl)}
+.pc-pop{border-color:var(--b-400);box-shadow:0 0 0 4px rgba(251,191,36,.12)}
+.pc-pop-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--b-500);color:var(--b-950);border-radius:var(--r-full);padding:4px 16px;font-size:.7rem;font-weight:800;white-space:nowrap}
+.pc-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.pc-name{font-family:var(--fd);font-size:1.2rem;font-weight:700;color:var(--b-900);margin-bottom:.4rem}
+.pc-desc{font-size:.84rem;color:var(--n-500);line-height:1.6;margin-bottom:1.5rem}
+.pc-price{margin-bottom:1.75rem}
+.pc-amount{font-family:var(--fd);font-size:3rem;font-weight:700;color:var(--b-900);line-height:1;letter-spacing:-.03em}
+.pc-period{font-size:.82rem;color:var(--n-500);margin-top:4px}
+.pc-period .strike{text-decoration:line-through;color:var(--n-400);margin-right:4px}
+.pc-divider{border:none;border-top:1px solid var(--n-200);margin:1.5rem 0}
+.pc-features{list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.75rem}
+.pc-features li{display:flex;align-items:flex-start;gap:10px;font-size:.875rem}
+.pc-features li i{margin-top:2px;font-size:.8rem;flex-shrink:0}
+.li-yes i{color:var(--b-500)}
+.li-no{color:var(--n-400)}
+.li-no i{color:var(--n-300)}
+.pc-note{font-size:.72rem;color:var(--n-400);text-align:center;margin-top:.75rem}
+/* compare */
+.cmp-sec{padding:0 2.5rem 6rem;background:var(--n-0)}
+.cmp-inner{max-width:900px;margin:0 auto}
+.cmp-title{font-family:var(--fd);font-size:2rem;font-weight:700;color:var(--b-900);letter-spacing:-.01em;margin-bottom:.5rem}
+table{width:100%;border-collapse:collapse;font-size:.875rem;margin-top:2.5rem}
+thead th{padding:1rem;text-align:center;font-family:var(--fd);font-weight:700;border-bottom:2px solid var(--b-200)}
+thead th:first-child{text-align:left}
+thead th.th-pro{background:var(--b-50);border-radius:12px 12px 0 0;color:var(--b-800)}
+tbody tr{border-bottom:1px solid var(--n-100)}
+tbody td{padding:.875rem 1rem;text-align:center}
+tbody td:first-child{text-align:left;color:var(--n-700);font-weight:500}
+.yes{color:var(--b-500)}
+.no{color:var(--n-300)}
+.cmp-cat td{font-family:var(--fd);font-size:.75rem;font-weight:800;color:var(--b-800);text-transform:uppercase;letter-spacing:.06em;background:var(--n-50);padding:.6rem 1rem}
+/* faq */
+.faq-sec{padding:5rem 2.5rem;background:var(--b-50)}
+.faq-inner{max-width:680px;margin:0 auto}
+.faq-item{background:var(--n-0);border:2px solid var(--b-100);border-radius:16px;margin-bottom:.75rem;overflow:hidden}
+.faq-q{padding:1.1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;color:var(--b-900);font-size:.9rem;transition:background 150ms}
+.faq-q:hover{background:var(--b-50)}
+.faq-q i{color:var(--b-500);transition:transform 250ms var(--ease-spring);flex-shrink:0}
+.faq-a{padding:0 1.25rem 1.1rem;font-size:.875rem;color:var(--n-600);line-height:1.7;display:none}
+.faq-item.open .faq-q i{transform:rotate(180deg)}
+.faq-item.open .faq-a{display:block}
+/* cta */
+.cta-strip{background:var(--b-900);padding:5rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+.cta-strip::before,.cta-strip::after{content:'';position:absolute;border-radius:50%;background:rgba(251,191,36,.06);pointer-events:none}
+.cta-strip::before{width:500px;height:500px;top:-200px;left:-150px}
+.cta-strip::after{width:300px;height:300px;bottom:-100px;right:-80px}
+.cta-title{font-family:var(--fd);font-size:2.5rem;font-weight:700;color:var(--b-300);letter-spacing:-.01em;margin-bottom:.75rem;position:relative;z-index:1}
+.cta-sub{color:var(--b-200);font-size:1rem;line-height:1.65;max-width:440px;margin:0 auto 2rem;position:relative;z-index:1}
+.cta-acts{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.btn-white{background:var(--n-0);color:var(--b-900);font-weight:700}
+.btn-white:hover{background:var(--b-100);transform:translateY(-2px)}
+.btn-ow{background:transparent;color:var(--b-300);border:2px solid rgba(252,211,77,.35)}
+.btn-ow:hover{border-color:var(--b-400);background:rgba(245,158,11,.08);transform:translateY(-2px)}
+footer{background:var(--b-950);padding:2rem 2.5rem;color:var(--b-700);text-align:center;font-size:.78rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+footer a{color:var(--b-600);text-decoration:none}footer a:hover{color:var(--b-400)}
+.foot-logo{font-family:var(--fd);font-size:1.2rem;font-weight:700;color:var(--b-500);display:flex;align-items:center;gap:5px}
+@media(max-width:640px){.pricing-hero,.pricing-sec,.cmp-sec,.faq-sec,.cta-strip{padding-left:1.25rem;padding-right:1.25rem}}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="bannana-landing.html" class="navbar-logo"><span class="bana">🍌</span> bannana</a>
+  <ul class="navbar-links"><li><a href="bannana-landing.html#features">Fitur</a></li><li><a href="bannana-pricing.html" class="active">Pricing</a></li></ul>
+  <div class="navbar-actions"><a href="bannana-login.html" class="btn btn-ghost btn-sm">Masuk</a><a href="bannana-login.html?mode=register" class="btn btn-primary btn-sm"><i class="fa-solid fa-bolt"></i> Daftar Gratis</a></div>
+</nav>
+
+<div class="pricing-hero">
+  <div class="eyebrow" style="margin-bottom:1.5rem;position:relative;z-index:1"><i class="fa-solid fa-tag"></i> Harga yang jujur &amp; transparan</div>
+  <h1 class="ph-title">Pilih paket yang cocok buatmu</h1>
+  <p class="ph-sub">Mulai gratis, upgrade kapanpun kamu siap. Tidak ada biaya tersembunyi.</p>
+  <div class="toggle-wrap">
+    <span class="toggle-label act" id="lbl-y">Tahunan</span>
+    <div class="toggle" id="bill-toggle" onclick="toggleBill()" style="cursor:pointer"></div>
+    <span class="toggle-label" id="lbl-m">Bulanan <span class="save-pill">Hemat 25%</span></span>
+  </div>
+</div>
+
+<div class="pricing-sec">
+  <div class="pricing-grid">
+    <div class="pc">
+      <div class="pc-icon" style="background:var(--b-100);color:var(--b-600)"><i class="fa-solid fa-seedling"></i></div>
+      <div class="pc-name">Gratis</div>
+      <div class="pc-desc">Sempurna untuk memulai dan mencoba bannana.id tanpa risiko apapun.</div>
+      <div class="pc-price"><div class="pc-amount">Rp&nbsp;0</div><div class="pc-period">selamanya gratis</div></div>
+      <a href="bannana-login.html?mode=register" class="btn btn-ghost btn-lg btn-full">Mulai Gratis</a>
+      <hr class="pc-divider">
+      <ul class="pc-features">
+        <li class="li-yes"><i class="fa-solid fa-check"></i> 1 halaman link</li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> Hingga 10 blok per halaman</li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> 3 tema preset</li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> Analytics dasar (7 hari)</li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> Subdomain bannana.id/username</li>
+        <li class="li-no"><i class="fa-solid fa-xmark"></i> Custom domain</li>
+        <li class="li-no"><i class="fa-solid fa-xmark"></i> Custom CSS</li>
+        <li class="li-no"><i class="fa-solid fa-xmark"></i> Analytics lengkap + CSV</li>
+        <li class="li-no"><i class="fa-solid fa-xmark"></i> REST API access</li>
+      </ul>
+    </div>
+    <div class="pc pc-pop">
+      <div class="pc-pop-badge"><i class="fa-solid fa-star"></i> Paling Populer</div>
+      <div class="pc-icon" style="background:var(--b-100);color:var(--b-600)"><i class="fa-solid fa-rocket"></i></div>
+      <div class="pc-name">Pro</div>
+      <div class="pc-desc">Untuk kreator serius yang ingin tampil maksimal dan punya data lengkap.</div>
+      <div class="pc-price">
+        <div class="pc-amount"><span style="font-size:1.3rem;vertical-align:super">Rp</span><span id="pro-price">37K</span></div>
+        <div class="pc-period" id="pro-period"><span class="strike">Rp 49K</span> /bulan, dibayar tahunan</div>
+      </div>
+      <a href="bannana-login.html?mode=register" class="btn btn-primary btn-lg btn-full"><i class="fa-solid fa-bolt"></i> Mulai 14 Hari Gratis</a>
+      <div class="pc-note"><i class="fa-solid fa-circle-info"></i> Tidak perlu kartu kredit</div>
+      <hr class="pc-divider">
+      <ul class="pc-features">
+        <li class="li-yes"><i class="fa-solid fa-check"></i> <strong>Halaman tidak terbatas</strong></li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> <strong>Blok tidak terbatas</strong></li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> <strong>12+ tema preset</strong></li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> <strong>Custom CSS hingga 5KB</strong></li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> Analytics lengkap (90 hari) + export CSV</li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> <strong>Custom domain</strong></li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> REST API access</li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> <strong>Hapus branding bannana</strong></li>
+        <li class="li-yes"><i class="fa-solid fa-check"></i> Priority support</li>
+      </ul>
+    </div>
+    <div class="pc">
+      <div class="pc-icon" style="background:#EDE9FE;color:#7C3AED"><i class="fa-solid fa-server"></i></div>
+      <div class="pc-name">Self-Hosted</div>
+      <div class="pc-desc">Deploy di server sendiri, kontrol penuh. Cocok untuk developer &amp; tim teknis.</div>
+      <div class="pc-price"><div class="pc-amount" style="color:#7C3AED">Gratis</div><div class="pc-period">open source · MIT License</div></div>
+      <a href="#" class="btn btn-lg btn-full" style="background:#EDE9FE;color:#7C3AED;border:2px solid #DDD6FE;font-weight:700"><i class="fa-brands fa-github"></i> Lihat di GitHub</a>
+      <hr class="pc-divider">
+      <ul class="pc-features">
+        <li style="color:var(--n-700)"><i class="fa-solid fa-check" style="color:#7C3AED"></i> Semua fitur Pro, gratis</li>
+        <li style="color:var(--n-700)"><i class="fa-solid fa-check" style="color:#7C3AED"></i> Kode sumber lengkap</li>
+        <li style="color:var(--n-700)"><i class="fa-solid fa-check" style="color:#7C3AED"></i> Kontrol data sepenuhnya</li>
+        <li style="color:var(--n-700)"><i class="fa-solid fa-check" style="color:#7C3AED"></i> Next.js 15 + Prisma + MySQL</li>
+        <li style="color:var(--n-700)"><i class="fa-solid fa-check" style="color:#7C3AED"></i> Deploy PM2 + Nginx</li>
+        <li class="li-no"><i class="fa-solid fa-xmark"></i> Setup manual (butuh teknis)</li>
+        <li class="li-no"><i class="fa-solid fa-xmark"></i> Tanpa cloud support</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="cmp-sec">
+  <div class="cmp-inner">
+    <div style="text-align:center"><div class="cmp-title">Perbandingan Lengkap</div><div style="font-size:.9rem;color:var(--n-500)">Semua fitur dalam satu tabel</div></div>
+    <table>
+      <thead><tr><th style="width:40%">Fitur</th><th>Gratis</th><th class="th-pro">Pro</th><th>Self-Hosted</th></tr></thead>
+      <tbody>
+        <tr class="cmp-cat"><td colspan="4">Halaman &amp; Blok</td></tr>
+        <tr><td>Jumlah halaman</td><td>1</td><td style="background:var(--b-50);font-weight:600">Tidak terbatas</td><td>Tidak terbatas</td></tr>
+        <tr><td>Blok per halaman</td><td>10</td><td style="background:var(--b-50);font-weight:600">Tidak terbatas</td><td>Tidak terbatas</td></tr>
+        <tr><td>Semua jenis blok</td><td><i class="fa-solid fa-check yes"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr class="cmp-cat"><td colspan="4">Tampilan &amp; Tema</td></tr>
+        <tr><td>Tema preset</td><td>3 tema</td><td style="background:var(--b-50);font-weight:600">12+ tema</td><td>12+ tema</td></tr>
+        <tr><td>Custom CSS</td><td><i class="fa-solid fa-xmark no"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr class="cmp-cat"><td colspan="4">Domain &amp; Branding</td></tr>
+        <tr><td>Subdomain bannana.id</td><td><i class="fa-solid fa-check yes"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr><td>Custom domain</td><td><i class="fa-solid fa-xmark no"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr><td>Hapus branding bannana</td><td><i class="fa-solid fa-xmark no"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr class="cmp-cat"><td colspan="4">Analytics</td></tr>
+        <tr><td>Analytics dasar</td><td><i class="fa-solid fa-check yes"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr><td>Retensi data</td><td>7 hari</td><td style="background:var(--b-50);font-weight:600">90 hari</td><td>Tidak terbatas</td></tr>
+        <tr><td>Export CSV</td><td><i class="fa-solid fa-xmark no"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr class="cmp-cat"><td colspan="4">Developer</td></tr>
+        <tr><td>REST API access</td><td><i class="fa-solid fa-xmark no"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-check yes"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+        <tr><td>Akses kode sumber</td><td><i class="fa-solid fa-xmark no"></i></td><td style="background:var(--b-50)"><i class="fa-solid fa-xmark no"></i></td><td><i class="fa-solid fa-check yes"></i></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="faq-sec">
+  <div class="faq-inner">
+    <div style="text-align:center;margin-bottom:2.5rem"><div class="cmp-title">Pertanyaan Umum</div><div style="font-size:.9rem;color:var(--n-500);margin-top:.4rem">Ada yang masih bingung? Kami siap bantu!</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Apakah gratis benar-benar gratis? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-a">Ya! Paket Gratis tidak memiliki batas waktu. Kamu bisa menggunakan bannana.id secara gratis selamanya dengan fitur dasar. Tidak perlu kartu kredit untuk mendaftar.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Bisa upgrade/downgrade kapanpun? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-a">Tentu! Kamu bisa upgrade ke Pro kapanpun, dan downgrade kembali ke Gratis jika sudah tidak butuh fitur Pro. Data halamanmu tetap aman.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Metode pembayaran apa saja yang tersedia? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-a">Kami menerima transfer bank, dompet digital (GoPay, OVO, Dana), dan kartu kredit/debit Visa &amp; Mastercard melalui payment gateway yang aman.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Apakah ada uji coba gratis untuk paket Pro? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-a">Ya! Paket Pro bisa dicoba gratis selama 14 hari tanpa kartu kredit. Setelah 14 hari, kamu bisa memilih berlangganan atau kembali ke paket Gratis.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Apa itu Self-Hosted dan siapa yang cocok? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-a">Self-Hosted berarti kamu download dan jalankan bannana.id di server milikmu sendiri. Cocok untuk developer, tim teknis, atau yang ingin kontrol penuh atas data. Butuh pengetahuan teknis (Node.js, MySQL, Nginx).</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Dataku aman jika saya berhenti berlangganan? <i class="fa-solid fa-chevron-down"></i></div><div class="faq-a">Data halamanmu tetap aman. Jika kamu downgrade ke Gratis, beberapa fitur Pro tidak bisa diakses, tapi semua data link dan halaman tetap tersimpan.</div></div>
+  </div>
+</div>
+
+<div class="cta-strip">
+  <h2 class="cta-title">Siap mulai? Gratis!</h2>
+  <p class="cta-sub">Daftar dalam 30 detik, buat link page pertamamu, dan share ke followers!</p>
+  <div class="cta-acts">
+    <a href="bannana-login.html?mode=register" class="btn btn-white btn-xl"><i class="fa-solid fa-bolt"></i> Mulai Gratis Sekarang</a>
+    <a href="bannana-landing.html" class="btn btn-ow btn-xl"><i class="fa-solid fa-arrow-left"></i> Kembali ke Home</a>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-logo"><span class="bana">🍌</span> bannana.id</div>
+  <span>&copy; 2025 bannana.id — dibuat dengan cinta &amp; kuning</span>
+  <div style="display:flex;gap:1rem"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">MIT</a></div>
+</footer>
+
+<script>
+let yearly=true;
+function toggleBill(){
+  yearly=!yearly;
+  const t=document.getElementById('bill-toggle');
+  t.classList.toggle('off',!yearly);
+  document.getElementById('lbl-y').classList.toggle('act',yearly);
+  document.getElementById('lbl-m').classList.toggle('act',!yearly);
+  document.getElementById('pro-price').textContent=yearly?'37K':'49K';
+  document.getElementById('pro-period').innerHTML=yearly?'<span class="strike">Rp 49K</span> /bulan, dibayar tahunan':'/bulan';
+}
+function toggleFaq(el){el.classList.toggle('open')}
+</script>
+</body>
+</html>

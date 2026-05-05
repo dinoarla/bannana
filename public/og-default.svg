@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#FFFBEB"/>
+  <circle cx="1000" cy="120" r="180" fill="#FDE68A"/>
+  <circle cx="190" cy="520" r="210" fill="#FEF3C7"/>
+  <text x="120" y="285" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-size="108" font-weight="700" fill="#78350F">bannana.id</text>
+  <text x="126" y="360" font-family="Arial, sans-serif" font-size="40" fill="#92400E">satu link, semua tempat</text>
+  <text x="890" y="395" font-size="180">🍌</text>
+</svg>

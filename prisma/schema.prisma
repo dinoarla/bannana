@@ -1,0 +1,155 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  username      String    @unique
+  passwordHash  String
+  emailVerified DateTime?
+  role          Role      @default(USER)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile       Profile?
+  pages         Page[]
+  sessions      Session[]
+  apiKeys       ApiKey[]
+  auditLogs     AuditLog[]
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  displayName String
+  bio         String?  @db.Text
+  avatarUrl   String?  @db.Text
+  avatarIcon  String?
+  tags        Json
+  socialLinks Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Page {
+  id             String   @id @default(cuid())
+  userId         String
+  title          String
+  slug           String   @unique
+  theme          String   @default("classic")
+  isPublished    Boolean  @default(false)
+  customCss      String?  @db.Text
+  viewCount      Int      @default(0)
+  uniqueVisitors Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blocks         Block[]
+  analytics      Analytics[]
+
+  @@index([userId])
+  @@index([slug, isPublished])
+}
+
+model Block {
+  id         String    @id @default(cuid())
+  pageId     String
+  type       BlockType
+  title      String?
+  url        String?   @db.Text
+  position   Int
+  isEnabled  Boolean   @default(true)
+  config     Json
+  clickCount Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  page       Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  analytics  Analytics[]
+
+  @@index([pageId, position])
+  @@index([pageId, isEnabled])
+}
+
+model Analytics {
+  id        String   @id @default(cuid())
+  pageId    String
+  blockId   String?
+  event     String
+  referrer  String?  @db.Text
+  userAgent String?  @db.Text
+  country   String?
+  device    String?
+  createdAt DateTime @default(now())
+
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  block     Block?   @relation(fields: [blockId], references: [id], onDelete: SetNull)
+
+  @@index([pageId, createdAt])
+  @@index([blockId, createdAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  csrfToken String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  keyHash   String   @unique
+  scopes    Json
+  lastUsedAt DateTime?
+  createdAt DateTime @default(now())
+  revokedAt DateTime?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  metadata  Json
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum BlockType {
+  LINK
+  HEADER
+  SOCIAL
+  EMBED
+  IMAGE
+  DIVIDER
+}
+
+enum Role {
+  USER
+  ADMIN
+}

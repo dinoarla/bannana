@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Andi Pratama — bannana.id</title>
+<meta name="description" content="Halo! Aku host di @designtalks, founder startup marketing.">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--b50:#FFFBEB;--b100:#FEF3C7;--b200:#FDE68A;--b300:#FCD34D;--b400:#FBBF24;--b500:#F59E0B;--b600:#D97706;--b700:#B45309;--b800:#92400E;--b900:#78350F;--b950:#451A03;--n0:#fff;--n50:#FAFAF9;--n100:#F5F5F4;--n200:#E7E5E4;--n500:#78716C;--n600:#57534E;--n700:#44403C;--n800:#292524;--n900:#1C1917;--sh-sm:0 2px 8px rgba(120,53,15,.1);--sh-brand:0 4px 14px rgba(245,158,11,.28);--spring:cubic-bezier(.34,1.56,.64,1);--fd:'Fredoka',system-ui,sans-serif;--fb:'Plus Jakarta Sans',system-ui,sans-serif}
+@keyframes pop-up{0%{opacity:0;transform:translateY(20px) scale(.97)}60%{transform:translateY(-3px) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}
+body{font-family:var(--fb);background:var(--n50);min-height:100vh;display:flex;flex-direction:column}
+/* Public page layout */
+.pub-wrap{max-width:560px;margin:0 auto;padding:2rem 1.25rem;width:100%;flex:1}
+/* Header / profile */
+.prof-header{text-align:center;padding:2rem 0 1.5rem;animation:pop-up .6s var(--spring) both}
+.prof-avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--b400),var(--b600));display:flex;align-items:center;justify-content:center;color:var(--b950);font-size:2.2rem;margin:0 auto 1rem;box-shadow:0 8px 24px rgba(245,158,11,.3);position:relative}
+.prof-avatar::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:3px solid var(--b300);animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prof-name{font-family:var(--fd);font-size:1.6rem;font-weight:700;color:var(--b900);letter-spacing:-.01em}
+.prof-handle{font-size:.84rem;color:var(--n500);margin-top:2px;margin-bottom:.875rem}
+.prof-bio{font-size:.9rem;color:var(--n600);line-height:1.65;max-width:360px;margin:0 auto}
+.prof-tags{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.875rem}
+.ptag{font-size:.72rem;font-weight:700;background:var(--b100);color:var(--b800);border-radius:9999px;padding:3px 10px}
+.social-row{display:flex;gap:.625rem;justify-content:center;margin-top:1rem}
+.soc-btn{width:38px;height:38px;border-radius:50%;background:var(--n0);border:1.5px solid var(--n200);display:flex;align-items:center;justify-content:center;color:var(--n600);text-decoration:none;font-size:.95rem;transition:all 150ms var(--spring)}
+.soc-btn:hover{transform:translateY(-3px) scale(1.1)}
+/* Blocks */
+.blocks{display:flex;flex-direction:column;gap:.75rem;margin-top:1.5rem}
+.block-item{animation:pop-up .5s var(--spring) both}
+/* Link block */
+.link-card{display:flex;align-items:center;gap:12px;background:var(--n0);border:2px solid var(--b100);border-radius:16px;padding:.875rem 1rem;text-decoration:none;transition:all 200ms var(--spring);box-shadow:var(--sh-sm);cursor:pointer}
+.link-card:hover{border-color:var(--b400);transform:translateY(-3px) scale(1.01);box-shadow:var(--sh-brand)}
+.link-card:active{transform:scale(.98)}
+.lc-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.lc-title{font-weight:700;font-size:.9rem;color:var(--b900)}
+.lc-sub{font-size:.75rem;color:var(--n500);margin-top:1px}
+.lc-arr{margin-left:auto;color:var(--n300);font-size:.85rem;flex-shrink:0;transition:transform 200ms var(--spring)}
+.link-card:hover .lc-arr{transform:translateX(3px);color:var(--b500)}
+.lc-clicks{font-size:.68rem;font-weight:700;background:var(--b100);color:var(--b700);border-radius:9999px;padding:1px 7px;margin-left:auto;flex-shrink:0}
+/* Header block */
+.header-block{text-align:center;padding:.5rem 0}
+.hb-text{font-family:var(--fd);font-size:1.05rem;font-weight:700;color:var(--b900)}
+.hb-sub{font-size:.8rem;color:var(--n500);margin-top:3px}
+/* Divider block */
+.div-block{display:flex;align-items:center;gap:.75rem;padding:.25rem 0}
+.div-line{flex:1;height:1.5px;background:var(--n200);border-radius:1px}
+.div-dot{width:7px;height:7px;border-radius:50%;background:var(--b300);flex-shrink:0}
+/* Social block */
+.social-block{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;padding:.25rem 0}
+.sb-chip{display:inline-flex;align-items:center;gap:6px;background:var(--n0);border:1.5px solid var(--n200);border-radius:9999px;padding:6px 14px;font-size:.8rem;font-weight:600;color:var(--n700);text-decoration:none;transition:all 150ms var(--spring)}
+.sb-chip:hover{border-color:var(--b300);background:var(--b50);transform:translateY(-2px)}
+/* Embed block */
+.embed-block{background:var(--n0);border:2px solid var(--n200);border-radius:16px;overflow:hidden;box-shadow:var(--sh-sm)}
+.embed-inner{background:var(--n100);height:120px;display:flex;align-items:center;justify-content:center;gap:.75rem;color:var(--n400)}
+.embed-inner i{font-size:2rem;color:var(--b300)}
+.embed-foot{padding:.75rem 1rem;border-top:1px solid var(--n200);display:flex;align-items:center;gap:.5rem}
+.embed-title{font-size:.82rem;font-weight:600;color:var(--b900);flex:1}
+.embed-link{font-size:.72rem;color:var(--b600);font-weight:600;text-decoration:none}
+/* Footer */
+.pub-footer{text-align:center;padding:3rem 1.25rem 2rem;font-size:.78rem;color:var(--n400)}
+.made-with{display:inline-flex;align-items:center;gap:6px;background:var(--b50);border:1.5px solid var(--b100);border-radius:9999px;padding:6px 16px;text-decoration:none;color:var(--b700);font-weight:700;font-size:.78rem;transition:all 150ms var(--spring)}
+.made-with:hover{background:var(--b100);transform:translateY(-1px)}
+/* Floating share btn */
+.share-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:52px;height:52px;border-radius:50%;background:var(--b500);color:var(--b950);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 8px 24px rgba(245,158,11,.4);transition:all 200ms var(--spring);z-index:100}
+.share-fab:hover{transform:scale(1.1);box-shadow:0 12px 30px rgba(245,158,11,.5)}
+/* Page settings overlay for demo */
+.demo-banner{background:var(--b900);color:var(--b200);text-align:center;font-size:.78rem;padding:8px 1.25rem;display:flex;align-items:center;justify-content:center;gap:8px}
+.demo-banner a{color:var(--b400);font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <i class="fa-solid fa-eye"></i> Ini adalah tampilan publik halaman bannana.id — yang dilihat pengunjungmu.
+  <a href="bannana-login.html?mode=register">Buat halaman kamu sendiri →</a>
+</div>
+
+<div class="pub-wrap">
+  <div class="prof-header">
+    <div class="prof-avatar"><i class="fa-solid fa-user"></i></div>
+    <div class="prof-name">Andi Pratama</div>
+    <div class="prof-handle">@andi_kreasi · bannana.id/andi_kreasi</div>
+    <div class="prof-bio">Halo! Aku host di @designtalks, founder startup marketing, &amp; suka bantu UMKM tampil keren online. ☕</div>
+    <div class="prof-tags"><span class="ptag">Design</span><span class="ptag">Startup</span><span class="ptag">Podcast</span><span class="ptag">Marketing</span></div>
+    <div class="social-row">
+      <a href="#" class="soc-btn" style="color:#E1306C" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" class="soc-btn" style="color:#1DA1F2" title="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+      <a href="#" class="soc-btn" style="color:#FF0000" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+      <a href="#" class="soc-btn" style="color:#0A66C2" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+    </div>
+  </div>
+
+  <div class="blocks">
+    <!-- Header block -->
+    <div class="block-item" style="animation-delay:.1s">
+      <div class="header-block">
+        <div class="hb-text">Halo! Selamat datang di bannana-ku ✨</div>
+        <div class="hb-sub">Semua link favoritku ada di sini — pilih yang kamu mau!</div>
+      </div>
+    </div>
+
+    <!-- Link blocks -->
+    <div class="block-item" style="animation-delay:.17s">
+      <a href="#" class="link-card" onclick="trackClick(this)">
+        <div class="lc-ico" style="background:var(--b100);color:var(--b600)"><i class="fa-solid fa-star"></i></div>
+        <div><div class="lc-title">Portfolio Terbaru 2025</div><div class="lc-sub">Lihat semua karya &amp; project terbaikku</div></div>
+        <div class="lc-arr"><i class="fa-solid fa-chevron-right"></i></div>
+      </a>
+    </div>
+    <div class="block-item" style="animation-delay:.24s">
+      <a href="#" class="link-card" onclick="trackClick(this)">
+        <div class="lc-ico" style="background:#FEE2D5;color:#C05621"><i class="fa-brands fa-youtube"></i></div>
+        <div><div class="lc-title">YouTube Channel</div><div class="lc-sub">Tutorial desain &amp; marketing mingguan</div></div>
+        <div class="lc-arr"><i class="fa-solid fa-chevron-right"></i></div>
+      </a>
+    </div>
+    <div class="block-item" style="animation-delay:.31s">
+      <a href="#" class="link-card" onclick="trackClick(this)">
+        <div class="lc-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-bag-shopping"></i></div>
+        <div><div class="lc-title">Toko Online — Preset &amp; Merch</div><div class="lc-sub">Preset Lightroom, template Figma, dan lainnya</div></div>
+        <div class="lc-arr"><i class="fa-solid fa-chevron-right"></i></div>
+      </a>
+    </div>
+
+    <!-- Divider -->
+    <div class="block-item" style="animation-delay:.38s">
+      <div class="div-block"><div class="div-line"></div><div class="div-dot"></div><div class="div-line"></div></div>
+    </div>
+
+    <!-- Embed block -->
+    <div class="block-item" style="animation-delay:.45s">
+      <div class="embed-block">
+        <div class="embed-inner"><i class="fa-brands fa-youtube"></i><div><div style="font-size:.85rem;font-weight:700;color:var(--n700)">Episode Terbaru Podcast</div><div style="font-size:.72rem;color:var(--n400);margin-top:2px">Design Talks #42 — Cara Bangun Brand Personal</div></div></div>
+        <div class="embed-foot"><span class="embed-title"><i class="fa-brands fa-spotify" style="color:#1DB954;margin-right:5px"></i> Dengarkan di Spotify</span><a href="#" class="embed-link">Buka <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.6rem"></i></a></div>
+      </div>
+    </div>
+
+    <div class="block-item" style="animation-delay:.52s">
+      <a href="#" class="link-card" onclick="trackClick(this)">
+        <div class="lc-ico" style="background:#E0E7FF;color:#4338CA"><i class="fa-solid fa-envelope"></i></div>
+        <div><div class="lc-title">Hubungi Aku — Kolaborasi</div><div class="lc-sub">Terbuka untuk project &amp; partnership</div></div>
+        <div class="lc-arr"><i class="fa-solid fa-chevron-right"></i></div>
+      </a>
+    </div>
+
+    <!-- Social block -->
+    <div class="block-item" style="animation-delay:.59s">
+      <div class="social-block">
+        <a href="#" class="sb-chip" style="color:#E1306C"><i class="fa-brands fa-instagram"></i> Instagram</a>
+        <a href="#" class="sb-chip" style="color:#1DA1F2"><i class="fa-brands fa-x-twitter"></i> Twitter / X</a>
+        <a href="#" class="sb-chip" style="color:#0A66C2"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+        <a href="#" class="sb-chip" style="color:#FF0000"><i class="fa-brands fa-youtube"></i> YouTube</a>
+        <a href="#" class="sb-chip" style="color:#1DB954"><i class="fa-brands fa-spotify"></i> Podcast</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pub-footer">
+  <a href="bannana-landing.html" class="made-with"><span style="animation:bannana-wiggle 3s ease-in-out infinite;display:inline-block">🍌</span> Dibuat dengan bannana.id — gratis!</a>
+</div>
+
+<button class="share-fab" onclick="shareProfile()" title="Bagikan halaman ini"><i class="fa-solid fa-share-nodes"></i></button>
+
+<script>
+// Track click analytics (will hit API in real app)
+function trackClick(el){el.style.transform='scale(.97)';setTimeout(()=>el.style.transform='',150)}
+// Block entrance animation with stagger
+document.querySelectorAll('.block-item').forEach((el,i)=>{el.style.animationDelay=(0.1+i*0.07)+'s'})
+// Share
+function shareProfile(){
+  if(navigator.share){navigator.share({title:'Andi Pratama — bannana.id',url:location.href})}
+  else{navigator.clipboard.writeText(location.href).then(()=>{
+    const btn=document.querySelector('.share-fab');
+    btn.innerHTML='<i class="fa-solid fa-check"></i>';
+    setTimeout(()=>{btn.innerHTML='<i class="fa-solid fa-share-nodes"></i>'},2000)
+  })}
+}
+// Wiggle keyframe for footer
+const st=document.createElement('style');st.textContent='@keyframes bannana-wiggle{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}';document.head.appendChild(st);
+</script>
+</body>
+</html>

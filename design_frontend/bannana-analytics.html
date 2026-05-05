@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analytics — bannana.id</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="bannana-ds.css">
+<style>
+html,body{height:100%;overflow:hidden}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;padding:1.25rem;transition:all 200ms var(--ease-spring)}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--sh-brand-sm);border-color:var(--b-200)}
+.sc-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.sc-val{font-family:var(--fd);font-size:1.9rem;font-weight:700;color:var(--b-900);letter-spacing:-.03em;margin-top:.5rem}
+.sc-lbl{font-size:.75rem;color:var(--n-500);margin-top:2px}
+.sc-chg{font-size:.72rem;font-weight:700;display:flex;align-items:center;gap:3px;margin-top:.5rem}
+.sc-chg.up{color:var(--success-600)}
+.sc-chg.dn{color:var(--danger-600)}
+.main-chart-card{background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;padding:1.5rem;margin-bottom:1.5rem}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.chart-title{font-family:var(--fd);font-size:1.1rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:7px}
+.chart-title i{color:var(--b-500)}
+.rng-btns{display:flex;gap:.4rem}
+.rng-btn{height:28px;padding:0 12px;border-radius:var(--r-full);font-size:.72rem;font-weight:700;border:1.5px solid var(--n-200);background:none;cursor:pointer;color:var(--n-500);transition:all 150ms}
+.rng-btn.act{background:var(--b-100);border-color:var(--b-300);color:var(--b-800)}
+.chart-bars{height:120px;display:flex;align-items:flex-end;gap:3px}
+.cbar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--b-300),var(--b-400));transition:all 200ms var(--ease-spring);cursor:pointer;position:relative}
+.cbar:hover{background:linear-gradient(180deg,var(--b-400),var(--b-500));transform:scaleY(1.05);transform-origin:bottom}
+.cbar.hi{background:linear-gradient(180deg,var(--b-500),var(--b-700))}
+.chart-labels{display:flex;gap:3px;margin-top:5px}
+.chart-labels span{flex:1;text-align:center;font-size:.58rem;color:var(--n-400)}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.anl-card{background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;padding:1.25rem}
+.anl-card-title{font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:7px;margin-bottom:1.1rem}
+.anl-card-title i{color:var(--b-500)}
+.link-row{display:flex;align-items:center;gap:9px;font-size:.82rem;padding:.55rem 0;border-bottom:1px solid var(--n-100)}
+.link-row:last-child{border-bottom:none}
+.link-row-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+.link-row-name{flex:1;color:var(--n-700);font-weight:500}
+.link-row-ct{font-weight:700;color:var(--b-700);min-width:40px;text-align:right;font-size:.78rem}
+.link-bar{flex:0 0 72px;height:5px;background:var(--b-100);border-radius:3px;overflow:hidden}
+.link-fill{height:100%;background:var(--b-500);border-radius:3px}
+.geo-row{display:flex;align-items:center;gap:9px;font-size:.82rem;padding:.5rem 0;border-bottom:1px solid var(--n-100)}
+.geo-row:last-child{border-bottom:none}
+.geo-flag{font-size:1.1rem;flex-shrink:0}
+.geo-name{flex:1;color:var(--n-700)}
+.geo-ct{font-weight:700;color:var(--b-700);font-size:.78rem}
+.geo-pct{font-size:.7rem;color:var(--n-400)}
+.device-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.dev-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dev-name{font-size:.82rem;font-weight:600;color:var(--n-700);flex:1}
+.dev-ct{font-size:.78rem;font-weight:700;color:var(--b-700)}
+.dev-bar{width:100%;height:7px;background:var(--n-100);border-radius:4px;overflow:hidden;margin-top:3px}
+.dev-fill{height:100%;border-radius:4px}
+.ref-item{display:flex;align-items:center;gap:9px;font-size:.82rem;padding:.5rem 0;border-bottom:1px solid var(--n-100)}
+.ref-item:last-child{border-bottom:none}
+.ref-ico{width:28px;height:28px;border-radius:7px;background:var(--n-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem}
+.export-btn{display:flex;align-items:center;gap:6px;background:var(--b-100);border:1.5px solid var(--b-200);border-radius:8px;padding:.5rem .875rem;font-size:.78rem;font-weight:700;color:var(--b-800);cursor:pointer;transition:all 150ms;text-decoration:none}
+.export-btn:hover{background:var(--b-200);border-color:var(--b-300)}
+@media(max-width:1200px){.stats-grid{grid-template-columns:1fr 1fr}.three-col{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a href="bannana-landing.html" class="sb-logo"><span class="bana">🍌</span> bannana</a>
+    <div class="sb-user"><div class="sb-avatar"><i class="fa-solid fa-user"></i></div><div><div class="sb-uname">Andi Pratama</div><div class="sb-handle">@andi_kreasi</div></div><span class="sb-badge" style="background:var(--b-500);color:var(--b-950)">PRO</span></div>
+    <nav class="sb-nav">
+      <div class="sb-section">Menu Utama</div>
+      <a href="bannana-dashboard.html" class="sb-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="bannana-editor.html" class="sb-item"><i class="fa-solid fa-table-columns"></i> Halaman Saya</a>
+      <a href="bannana-analytics.html" class="sb-item active"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+      <div class="sb-section">Kustomisasi</div>
+      <a href="bannana-themes.html" class="sb-item"><i class="fa-solid fa-palette"></i> Tema</a>
+      <a href="#" class="sb-item"><i class="fa-solid fa-image"></i> Gambar &amp; Media</a>
+      <div class="sb-section">Akun</div>
+      <a href="#" class="sb-item"><i class="fa-solid fa-key"></i> API Keys</a>
+      <a href="bannana-settings.html" class="sb-item"><i class="fa-solid fa-gear"></i> Pengaturan</a>
+    </nav>
+  </aside>
+  <div class="main-area">
+    <div class="topbar">
+      <div style="font-family:var(--fd);font-size:1.3rem;font-weight:700;color:var(--b-900)"><i class="fa-solid fa-chart-line" style="color:var(--b-500);margin-right:8px"></i> Analytics</div>
+      <div style="margin-left:auto;display:flex;gap:.75rem;align-items:center">
+        <select style="height:36px;border:1.5px solid var(--n-200);border-radius:9px;padding:0 10px;font-size:.84rem;font-family:var(--fb);color:var(--n-700);cursor:pointer;outline:none;background:var(--n-0)">
+          <option>Link Utama (bannana.id/andi_kreasi)</option>
+          <option>About Me</option>
+          <option>Semua Halaman</option>
+        </select>
+        <a href="#" class="export-btn"><i class="fa-solid fa-file-csv"></i> Export CSV</a>
+      </div>
+    </div>
+    <div class="page-content">
+      <!-- STATS OVERVIEW -->
+      <div class="stats-grid">
+        <div class="stat-card"><div class="sc-ico" style="background:var(--b-100);color:var(--b-600)"><i class="fa-solid fa-eye"></i></div><div class="sc-val">12,432</div><div class="sc-lbl">Total Views</div><div class="sc-chg up"><i class="fa-solid fa-arrow-up"></i> 18.4% vs periode lalu</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-arrow-pointer"></i></div><div class="sc-val">3,847</div><div class="sc-lbl">Total Klik</div><div class="sc-chg up"><i class="fa-solid fa-arrow-up"></i> 23.7% vs periode lalu</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:#DBEAFE;color:#1E40AF"><i class="fa-solid fa-percent"></i></div><div class="sc-val">30.9%</div><div class="sc-lbl">Click Rate (CTR)</div><div class="sc-chg up"><i class="fa-solid fa-arrow-up"></i> 3.1% vs periode lalu</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:#FCE7F3;color:#9D174D"><i class="fa-solid fa-users"></i></div><div class="sc-val">847</div><div class="sc-lbl">Pengunjung Unik</div><div class="sc-chg dn"><i class="fa-solid fa-arrow-down"></i> 4.8% vs periode lalu</div></div>
+      </div>
+      <!-- MAIN CHART -->
+      <div class="main-chart-card">
+        <div class="chart-head">
+          <div class="chart-title"><i class="fa-solid fa-chart-area"></i> Tren Kunjungan &amp; Klik</div>
+          <div style="display:flex;gap:.75rem;align-items:center">
+            <div style="display:flex;gap:.875rem;font-size:.75rem">
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--b-500);display:inline-block"></span> Views</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--b-200);display:inline-block"></span> Klik</span>
+            </div>
+            <div class="rng-btns">
+              <button class="rng-btn" onclick="setR(this,'7d')">7h</button>
+              <button class="rng-btn act" onclick="setR(this,'30d')">30h</button>
+              <button class="rng-btn" onclick="setR(this,'90d')">90h</button>
+            </div>
+          </div>
+        </div>
+        <div class="chart-bars" id="anl-chart">
+          <div class="cbar" style="height:35%"></div><div class="cbar" style="height:48%"></div><div class="cbar" style="height:42%"></div><div class="cbar" style="height:65%"></div><div class="cbar" style="height:55%"></div><div class="cbar hi" style="height:88%"></div><div class="cbar" style="height:74%"></div><div class="cbar" style="height:60%"></div><div class="cbar" style="height:78%"></div><div class="cbar" style="height:88%"></div><div class="cbar" style="height:72%"></div><div class="cbar" style="height:100%"></div><div class="cbar" style="height:91%"></div><div class="cbar" style="height:85%"></div><div class="cbar" style="height:78%"></div><div class="cbar" style="height:92%"></div><div class="cbar" style="height:88%"></div><div class="cbar" style="height:95%"></div><div class="cbar" style="height:82%"></div><div class="cbar" style="height:89%"></div><div class="cbar" style="height:76%"></div><div class="cbar" style="height:83%"></div><div class="cbar" style="height:97%"></div><div class="cbar" style="height:88%"></div><div class="cbar" style="height:93%"></div><div class="cbar" style="height:79%"></div><div class="cbar" style="height:86%"></div><div class="cbar" style="height:91%"></div><div class="cbar" style="height:94%"></div><div class="cbar" style="height:100%"></div>
+        </div>
+        <div class="chart-labels" id="anl-labels">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+        </div>
+      </div>
+      <!-- 3 COLS -->
+      <div class="three-col">
+        <!-- Top Links -->
+        <div class="anl-card">
+          <div class="anl-card-title"><i class="fa-solid fa-fire-flame-curved"></i> Top Links</div>
+          <div class="link-row"><div class="link-row-ico" style="background:var(--b-100);color:var(--b-700)"><i class="fa-solid fa-star"></i></div><span class="link-row-name">Portfolio Terbaru</span><span class="link-row-ct">1,240</span><div class="link-bar"><div class="link-fill" style="width:100%"></div></div></div>
+          <div class="link-row"><div class="link-row-ico" style="background:#FEE2D5;color:#C05621"><i class="fa-brands fa-youtube"></i></div><span class="link-row-name">YouTube Channel</span><span class="link-row-ct">980</span><div class="link-bar"><div class="link-fill" style="width:79%"></div></div></div>
+          <div class="link-row"><div class="link-row-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-bag-shopping"></i></div><span class="link-row-name">Toko Online</span><span class="link-row-ct">740</span><div class="link-bar"><div class="link-fill" style="width:60%"></div></div></div>
+          <div class="link-row"><div class="link-row-ico" style="background:#E0F2FE;color:#0369A1"><i class="fa-brands fa-x-twitter"></i></div><span class="link-row-name">Twitter / X</span><span class="link-row-ct">420</span><div class="link-bar"><div class="link-fill" style="width:34%"></div></div></div>
+          <div class="link-row"><div class="link-row-ico" style="background:#EDE9FE;color:#7C3AED"><i class="fa-solid fa-envelope"></i></div><span class="link-row-name">Hubungi Aku</span><span class="link-row-ct">267</span><div class="link-bar"><div class="link-fill" style="width:22%"></div></div></div>
+        </div>
+        <!-- Top Countries -->
+        <div class="anl-card">
+          <div class="anl-card-title"><i class="fa-solid fa-earth-asia"></i> Negara Asal</div>
+          <div class="geo-row"><span class="geo-flag">🇮🇩</span><span class="geo-name">Indonesia</span><span class="geo-ct">2,841</span><span class="geo-pct">73.8%</span></div>
+          <div class="geo-row"><span class="geo-flag">🇲🇾</span><span class="geo-name">Malaysia</span><span class="geo-ct">384</span><span class="geo-pct">9.9%</span></div>
+          <div class="geo-row"><span class="geo-flag">🇸🇬</span><span class="geo-name">Singapura</span><span class="geo-ct">198</span><span class="geo-pct">5.1%</span></div>
+          <div class="geo-row"><span class="geo-flag">🇺🇸</span><span class="geo-name">Amerika Serikat</span><span class="geo-ct">142</span><span class="geo-pct">3.7%</span></div>
+          <div class="geo-row"><span class="geo-flag">🇦🇺</span><span class="geo-name">Australia</span><span class="geo-ct">98</span><span class="geo-pct">2.5%</span></div>
+          <div class="geo-row"><span class="geo-flag">🌍</span><span class="geo-name">Lainnya</span><span class="geo-ct">184</span><span class="geo-pct">4.8%</span></div>
+        </div>
+        <!-- Device -->
+        <div class="anl-card">
+          <div class="anl-card-title"><i class="fa-solid fa-mobile-screen"></i> Perangkat</div>
+          <div class="device-row">
+            <div class="dev-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-mobile-screen"></i></div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span class="dev-name">Mobile</span><span class="dev-ct">68.4%</span></div>
+              <div class="dev-bar"><div class="dev-fill" style="width:68.4%;background:#4ADE80"></div></div>
+            </div>
+          </div>
+          <div class="device-row">
+            <div class="dev-ico" style="background:#DBEAFE;color:#1E40AF"><i class="fa-solid fa-desktop"></i></div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span class="dev-name">Desktop</span><span class="dev-ct">24.2%</span></div>
+              <div class="dev-bar"><div class="dev-fill" style="width:24.2%;background:#60A5FA"></div></div>
+            </div>
+          </div>
+          <div class="device-row">
+            <div class="dev-ico" style="background:#FEF3C7;color:#D97706"><i class="fa-solid fa-tablet-screen-button"></i></div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span class="dev-name">Tablet</span><span class="dev-ct">7.4%</span></div>
+              <div class="dev-bar"><div class="dev-fill" style="width:7.4%;background:#FBBF24"></div></div>
+            </div>
+          </div>
+          <div style="margin-top:1.1rem;padding-top:.875rem;border-top:1px solid var(--n-100)">
+            <div class="anl-card-title" style="font-size:.85rem;margin-bottom:.75rem"><i class="fa-brands fa-chrome"></i> Browser Populer</div>
+            <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.78rem;color:var(--n-700)">
+              <div style="display:flex;justify-content:space-between"><span>Chrome</span><span style="font-weight:700;color:var(--b-700)">58.2%</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Safari</span><span style="font-weight:700;color:var(--b-700)">24.1%</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Firefox</span><span style="font-weight:700;color:var(--b-700)">9.8%</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Lainnya</span><span style="font-weight:700;color:var(--b-700)">7.9%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 2 COLS bottom -->
+      <div class="two-col">
+        <div class="anl-card">
+          <div class="anl-card-title"><i class="fa-solid fa-arrow-turn-right"></i> Sumber Referral</div>
+          <div class="ref-item"><div class="ref-ico"><i class="fa-brands fa-instagram" style="color:#E1306C"></i></div><span style="flex:1;color:var(--n-700)">Instagram (Bio Link)</span><span style="font-weight:700;color:var(--b-700);font-size:.78rem">1,248</span><span style="font-size:.7rem;color:var(--n-400);margin-left:5px">32.4%</span></div>
+          <div class="ref-item"><div class="ref-ico"><i class="fa-brands fa-x-twitter" style="color:#1DA1F2"></i></div><span style="flex:1;color:var(--n-700)">Twitter / X</span><span style="font-weight:700;color:var(--b-700);font-size:.78rem">874</span><span style="font-size:.7rem;color:var(--n-400);margin-left:5px">22.7%</span></div>
+          <div class="ref-item"><div class="ref-ico"><i class="fa-brands fa-tiktok" style="color:#000"></i></div><span style="flex:1;color:var(--n-700)">TikTok</span><span style="font-weight:700;color:var(--b-700);font-size:.78rem">632</span><span style="font-size:.7rem;color:var(--n-400);margin-left:5px">16.4%</span></div>
+          <div class="ref-item"><div class="ref-ico"><i class="fa-brands fa-google" style="color:#EA4335"></i></div><span style="flex:1;color:var(--n-700)">Google Search</span><span style="font-weight:700;color:var(--b-700);font-size:.78rem">418</span><span style="font-size:.7rem;color:var(--n-400);margin-left:5px">10.9%</span></div>
+          <div class="ref-item"><div class="ref-ico"><i class="fa-solid fa-link" style="color:var(--b-500)"></i></div><span style="flex:1;color:var(--n-700)">Direct / Langsung</span><span style="font-weight:700;color:var(--b-700);font-size:.78rem">675</span><span style="font-size:.7rem;color:var(--n-400);margin-left:5px">17.6%</span></div>
+        </div>
+        <div class="anl-card">
+          <div class="anl-card-title"><i class="fa-solid fa-clock"></i> Jam Paling Ramai</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:.5rem">
+            <!-- Heatmap sederhana -->
+            <script>
+              const hours=[0,0,1,1,2,3,8,12,18,22,20,15,18,22,20,18,22,25,30,28,24,20,15,8];
+              const max=Math.max(...hours);
+              document.addEventListener('DOMContentLoaded',()=>{
+                const grid=document.querySelector('.heat-grid');
+                hours.forEach((v,i)=>{
+                  const el=document.createElement('div');
+                  const pct=v/max;
+                  el.style.cssText=`height:40px;border-radius:6px;background:rgba(245,158,11,${0.1+pct*0.9});display:flex;align-items:center;justify-content:center;font-size:.58rem;color:var(--b-900);font-weight:700;cursor:pointer`;
+                  el.title=`${i}:00 — ${v} klik`;
+                  el.textContent=v>0?v:'';
+                  grid.appendChild(el);
+                });
+              });
+            </script>
+            <div style="display:none"></div>
+          </div>
+          <div class="heat-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:.5rem"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:.5rem;font-size:.62rem;color:var(--n-400)">
+            <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span>
+          </div>
+          <div style="margin-top:1rem;padding-top:.875rem;border-top:1px solid var(--n-100);font-size:.82rem;color:var(--n-600);line-height:1.65">
+            <i class="fa-solid fa-lightbulb" style="color:var(--b-500);margin-right:5px"></i>
+            Waktu terbaik posting: <strong style="color:var(--b-800)">18:00 – 21:00 WIB</strong> berdasarkan tren klikmu.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const d30=[35,48,42,65,55,82,74,60,78,88,72,100,91,85,78,92,88,95,82,89,76,83,97,88,93,79,86,91,94,100];
+const d7=[60,75,88,70,82,95,100];
+const d90=Array.from({length:90},(_,i)=>20+Math.floor(Math.random()*80));
+function setR(btn,r){
+  document.querySelectorAll('.rng-btn').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
+  const c=document.getElementById('anl-chart');c.innerHTML='';
+  const data=r==='7d'?d7:r==='30d'?d30:d90;
+  const mx=Math.max(...data);
+  data.forEach(h=>{const b=document.createElement('div');b.className='cbar'+(h===mx?' hi':'');b.style.height=(h/mx*100)+'%';c.appendChild(b)});
+}
+</script>
+</body>
+</html>

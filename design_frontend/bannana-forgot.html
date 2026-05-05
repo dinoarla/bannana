@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lupa Password — bannana.id</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="bannana-ds.css">
+<style>
+html,body{height:100%}
+body{background:#EDF5F5;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem 1.25rem;position:relative;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 60% at 0% 0%,rgba(140,215,215,.55) 0%,transparent 58%),radial-gradient(ellipse 55% 50% at 100% 0%,rgba(255,175,185,.48) 0%,transparent 58%),radial-gradient(ellipse 60% 55% at 100% 100%,rgba(253,228,130,.44) 0%,transparent 58%);background-color:#EDF5F5;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(140,100,60,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(140,100,60,.035) 1px,transparent 1px);background-size:48px 48px;z-index:0}
+.wrap{position:relative;z-index:1;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center}
+.logo{font-family:var(--fd);font-size:1.8rem;font-weight:600;color:var(--b-900);text-decoration:none;display:flex;align-items:center;gap:7px;margin-bottom:2rem}
+.card{background:rgba(255,255,255,.88);backdrop-filter:blur(24px) saturate(180%);border:1.5px solid rgba(245,158,11,.18);border-radius:28px;padding:2.5rem;width:100%;box-shadow:0 24px 60px rgba(120,53,15,.12)}
+.icon-big{width:72px;height:72px;border-radius:20px;background:var(--b-100);display:flex;align-items:center;justify-content:center;color:var(--b-600);font-size:2rem;margin:0 auto 1.5rem}
+.card-title{font-family:var(--fd);font-size:1.75rem;font-weight:700;color:var(--b-900);text-align:center;margin-bottom:.5rem}
+.card-sub{font-size:.9rem;color:var(--n-500);text-align:center;line-height:1.65;margin-bottom:2rem}
+.btn-submit{width:100%;height:50px;background:var(--b-500);color:var(--b-900);font-family:var(--fb);font-size:1rem;font-weight:800;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--sh-brand-sm);margin-top:.5rem;transition:all 160ms var(--ease-spring)}
+.btn-submit:hover{background:var(--b-400);transform:translateY(-2px)}
+.back-link{display:flex;align-items:center;gap:7px;color:var(--b-700);font-size:.84rem;font-weight:600;text-decoration:none;justify-content:center;margin-top:1.5rem;transition:color 150ms}
+.back-link:hover{color:var(--b-600)}
+/* Success state */
+.success-state{text-align:center;display:none}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--success-100);display:flex;align-items:center;justify-content:center;color:var(--success-600);font-size:2rem;margin:0 auto 1.5rem;animation:bannana-pop-up .5s var(--ease-spring) both}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="bannana-landing.html" class="logo"><span class="bana">🍌</span> bannana</a>
+  <div class="card">
+    <!-- Default state -->
+    <div id="default-state">
+      <div class="icon-big"><i class="fa-solid fa-key"></i></div>
+      <div class="card-title">Lupa Password?</div>
+      <div class="card-sub">Tenang! Masukkan emailmu dan kami akan kirim link reset password ke sana.</div>
+      <div class="form-group">
+        <label class="form-label">Alamat Email</label>
+        <div class="input-icon-wrap"><i class="ico fa-regular fa-envelope"></i><input class="input" type="email" placeholder="kamu@email.com" id="email-input"></div>
+        <div class="form-hint"><i class="fa-solid fa-circle-info"></i> Link reset akan expired dalam 1 jam</div>
+      </div>
+      <button class="btn-submit" onclick="sendReset()"><i class="fa-solid fa-paper-plane"></i> Kirim Link Reset</button>
+      <a href="bannana-login.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Kembali ke halaman masuk</a>
+    </div>
+    <!-- Success state -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
+      <div class="card-title" style="margin-bottom:.5rem">Email terkirim! 📬</div>
+      <div class="card-sub">Cek inbox kamu di <strong id="sent-email"></strong>. Kalau tidak ada, cek folder spam ya!</div>
+      <div style="background:var(--b-50);border:1.5px solid var(--b-200);border-radius:12px;padding:1rem;margin-top:1rem;font-size:.82rem;color:var(--n-600);line-height:1.65">
+        <i class="fa-solid fa-circle-info" style="color:var(--b-500);margin-right:6px"></i>
+        Link reset password hanya berlaku selama <strong>1 jam</strong> dan hanya bisa dipakai sekali.
+      </div>
+      <a href="bannana-login.html" class="back-link" style="margin-top:2rem"><i class="fa-solid fa-arrow-left"></i> Kembali ke halaman masuk</a>
+    </div>
+  </div>
+</div>
+<script>
+function sendReset(){
+  const email = document.getElementById('email-input').value;
+  if(!email){alert('Masukkan emailmu dulu ya!');return}
+  document.getElementById('default-state').style.display='none';
+  document.getElementById('success-state').style.display='block';
+  document.getElementById('sent-email').textContent=email;
+}
+</script>
+</body>
+</html>

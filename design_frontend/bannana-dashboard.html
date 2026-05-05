@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — bannana.id</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="bannana-ds.css">
+<style>
+html,body{height:100%;overflow:hidden}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;padding:1.25rem;transition:all 200ms var(--ease-spring)}
+.stat-card:hover{border-color:var(--b-200);transform:translateY(-3px);box-shadow:var(--sh-brand-sm)}
+.sc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
+.sc-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:.92rem}
+.sc-val{font-family:var(--fd);font-size:1.9rem;font-weight:700;color:var(--b-900);letter-spacing:-.03em}
+.sc-lbl{font-size:.75rem;color:var(--n-500);margin-top:2px}
+.sc-bar{height:4px;background:var(--n-100);border-radius:2px;margin-top:.875rem;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--b-400),var(--b-500))}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.sec-hd h2{font-family:var(--fd);font-size:1.15rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:7px}
+.sec-hd h2 i{color:var(--b-500);font-size:.95rem}
+.see-all{font-size:.8rem;color:var(--b-700);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px}
+.see-all:hover{color:var(--b-600)}
+.pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:1rem;margin-bottom:2rem}
+.pg-card{background:var(--n-0);border:2px solid var(--n-200);border-radius:20px;overflow:hidden;transition:all 200ms var(--ease-spring)}
+.pg-card:hover{border-color:var(--b-300);transform:translateY(-4px);box-shadow:var(--sh-brand-sm)}
+.pg-preview{height:112px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px}
+.pg-status{position:absolute;top:9px;right:9px;border-radius:var(--r-full);padding:2px 9px;font-size:.62rem;font-weight:700;display:flex;align-items:center;gap:4px}
+.pg-status.live{background:var(--success-100);color:var(--success-700)}
+.pg-status.live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success-600);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pg-status.draft{background:var(--n-200);color:var(--n-500)}
+.pg-body{padding:1rem}
+.pg-name{font-weight:700;font-size:.92rem;color:var(--b-900);margin-bottom:.3rem;display:flex;align-items:center;gap:6px}
+.pg-slug{font-family:var(--fm);font-size:.7rem;color:var(--n-500);margin-bottom:.75rem}
+.pg-stats{display:flex;gap:.875rem;font-size:.72rem;color:var(--n-500);margin-bottom:.875rem}
+.pg-stats span{display:flex;align-items:center;gap:4px}
+.pg-stats i{color:var(--b-500);font-size:.65rem}
+.pg-actions{display:flex;gap:.5rem}
+.pg-btn{flex:1;height:33px;border-radius:9px;font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;border:none;text-decoration:none;transition:all 150ms}
+.pg-btn-primary{background:var(--b-500);color:var(--b-950);box-shadow:0 2px 8px rgba(245,158,11,.25)}
+.pg-btn-primary:hover{background:var(--b-400);transform:translateY(-1px)}
+.pg-btn-ghost{background:var(--n-100);color:var(--n-700);border:1.5px solid var(--n-200)}
+.pg-btn-ghost:hover{background:var(--b-50);border-color:var(--b-300);color:var(--b-800)}
+.pg-btn-ico{width:33px;flex:none;background:var(--n-100);color:var(--n-600);border:1.5px solid var(--n-200)}
+.pg-btn-ico:hover{background:var(--b-50);border-color:var(--b-300)}
+.pg-new{border:2px dashed var(--b-200);background:var(--b-50);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;padding:2.25rem;cursor:pointer;text-decoration:none;transition:all 200ms var(--ease-spring);min-height:220px}
+.pg-new:hover{border-color:var(--b-400);background:var(--b-100);transform:translateY(-4px)}
+.pg-new-ico{width:52px;height:52px;border-radius:50%;background:var(--b-100);display:flex;align-items:center;justify-content:center;color:var(--b-500);font-size:1.2rem;transition:all 200ms var(--ease-spring)}
+.pg-new:hover .pg-new-ico{background:var(--b-200);transform:scale(1.1)}
+.two-col{display:grid;grid-template-columns:1fr 320px;gap:1.5rem}
+.qa-card{background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;padding:1.5rem;margin-bottom:1rem}
+.chart-bars{height:86px;display:flex;align-items:flex-end;gap:4px;margin-bottom:.875rem}
+.cbar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--b-300),var(--b-400));transition:all 200ms var(--ease-spring);cursor:pointer}
+.cbar:hover{background:linear-gradient(180deg,var(--b-400),var(--b-500));transform:scaleY(1.06);transform-origin:bottom}
+.cbar.hi{background:linear-gradient(180deg,var(--b-500),var(--b-700))}
+.rng-btns{display:flex;gap:.4rem}
+.rng-btn{height:27px;padding:0 11px;border-radius:var(--r-full);font-size:.72rem;font-weight:700;border:1.5px solid var(--n-200);background:none;cursor:pointer;color:var(--n-500);transition:all 150ms}
+.rng-btn.act{background:var(--b-100);border-color:var(--b-300);color:var(--b-800)}
+.qa-foot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;border-top:1px solid var(--n-100);padding-top:.875rem}
+.qa-st-val{font-family:var(--fd);font-size:1.25rem;font-weight:700;color:var(--b-700);display:block;text-align:center}
+.qa-st-lbl{font-size:.67rem;color:var(--n-500);text-align:center}
+.act-item{display:flex;align-items:center;gap:12px;background:var(--n-0);border:1.5px solid var(--n-200);border-radius:12px;padding:.875rem;transition:all 150ms;margin-bottom:.625rem}
+.act-item:hover{border-color:var(--b-200)}
+.act-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.act-title{font-size:.84rem;font-weight:600;color:var(--b-900)}
+.act-time{font-size:.72rem;color:var(--n-400);margin-top:1px}
+.tl-item{display:flex;align-items:center;gap:9px;font-size:.82rem;margin-bottom:.625rem}
+.tl-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem}
+.tl-bar{width:60px;height:5px;background:var(--b-100);border-radius:3px;overflow:hidden}
+.tl-fill{height:100%;background:var(--b-500);border-radius:3px}
+.tl-ct{font-weight:700;color:var(--b-700);font-size:.78rem;min-width:36px;text-align:right}
+.page-title-row{margin-bottom:2rem}
+.page-title-row .ptitle{font-family:var(--fd);font-size:1.8rem;font-weight:700;color:var(--b-900);letter-spacing:-.01em}
+.page-title-row .psub{font-size:.875rem;color:var(--n-500);margin-top:.25rem}
+@media(max-width:1200px){.stats-grid{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="bannana-landing.html" class="sb-logo"><span class="bana">🍌</span> bannana</a>
+    <div class="sb-user">
+      <div class="sb-avatar"><i class="fa-solid fa-user"></i></div>
+      <div><div class="sb-uname">Andi Pratama</div><div class="sb-handle">@andi_kreasi</div></div>
+      <span class="sb-badge" style="background:var(--b-500);color:var(--b-950)">PRO</span>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Menu Utama</div>
+      <a href="bannana-dashboard.html" class="sb-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="bannana-editor.html" class="sb-item"><i class="fa-solid fa-table-columns"></i> Halaman Saya <span class="sb-badge">2</span></a>
+      <a href="bannana-analytics.html" class="sb-item"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+      <div class="sb-section">Kustomisasi</div>
+      <a href="bannana-themes.html" class="sb-item"><i class="fa-solid fa-palette"></i> Tema</a>
+      <a href="#" class="sb-item"><i class="fa-solid fa-image"></i> Gambar &amp; Media</a>
+      <div class="sb-section">Akun</div>
+      <a href="#" class="sb-item"><i class="fa-solid fa-key"></i> API Keys</a>
+      <a href="bannana-settings.html" class="sb-item"><i class="fa-solid fa-gear"></i> Pengaturan</a>
+      <a href="bannana-pricing.html" class="sb-item"><i class="fa-solid fa-crown" style="color:var(--b-400)"></i> Upgrade Pro</a>
+    </nav>
+    <div class="sb-bottom">
+      <a href="bannana-login.html" class="sb-item" style="color:#FCA5A5"><i class="fa-solid fa-right-from-bracket"></i> Keluar</a>
+    </div>
+  </aside>
+  <!-- MAIN -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="tb-search"><i class="fa-solid fa-search"></i><input class="input" type="text" placeholder="Cari halaman, blok, pengaturan..."></div>
+      <div style="margin-left:auto;display:flex;gap:.75rem;align-items:center">
+        <div class="tb-icon-btn"><i class="fa-solid fa-bell"></i><div class="notif-dot"></div></div>
+        <a href="bannana-editor.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Halaman Baru</a>
+        <a href="bannana-public.html" class="tb-icon-btn" title="Lihat halaman publik"><i class="fa-solid fa-eye"></i></a>
+        <div class="sb-avatar" style="cursor:pointer"><i class="fa-solid fa-user"></i></div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="page-title-row">
+        <div class="ptitle">Selamat datang, Andi! 👋</div>
+        <div class="psub">Ringkasan performa halaman bannana.id kamu — 30 hari terakhir</div>
+      </div>
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card"><div class="sc-hd"><div class="sc-ico" style="background:var(--b-100);color:var(--b-600)"><i class="fa-solid fa-eye"></i></div><span class="badge badge-success"><i class="fa-solid fa-arrow-up"></i> 18%</span></div><div class="sc-val">12.4K</div><div class="sc-lbl">Total Views</div><div class="sc-bar"><div class="sc-fill" style="width:74%"></div></div></div>
+        <div class="stat-card"><div class="sc-hd"><div class="sc-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-arrow-pointer"></i></div><span class="badge badge-success"><i class="fa-solid fa-arrow-up"></i> 24%</span></div><div class="sc-val">3.8K</div><div class="sc-lbl">Total Klik</div><div class="sc-bar"><div class="sc-fill" style="width:60%;background:linear-gradient(90deg,#4ADE80,#22C55E)"></div></div></div>
+        <div class="stat-card"><div class="sc-hd"><div class="sc-ico" style="background:#DBEAFE;color:#1E40AF"><i class="fa-solid fa-percent"></i></div><span class="badge badge-success"><i class="fa-solid fa-arrow-up"></i> 3.2%</span></div><div class="sc-val">30.6%</div><div class="sc-lbl">Click Rate</div><div class="sc-bar"><div class="sc-fill" style="width:55%;background:linear-gradient(90deg,#60A5FA,#3B82F6)"></div></div></div>
+        <div class="stat-card"><div class="sc-hd"><div class="sc-ico" style="background:#FCE7F3;color:#9D174D"><i class="fa-solid fa-users"></i></div><span class="badge badge-danger"><i class="fa-solid fa-arrow-down"></i> 5%</span></div><div class="sc-val">847</div><div class="sc-lbl">Pengunjung Unik</div><div class="sc-bar"><div class="sc-fill" style="width:42%;background:linear-gradient(90deg,#F9A8D4,#EC4899)"></div></div></div>
+      </div>
+      <!-- PAGES -->
+      <div class="sec-hd"><h2><i class="fa-solid fa-table-columns"></i> Halaman Saya</h2><a href="#" class="see-all">Lihat semua <i class="fa-solid fa-chevron-right"></i></a></div>
+      <div class="pages-grid">
+        <div class="pg-card">
+          <div class="pg-preview" style="background:linear-gradient(160deg,var(--b-50),#fff)">
+            <div class="pg-status live">Live</div>
+            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--b-400),var(--b-600));display:flex;align-items:center;justify-content:center;color:var(--b-950);font-size:1.2rem"><i class="fa-solid fa-user"></i></div>
+            <div style="font-family:var(--fd);font-size:.78rem;font-weight:700;color:var(--b-900)">@andi_kreasi</div>
+            <div style="display:flex;flex-direction:column;gap:3px;width:100%;padding:0 14px">
+              <div style="height:7px;background:var(--b-300);border-radius:4px;width:82%"></div>
+              <div style="height:7px;background:var(--b-200);border-radius:4px;width:66%"></div>
+              <div style="height:7px;background:var(--b-100);border-radius:4px;width:55%"></div>
+            </div>
+          </div>
+          <div class="pg-body">
+            <div class="pg-name"><i class="fa-solid fa-star" style="color:var(--b-500);font-size:.75rem"></i> Link Utama</div>
+            <div class="pg-slug">bannana.id/andi_kreasi</div>
+            <div class="pg-stats"><span><i class="fa-solid fa-eye"></i> 9.2K</span><span><i class="fa-solid fa-arrow-pointer"></i> 2.8K</span><span><i class="fa-solid fa-puzzle-piece"></i> 6 blok</span></div>
+            <div class="pg-actions"><a href="bannana-editor.html" class="pg-btn pg-btn-primary"><i class="fa-solid fa-pen-to-square"></i> Edit</a><a href="bannana-public.html" class="pg-btn pg-btn-ghost"><i class="fa-solid fa-eye"></i> Lihat</a><button class="pg-btn pg-btn-ico"><i class="fa-solid fa-ellipsis"></i></button></div>
+          </div>
+        </div>
+        <div class="pg-card">
+          <div class="pg-preview" style="background:linear-gradient(160deg,#f7f3ff,#fff)">
+            <div class="pg-status draft">Draft</div>
+            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#C4B5FD,#8B5CF6);display:flex;align-items:center;justify-content:center;color:white;font-size:1.2rem"><i class="fa-solid fa-camera-retro"></i></div>
+            <div style="font-family:var(--fd);font-size:.78rem;font-weight:700;color:var(--n-800)">About Me</div>
+            <div style="display:flex;flex-direction:column;gap:3px;width:100%;padding:0 14px">
+              <div style="height:7px;background:#C4B5FD;border-radius:4px;width:75%"></div>
+              <div style="height:7px;background:#DDD6FE;border-radius:4px;width:58%"></div>
+            </div>
+          </div>
+          <div class="pg-body">
+            <div class="pg-name"><i class="fa-solid fa-user-circle" style="color:#8B5CF6;font-size:.75rem"></i> About Me</div>
+            <div class="pg-slug">bannana.id/andi_kreasi/about</div>
+            <div class="pg-stats"><span><i class="fa-solid fa-eye"></i> 3.2K</span><span><i class="fa-solid fa-arrow-pointer"></i> 980</span><span><i class="fa-solid fa-puzzle-piece"></i> 4 blok</span></div>
+            <div class="pg-actions"><a href="bannana-editor.html" class="pg-btn pg-btn-primary"><i class="fa-solid fa-pen-to-square"></i> Edit</a><a href="bannana-public.html" class="pg-btn pg-btn-ghost"><i class="fa-solid fa-eye"></i> Lihat</a><button class="pg-btn pg-btn-ico"><i class="fa-solid fa-ellipsis"></i></button></div>
+          </div>
+        </div>
+        <a href="bannana-editor.html" class="pg-new pg-card">
+          <div class="pg-new-ico"><i class="fa-solid fa-plus"></i></div>
+          <div style="font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--b-700)">Buat Halaman Baru</div>
+          <div style="font-size:.75rem;color:var(--n-500);text-align:center">Link page, about me, portofolio — bebas!</div>
+        </a>
+      </div>
+      <!-- 2 COL -->
+      <div class="two-col">
+        <div>
+          <div class="qa-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+              <div style="font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:7px"><i class="fa-solid fa-chart-area" style="color:var(--b-500)"></i> Tren Kunjungan</div>
+              <div class="rng-btns"><button class="rng-btn" onclick="setRange(this,'7d')">7h</button><button class="rng-btn act" onclick="setRange(this,'30d')">30h</button><button class="rng-btn" onclick="setRange(this,'90d')">90h</button></div>
+            </div>
+            <div class="chart-bars" id="chart">
+              <div class="cbar" style="height:35%"></div><div class="cbar" style="height:48%"></div><div class="cbar" style="height:42%"></div><div class="cbar" style="height:65%"></div><div class="cbar" style="height:55%"></div><div class="cbar hi" style="height:82%"></div><div class="cbar" style="height:74%"></div><div class="cbar" style="height:60%"></div><div class="cbar" style="height:78%"></div><div class="cbar" style="height:88%"></div><div class="cbar" style="height:72%"></div><div class="cbar" style="height:100%"></div><div class="cbar" style="height:91%"></div><div class="cbar" style="height:85%"></div>
+            </div>
+            <div class="qa-foot">
+              <div><span class="qa-st-val">12.4K</span><span class="qa-st-lbl">Views</span></div>
+              <div><span class="qa-st-val">3.8K</span><span class="qa-st-lbl">Klik</span></div>
+              <div><span class="qa-st-val">847</span><span class="qa-st-lbl">Pengunjung</span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="qa-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div style="font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:6px"><i class="fa-solid fa-fire-flame-curved" style="color:var(--b-500)"></i> Top Links</div><a href="bannana-analytics.html" class="see-all">Lihat semua</a></div>
+            <div class="tl-item"><div class="tl-ico" style="background:var(--b-100);color:var(--b-700)"><i class="fa-solid fa-star"></i></div><span style="flex:1;color:var(--n-700)">Portfolio Terbaru</span><span class="tl-ct">1,240</span><div class="tl-bar"><div class="tl-fill" style="width:100%"></div></div></div>
+            <div class="tl-item"><div class="tl-ico" style="background:#FEE2D5;color:#C05621"><i class="fa-brands fa-youtube"></i></div><span style="flex:1;color:var(--n-700)">YouTube Channel</span><span class="tl-ct">980</span><div class="tl-bar"><div class="tl-fill" style="width:79%"></div></div></div>
+            <div class="tl-item"><div class="tl-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-bag-shopping"></i></div><span style="flex:1;color:var(--n-700)">Toko Online</span><span class="tl-ct">740</span><div class="tl-bar"><div class="tl-fill" style="width:60%"></div></div></div>
+            <div class="tl-item"><div class="tl-ico" style="background:#E0F2FE;color:#0369A1"><i class="fa-brands fa-x-twitter"></i></div><span style="flex:1;color:var(--n-700)">Twitter / X</span><span class="tl-ct">420</span><div class="tl-bar"><div class="tl-fill" style="width:34%"></div></div></div>
+          </div>
+          <div class="qa-card">
+            <div style="font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:6px;margin-bottom:1rem"><i class="fa-solid fa-clock-rotate-left" style="color:var(--b-500)"></i> Aktivitas Terbaru</div>
+            <div class="act-item"><div class="act-ico" style="background:var(--b-100);color:var(--b-600)"><i class="fa-solid fa-arrow-pointer"></i></div><div style="flex:1"><div class="act-title">47 klik baru di Link Utama</div><div class="act-time"><i class="fa-regular fa-clock"></i> 2 jam lalu</div></div><span style="font-weight:700;color:var(--b-700);font-size:.82rem">+47</span></div>
+            <div class="act-item"><div class="act-ico" style="background:#D1FAE5;color:#065F46"><i class="fa-solid fa-eye"></i></div><div style="flex:1"><div class="act-title">120 views dari Instagram</div><div class="act-time"><i class="fa-regular fa-clock"></i> 5 jam lalu</div></div><span style="font-weight:700;color:#22C55E;font-size:.82rem">+120</span></div>
+            <div class="act-item"><div class="act-ico" style="background:#DBEAFE;color:#1E40AF"><i class="fa-solid fa-pen-to-square"></i></div><div style="flex:1"><div class="act-title">Halaman About Me diperbarui</div><div class="act-time"><i class="fa-regular fa-clock"></i> Kemarin</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const chartData={'7d':[30,45,38,60,50,78,100],'30d':[35,48,42,65,55,82,74,60,78,88,72,100,91,85],'90d':[20,28,35,42,38,48,55,60,52,65,70,75,68,80,88,82,90,85,95,88,78,85,92,96,88,94,98,90,95,100]};
+function setRange(btn,range){
+  document.querySelectorAll('.rng-btn').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
+  const chart=document.getElementById('chart');chart.innerHTML='';
+  const d=chartData[range];const mx=Math.max(...d);
+  d.forEach(h=>{const b=document.createElement('div');b.className='cbar'+(h===mx?' hi':'');b.style.height=(h/mx*100)+'%';chart.appendChild(b)});
+}
+</script>
+</body>
+</html>

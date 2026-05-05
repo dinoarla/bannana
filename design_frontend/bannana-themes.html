@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tema — bannana.id</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="bannana-ds.css">
+<style>
+html,body{height:100%;overflow:hidden}
+.themes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.theme-card{border-radius:18px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:all 220ms var(--ease-spring);box-shadow:var(--sh-sm);position:relative}
+.theme-card:hover{transform:translateY(-5px) scale(1.02);border-color:var(--b-400);box-shadow:var(--sh-brand-md)}
+.theme-card.active{border-color:var(--b-500);box-shadow:0 0 0 3px rgba(245,158,11,.2),var(--sh-brand-md)}
+.active-badge{position:absolute;top:8px;right:8px;background:var(--b-500);color:var(--b-950);border-radius:var(--r-full);padding:2px 9px;font-size:.62rem;font-weight:800;z-index:5}
+.theme-preview{height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px;position:relative;overflow:hidden}
+.tp-phone{width:52px;height:88px;border-radius:10px;background:rgba(255,255,255,.85);padding:5px;display:flex;flex-direction:column;gap:3px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.tp-av{width:20px;height:20px;border-radius:50%;margin:0 auto 3px}
+.tp-bar{border-radius:3px;height:6px}
+.theme-info{padding:10px 12px;border-top:1px solid rgba(0,0,0,.06)}
+.theme-name{font-weight:800;font-size:.82rem;color:var(--b-900);display:flex;align-items:center;justify-content:space-between}
+.theme-mood{font-size:.67rem;color:var(--n-500);margin-top:2px}
+.theme-tags{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+.theme-tag{font-size:.58rem;font-weight:700;background:var(--n-100);color:var(--n-600);border-radius:var(--r-full);padding:1px 6px}
+/* BG presets */
+.bg-classic{background:linear-gradient(160deg,#FFFBEB,#FEF3C7)}
+.bg-night{background:linear-gradient(160deg,#1A1409,#2E2210)}
+.bg-vanilla{background:linear-gradient(160deg,#FEFCE8,#FFF7ED)}
+.bg-peach{background:linear-gradient(160deg,#FFF7ED,#FEE2D5)}
+.bg-matcha{background:linear-gradient(160deg,#F0FDF4,#DCFCE7)}
+.bg-blueberry{background:linear-gradient(160deg,#1E1B4B,#312E81)}
+.bg-strawberry{background:linear-gradient(160deg,#FFF1F2,#FFE4E6)}
+.bg-licorice{background:linear-gradient(160deg,#0A0A0A,#1C1917)}
+.bg-rainbow{background:linear-gradient(135deg,#FDE68A,#FCA5A5,#C4B5FD)}
+.bg-cloud{background:linear-gradient(160deg,#F8FAFC,#F1F5F9)}
+.bg-pumpkin{background:linear-gradient(160deg,#FFF7ED,#FFEDD5)}
+.bg-glitter{background:linear-gradient(160deg,#0F0A00,#1C1409)}
+/* theme card bg */
+.tc-classic{background:white}
+.tc-night{background:#1A1409}
+.tc-vanilla,.tc-peach,.tc-matcha,.tc-strawberry,.tc-cloud,.tc-rainbow,.tc-pumpkin,.tc-vanilla{background:white}
+.tc-blueberry{background:#1E1B4B}
+.tc-licorice{background:#0A0A0A}
+.tc-glitter{background:#0F0A00}
+/* Filters */
+.filter-bar{display:flex;gap:.625rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-btn{height:32px;padding:0 14px;border-radius:var(--r-full);font-size:.78rem;font-weight:700;border:1.5px solid var(--n-200);background:var(--n-0);color:var(--n-600);cursor:pointer;transition:all 150ms}
+.filter-btn.act{background:var(--b-100);border-color:var(--b-300);color:var(--b-800)}
+.filter-btn:hover{border-color:var(--b-300)}
+/* Custom CSS area */
+.custom-panel{background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;padding:1.5rem;margin-bottom:1rem}
+.custom-title{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:7px;margin-bottom:1rem}
+.custom-title i{color:var(--b-500)}
+.css-editor{width:100%;height:120px;border:2px solid var(--n-200);border-radius:10px;padding:10px 12px;font-family:var(--fm);font-size:.8rem;color:var(--n-800);background:var(--n-50);resize:none;outline:none;line-height:1.65;transition:border-color 150ms}
+.css-editor:focus{border-color:var(--b-500);box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+@media(max-width:1100px){.themes-grid{grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a href="bannana-landing.html" class="sb-logo"><span class="bana">🍌</span> bannana</a>
+    <div class="sb-user"><div class="sb-avatar"><i class="fa-solid fa-user"></i></div><div><div class="sb-uname">Andi Pratama</div><div class="sb-handle">@andi_kreasi</div></div><span class="sb-badge" style="background:var(--b-500);color:var(--b-950)">PRO</span></div>
+    <nav class="sb-nav">
+      <div class="sb-section">Menu Utama</div>
+      <a href="bannana-dashboard.html" class="sb-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="bannana-editor.html" class="sb-item"><i class="fa-solid fa-table-columns"></i> Halaman Saya</a>
+      <a href="bannana-analytics.html" class="sb-item"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+      <div class="sb-section">Kustomisasi</div>
+      <a href="bannana-themes.html" class="sb-item active"><i class="fa-solid fa-palette"></i> Tema</a>
+      <div class="sb-section">Akun</div>
+      <a href="#" class="sb-item"><i class="fa-solid fa-key"></i> API Keys</a>
+      <a href="bannana-settings.html" class="sb-item"><i class="fa-solid fa-gear"></i> Pengaturan</a>
+    </nav>
+  </aside>
+  <div class="main-area">
+    <div class="topbar">
+      <div style="font-family:var(--fd);font-size:1.3rem;font-weight:700;color:var(--b-900)"><i class="fa-solid fa-palette" style="color:var(--b-500);margin-right:8px"></i> Pilih Tema</div>
+      <div style="margin-left:auto;display:flex;gap:.75rem;align-items:center">
+        <a href="bannana-public.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-eye"></i> Preview Halaman</a>
+        <button class="btn btn-primary btn-sm" id="save-theme-btn" onclick="saveTheme()"><i class="fa-solid fa-check"></i> Terapkan Tema</button>
+      </div>
+    </div>
+    <div class="page-content">
+      <!-- FILTER -->
+      <div class="filter-bar">
+        <button class="filter-btn act" onclick="filterThemes('all',this)">Semua (12)</button>
+        <button class="filter-btn" onclick="filterThemes('light',this)"><i class="fa-solid fa-sun"></i> Light (8)</button>
+        <button class="filter-btn" onclick="filterThemes('dark',this)"><i class="fa-solid fa-moon"></i> Dark (4)</button>
+        <button class="filter-btn" onclick="filterThemes('playful',this)"><i class="fa-solid fa-star"></i> Playful</button>
+        <button class="filter-btn" onclick="filterThemes('minimal',this)"><i class="fa-solid fa-minus"></i> Minimal</button>
+      </div>
+      <!-- THEMES GRID -->
+      <div class="themes-grid" id="themes-grid">
+        <!-- akan dirender JS -->
+      </div>
+      <!-- CUSTOM CSS -->
+      <div class="custom-panel">
+        <div class="custom-title"><i class="fa-solid fa-code"></i> Custom CSS <span class="badge badge-sunny" style="font-size:.65rem;margin-left:4px">PRO</span></div>
+        <textarea class="css-editor" id="css-input" placeholder="/* Tulis CSS kustom kamu di sini — hingga 5KB */&#10;/* Contoh: */&#10;.link-card {&#10;  border-radius: 24px;&#10;  box-shadow: 0 4px 20px rgba(245,158,11,0.2);&#10;}&#10;&#10;.avatar {&#10;  border: 3px solid #F59E0B;&#10;}"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.75rem">
+          <div style="font-size:.72rem;color:var(--n-400)"><i class="fa-solid fa-circle-info" style="color:var(--b-400)"></i> <span id="css-bytes">0</span> / 5120 bytes digunakan</div>
+          <button class="btn btn-secondary btn-sm" onclick="applyCss()"><i class="fa-solid fa-play"></i> Terapkan CSS</button>
+        </div>
+      </div>
+      <!-- COLOR TOKENS -->
+      <div style="background:var(--n-0);border:2px solid var(--n-200);border-radius:18px;padding:1.5rem">
+        <div style="font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--b-900);display:flex;align-items:center;gap:7px;margin-bottom:1.25rem"><i class="fa-solid fa-droplet" style="color:var(--b-500)"></i> Kustomisasi Warna</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem">
+          <div><div style="font-size:.75rem;font-weight:700;color:var(--n-700);margin-bottom:.5rem">Warna Tombol</div><div style="display:flex;gap:.4rem;flex-wrap:wrap"><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid var(--b-500);background:#F59E0B;transform:scale(1.1)"></div><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;background:#3B82F6" onclick="selectColor(this)"></div><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;background:#EF4444" onclick="selectColor(this)"></div><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;background:#8B5CF6" onclick="selectColor(this)"></div><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;background:#10B981" onclick="selectColor(this)"></div></div></div>
+          <div><div style="font-size:.75rem;font-weight:700;color:var(--n-700);margin-bottom:.5rem">Background</div><div style="display:flex;gap:.4rem;flex-wrap:wrap"><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid var(--b-500);background:#FFFBEB;transform:scale(1.1)"></div><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;background:#1A1409" onclick="selectColor(this)"></div><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;background:#F0FDF4" onclick="selectColor(this)"></div><div class="color-sw" style="width:28px;height:28px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;background:#EFF6FF" onclick="selectColor(this)"></div></div></div>
+          <div><div style="font-size:.75rem;font-weight:700;color:var(--n-700);margin-bottom:.5rem">Font Heading</div><select style="width:100%;height:36px;border:1.5px solid var(--n-200);border-radius:9px;padding:0 10px;font-size:.8rem;font-family:var(--fb);color:var(--n-700);cursor:pointer;outline:none;background:var(--n-0)"><option>Fredoka (Default)</option><option>Plus Jakarta Sans</option><option>DM Sans</option><option>Poppins</option><option>Space Grotesk</option></select></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const themes=[
+  {id:'classic',name:'Bannana Classic',mood:'Light · Playful',tags:['Default','Kuning'],icon:'fa-sun',bg:'bg-classic',btnColor:'#F59E0B',avColor:'#F59E0B',darkText:false,active:true},
+  {id:'night',name:'Bannana Night',mood:'Dark · Warm',tags:['Dark','Hangat'],icon:'fa-moon',bg:'bg-night',btnColor:'#FBBF24',avColor:'#FBBF24',darkText:true},
+  {id:'vanilla',name:'Vanilla Cream',mood:'Light · Soft',tags:['Lembut','Krem'],icon:'fa-ice-cream',bg:'bg-vanilla',btnColor:'#FDE68A',avColor:'#F59E0B'},
+  {id:'peach',name:'Peach Blossom',mood:'Light · Sweet',tags:['Manis','Peach'],icon:'fa-heart',bg:'bg-peach',btnColor:'#FB923C',avColor:'#FB923C'},
+  {id:'matcha',name:'Matcha Latte',mood:'Light · Natural',tags:['Hijau','Natural'],icon:'fa-leaf',bg:'bg-matcha',btnColor:'#4ADE80',avColor:'#4ADE80'},
+  {id:'blueberry',name:'Blueberry',mood:'Dark · Bold',tags:['Dark','Navy'],icon:'fa-circle',bg:'bg-blueberry',btnColor:'#FACC15',avColor:'#6366F1',darkText:true},
+  {id:'strawberry',name:'Strawberry',mood:'Light · Vibrant',tags:['Merah','Vibrant'],icon:'fa-fire',bg:'bg-strawberry',btnColor:'#E11D48',avColor:'#E11D48'},
+  {id:'licorice',name:'Licorice',mood:'Dark · Minimal',tags:['Dark','Minimal'],icon:'fa-star',bg:'bg-licorice',btnColor:'#A3E635',avColor:'#A3E635',darkText:true},
+  {id:'rainbow',name:'Rainbow Sherbet',mood:'Light · Fun',tags:['Colorful','Fun'],icon:'fa-wand-sparkles',bg:'bg-rainbow',btnColor:'white',avColor:'#FCA5A5'},
+  {id:'cloud',name:'Cloud Nine',mood:'Light · Clean',tags:['Bersih','Putih'],icon:'fa-cloud',bg:'bg-cloud',btnColor:'#CBD5E1',avColor:'#CBD5E1'},
+  {id:'pumpkin',name:'Pumpkin Spice',mood:'Light · Cozy',tags:['Oranye','Cozy'],icon:'fa-fire-flame-curved',bg:'bg-pumpkin',btnColor:'#EA580C',avColor:'#EA580C'},
+  {id:'glitter',name:'Glitter Honey',mood:'Dark · Glamour',tags:['Dark','Mewah'],icon:'fa-gem',bg:'bg-glitter',btnColor:'#F59E0B',avColor:'#F59E0B',darkText:true},
+];
+
+function renderThemes(filter='all'){
+  const grid=document.getElementById('themes-grid');grid.innerHTML='';
+  themes.forEach(t=>{
+    if(filter!=='all'){
+      const isDark=t.darkText;
+      if(filter==='light'&&isDark)return;
+      if(filter==='dark'&&!isDark)return;
+      if(filter==='playful'&&!['classic','rainbow','strawberry','peach'].includes(t.id))return;
+      if(filter==='minimal'&&!['cloud','licorice','vanilla'].includes(t.id))return;
+    }
+    const card=document.createElement('div');
+    card.className='theme-card tc-'+t.id+(t.active?' active':'');
+    card.onclick=()=>selectTheme(t.id);
+    card.innerHTML=`
+      ${t.active?'<div class="active-badge"><i class="fa-solid fa-check"></i> Aktif</div>':''}
+      <div class="theme-preview ${t.bg}">
+        <div class="tp-phone" style="background:rgba(255,255,255,${t.darkText?'.12':'.9'})">
+          <div class="tp-av" style="background:${t.avColor}"></div>
+          <div class="tp-bar" style="background:${t.btnColor};width:85%"></div>
+          <div class="tp-bar" style="background:${t.btnColor};opacity:.6;width:70%"></div>
+          <div class="tp-bar" style="background:${t.btnColor};opacity:.4;width:60%"></div>
+        </div>
+      </div>
+      <div class="theme-info" style="${t.darkText?'background:#1C1917':'background:white'}">
+        <div class="theme-name" style="${t.darkText?'color:#FEF3C7':''}">
+          <span><i class="fa-solid ${t.icon}" style="color:${t.btnColor};margin-right:5px"></i>${t.name}</span>
+        </div>
+        <div class="theme-mood" style="${t.darkText?'color:#78716C':''}">${t.mood}</div>
+        <div class="theme-tags">${t.tags.map(tg=>`<span class="theme-tag">${tg}</span>`).join('')}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+function selectTheme(id){
+  themes.forEach(t=>t.active=t.id===id);
+  renderThemes(currentFilter);
+  const btn=document.getElementById('save-theme-btn');
+  const name=themes.find(t=>t.id===id).name;
+  btn.innerHTML=`<i class="fa-solid fa-check"></i> Terapkan "${name}"`;
+}
+function saveTheme(){
+  const btn=document.getElementById('save-theme-btn');
+  btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+  setTimeout(()=>{btn.innerHTML='<i class="fa-solid fa-check"></i> Tema Diterapkan!';btn.style.background='#22C55E';setTimeout(()=>{btn.innerHTML='<i class="fa-solid fa-check"></i> Terapkan Tema';btn.style.background=''},2000)},800);
+}
+let currentFilter='all';
+function filterThemes(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  renderThemes(f);
+}
+function applyCss(){
+  const v=document.getElementById('css-input').value;
+  document.getElementById('css-bytes').textContent=new TextEncoder().encode(v).length;
+  alert('CSS berhasil diterapkan (preview)');
+}
+document.getElementById('css-input').addEventListener('input',function(){
+  document.getElementById('css-bytes').textContent=new TextEncoder().encode(this.value).length;
+});
+function selectColor(sw){
+  document.querySelectorAll('.color-sw').forEach(s=>{s.style.border='2.5px solid transparent';s.style.transform=''});
+  sw.style.border='2.5px solid var(--b-500)';sw.style.transform='scale(1.1)';
+}
+renderThemes();
+</script>
+</body>
+</html>
