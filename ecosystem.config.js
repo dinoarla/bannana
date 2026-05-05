@@ -3,11 +3,12 @@ module.exports = {
     {
       name: "bannana-id",
       script: ".next/standalone/server.js",
-      instances: "max",
-      exec_mode: "cluster",
+      instances: 1,
+      exec_mode: "fork",
       env: {
         NODE_ENV: "production",
-        PORT: 3000
+        PORT: 3000,
+        HOSTNAME: "0.0.0.0"
       }
     }
   ]
