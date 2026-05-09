@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
-import type { Metadata } from "next/types";
+import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import { BlockFactory } from "@/components/blocks/BlockFactory";
 import { PublicPageService } from "@/lib/services/PublicPageService";
 import type { PublicBlock } from "@/types";
