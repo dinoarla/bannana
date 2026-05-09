@@ -10,8 +10,17 @@ export async function GET() {
   checks.CSRF_SECRET   = process.env.CSRF_SECRET   ? "ok" : "MISSING";
 
   try {
+    const raw = (process.env.DATABASE_URL ?? "").trim();
+    const u = new URL(raw);
     const mysql = await import("mysql2/promise");
-    const conn = await mysql.createConnection(process.env.DATABASE_URL!);
+    const conn = await mysql.createConnection({
+      host: u.hostname,
+      port: u.port ? parseInt(u.port, 10) : 3306,
+      user: decodeURIComponent(u.username),
+      password: decodeURIComponent(u.password),
+      database: u.pathname.replace(/^\//, ""),
+      connectTimeout: 5000,
+    });
     await conn.query("SELECT 1");
     await conn.end();
     checks.database = "ok";
@@ -20,7 +29,5 @@ export async function GET() {
   }
 
   const allOk = Object.values(checks).every((v) => v === "ok");
-
-  // Always return 200 so proxy doesn't intercept and hide the JSON
   return NextResponse.json({ status: allOk ? "ok" : "degraded", checks });
 }
