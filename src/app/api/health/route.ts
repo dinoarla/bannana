@@ -1,4 +1,3 @@
-import { db } from "@/lib/db/client";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +10,10 @@ export async function GET() {
   checks.CSRF_SECRET   = process.env.CSRF_SECRET   ? "ok" : "MISSING";
 
   try {
-    await db.query("SELECT 1");
+    const mysql = await import("mysql2/promise");
+    const conn = await mysql.createConnection(process.env.DATABASE_URL!);
+    await conn.query("SELECT 1");
+    await conn.end();
     checks.database = "ok";
   } catch (e) {
     checks.database = `ERROR: ${(e as Error).message}`;
@@ -19,8 +21,6 @@ export async function GET() {
 
   const allOk = Object.values(checks).every((v) => v === "ok");
 
-  return NextResponse.json(
-    { status: allOk ? "ok" : "degraded", checks },
-    { status: allOk ? 200 : 500 }
-  );
+  // Always return 200 so proxy doesn't intercept and hide the JSON
+  return NextResponse.json({ status: allOk ? "ok" : "degraded", checks });
 }
