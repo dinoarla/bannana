@@ -20,7 +20,15 @@
       "Bash(echo \"NEXTAUTH_SECRET=$\\(openssl rand -base64 32\\)\")",
       "Bash(echo \"CSRF_SECRET=$\\(openssl rand -base64 32\\)\")",
       "Bash(awk '{print $2, $11, $12}')",
-      "Bash(pkill -f \"next\")"
+      "Bash(pkill -f \"next\")",
+      "Bash(kill 9100 9328)",
+      "Bash(kill 9943 9946 9969)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(jobs)",
+      "Bash(python3 *)"
     ]
   }
 }

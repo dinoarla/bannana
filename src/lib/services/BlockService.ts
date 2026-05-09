@@ -1,7 +1,6 @@
-import type { BlockType } from "@/types";
+import type { DbBlockType } from "@/types/db.types";
 import { BlockRepository } from "@/lib/db/repositories/BlockRepository";
 import { errors } from "@/lib/errors/AppError";
-import type { Prisma } from "@prisma/client";
 
 export class BlockService {
   constructor(private readonly blocks = new BlockRepository()) {}
@@ -10,11 +9,11 @@ export class BlockService {
     return this.blocks.list(pageId);
   }
 
-  create(pageId: string, input: { type: BlockType; title?: string | null; url?: string | null; config?: Prisma.InputJsonValue }) {
+  create(pageId: string, input: { type: DbBlockType; title?: string | null; url?: string | null; config?: Record<string, unknown> }) {
     return this.blocks.create(pageId, input);
   }
 
-  update(id: string, input: { title?: string | null; url?: string | null; isEnabled?: boolean; config?: Prisma.InputJsonValue }) {
+  update(id: string, input: { title?: string | null; url?: string | null; isEnabled?: boolean; config?: Record<string, unknown> }) {
     return this.blocks.update(id, input);
   }
 

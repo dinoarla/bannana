@@ -1,46 +1,90 @@
-import { prisma } from "@/lib/db/client";
-import type { BlockType } from "@/types";
-import type { Prisma } from "@prisma/client";
+import { db } from "@/lib/db/client";
+import type { Block, DbBlockType } from "@/types/db.types";
 
-export class BlockRepository {
-  list(pageId: string) {
-    return prisma.block.findMany({ where: { pageId }, orderBy: { position: "asc" } });
-  }
-
-  async create(pageId: string, input: { type: BlockType; title?: string | null; url?: string | null; config?: Prisma.InputJsonValue }) {
-    const count = await prisma.block.count({ where: { pageId } });
-    return prisma.block.create({
-      data: {
-        pageId,
-        type: input.type,
-        title: input.title ?? defaultTitle(input.type),
-        url: input.url,
-        position: count + 1,
-        config: input.config ?? {}
-      }
-    });
-  }
-
-  update(id: string, data: { title?: string | null; url?: string | null; isEnabled?: boolean; config?: Prisma.InputJsonValue }) {
-    return prisma.block.update({ where: { id }, data });
-  }
-
-  reorder(items: Array<{ id: string; position: number }>) {
-    return prisma.$transaction(items.map((item) => prisma.block.update({ where: { id: item.id }, data: { position: item.position } })));
-  }
-
-  delete(id: string) {
-    return prisma.block.delete({ where: { id } });
-  }
-
-  incrementClick(id: string) {
-    return prisma.block.update({ where: { id }, data: { clickCount: { increment: 1 } } });
-  }
+function parseBlock(row: Record<string, unknown>): Block {
+  return {
+    id: row.id as string,
+    pageId: row.pageId as string,
+    type: row.type as DbBlockType,
+    title: row.title as string | null,
+    url: row.url as string | null,
+    position: row.position as number,
+    isEnabled: Boolean(row.isEnabled),
+    config: typeof row.config === "string" ? JSON.parse(row.config) : (row.config ?? {}),
+    clickCount: row.clickCount as number,
+    createdAt: row.createdAt as Date,
+    updatedAt: row.updatedAt as Date,
+  };
 }
 
-function defaultTitle(type: BlockType) {
+function defaultTitle(type: DbBlockType): string | null {
   if (type === "HEADER") return "Heading Baru";
   if (type === "DIVIDER") return null;
   if (type === "SOCIAL") return "Sosial Media";
   return "Link Baru";
+}
+
+export class BlockRepository {
+  async list(pageId: string): Promise<Block[]> {
+    const [rows] = await db.query(
+      "SELECT * FROM Block WHERE pageId = ? ORDER BY position ASC",
+      [pageId]
+    );
+    return (rows as Record<string, unknown>[]).map(parseBlock);
+  }
+
+  async create(pageId: string, input: { type: DbBlockType; title?: string | null; url?: string | null; config?: Record<string, unknown> }): Promise<Block> {
+    const [countRows] = await db.query("SELECT COUNT(*) AS cnt FROM Block WHERE pageId = ?", [pageId]);
+    const position = Number(((countRows as Record<string, unknown>[])[0] ?? {}).cnt ?? 0) + 1;
+    const id = crypto.randomUUID();
+    const now = new Date();
+    const config = input.config ?? {};
+
+    await db.query(
+      "INSERT INTO Block (id, pageId, type, title, url, position, isEnabled, config, clickCount, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, 1, ?, 0, ?, ?)",
+      [id, pageId, input.type, input.title ?? defaultTitle(input.type), input.url ?? null, position, JSON.stringify(config), now, now]
+    );
+
+    return { id, pageId, type: input.type, title: input.title ?? defaultTitle(input.type), url: input.url ?? null, position, isEnabled: true, config, clickCount: 0, createdAt: now, updatedAt: now };
+  }
+
+  async update(id: string, data: { title?: string | null; url?: string | null; isEnabled?: boolean; config?: Record<string, unknown> }): Promise<Block> {
+    const updates: string[] = [];
+    const vals: unknown[] = [];
+    if (data.title !== undefined) { updates.push("title = ?"); vals.push(data.title); }
+    if (data.url !== undefined) { updates.push("url = ?"); vals.push(data.url); }
+    if (data.isEnabled !== undefined) { updates.push("isEnabled = ?"); vals.push(data.isEnabled ? 1 : 0); }
+    if (data.config !== undefined) { updates.push("config = ?"); vals.push(JSON.stringify(data.config)); }
+    const now = new Date();
+    updates.push("updatedAt = ?"); vals.push(now);
+    vals.push(id);
+    await db.query(`UPDATE Block SET ${updates.join(", ")} WHERE id = ?`, vals);
+
+    const [rows] = await db.query("SELECT * FROM Block WHERE id = ? LIMIT 1", [id]);
+    return parseBlock((rows as Record<string, unknown>[])[0]);
+  }
+
+  async reorder(items: Array<{ id: string; position: number }>): Promise<void> {
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+      for (const item of items) {
+        await conn.query("UPDATE Block SET position = ?, updatedAt = ? WHERE id = ?", [item.position, new Date(), item.id]);
+      }
+      await conn.commit();
+    } catch (e) {
+      await conn.rollback();
+      throw e;
+    } finally {
+      conn.release();
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    await db.query("DELETE FROM Block WHERE id = ?", [id]);
+  }
+
+  async incrementClick(id: string): Promise<void> {
+    await db.query("UPDATE Block SET clickCount = clickCount + 1 WHERE id = ?", [id]);
+  }
 }

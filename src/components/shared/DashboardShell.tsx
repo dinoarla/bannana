@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { User, Profile } from "@prisma/client";
-
-type UserWithProfile = User & { profile: Profile | null };
+import type { UserWithProfile } from "@/types/db.types";
 
 export function DashboardShell({ user, children }: { user: UserWithProfile; children: React.ReactNode }) {
   const pathname = usePathname();

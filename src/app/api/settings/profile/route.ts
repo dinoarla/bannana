@@ -3,7 +3,7 @@ import { verifyCsrf } from "@/lib/csrf/token";
 import { handleApiError } from "@/lib/errors/errorHandler";
 import { errors } from "@/lib/errors/AppError";
 import { ok } from "@/lib/utils/response";
-import { prisma } from "@/lib/db/client";
+import { UserRepository } from "@/lib/db/repositories/UserRepository";
 import { z } from "zod";
 
 const profileUpdateSchema = z.object({
@@ -17,27 +17,21 @@ export async function PUT(request: Request) {
     await verifyCsrf();
     const user = await assertSessionUser();
     const input = profileUpdateSchema.parse(await request.json());
+    const repo = new UserRepository();
 
     if (input.username && input.username !== user.username) {
-      const existing = await prisma.user.findUnique({ where: { username: input.username } });
+      const existing = await repo.findByUsername(input.username);
       if (existing) throw errors.conflict("Username sudah dipakai.");
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        ...(input.username ? { username: input.username } : {}),
-        profile: {
-          update: {
-            ...(input.displayName !== undefined ? { displayName: input.displayName } : {}),
-            ...(input.bio !== undefined ? { bio: input.bio } : {}),
-          },
-        },
-      },
-      include: { profile: true },
+    const updated = await repo.updateUsernameAndProfile(user.id, {
+      username: input.username,
+      displayName: input.displayName,
+      bio: input.bio,
     });
 
-    const { passwordHash: _ph, ...safe } = updatedUser;
+    if (!updated) throw errors.notFound("User tidak ditemukan.");
+    const { passwordHash: _ph, ...safe } = updated;
     return ok(safe);
   } catch (error) {
     return handleApiError(error);

@@ -4,8 +4,6 @@ import { handleApiError } from "@/lib/errors/errorHandler";
 import { BlockService } from "@/lib/services/BlockService";
 import { ok } from "@/lib/utils/response";
 import { blockUpdateSchema } from "@/lib/validations/block";
-import type { Prisma } from "@prisma/client";
-
 type Context = { params: Promise<{ blockId: string }> };
 
 export async function PUT(request: Request, context: Context) {
@@ -14,7 +12,7 @@ export async function PUT(request: Request, context: Context) {
     await assertSessionUser();
     const { blockId } = await context.params;
     const input = blockUpdateSchema.parse(await request.json());
-    return ok(await new BlockService().update(blockId, { ...input, config: input.config as Prisma.InputJsonValue | undefined }));
+    return ok(await new BlockService().update(blockId, { ...input, config: input.config as Record<string, unknown> | undefined }));
   } catch (error) {
     return handleApiError(error);
   }
