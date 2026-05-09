@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Footer } from "@/components/shared/Footer";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -51,6 +52,7 @@ export default function LoginPage() {
   }
 
   return (
+    <>
     <main className="auth-page-bg">
       <div className="auth-wrap">
         <Link href="/" className="auth-logo">
@@ -111,7 +113,7 @@ export default function LoginPage() {
                     </button>
                   </div>
                 </div>
-                <Link href="/forgot-password" className="forgot">Lupa password?</Link>
+                <Link href="/forgot-password" className="forgot-link">Lupa password?</Link>
                 <button type="submit" className="btn-submit" disabled={loading}>
                   {loading ? <><i className="fa-solid fa-spinner fa-spin" /> Memproses...</> : <><i className="fa-solid fa-arrow-right-to-bracket" /> Masuk</>}
                 </button>
@@ -186,5 +188,7 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+    <Footer />
+    </>
   );
 }

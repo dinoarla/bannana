@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Footer } from "@/components/shared/Footer";
 
 const faqs = [
   { q: "Apakah gratis benar-benar gratis?", a: "Ya! Paket Gratis tidak memiliki batas waktu. Kamu bisa menggunakan bannana.id secara gratis selamanya dengan fitur dasar. Tidak perlu kartu kredit untuk mendaftar." },
@@ -275,15 +276,7 @@ export default function PricingPage() {
         </div>
       </div>
 
-      <footer className="pricing-footer">
-        <div className="foot-logo"><span className="bana">🍌</span> bannana.id</div>
-        <span>&copy; 2025 bannana.id — dibuat dengan cinta &amp; kuning</span>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">MIT</a>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

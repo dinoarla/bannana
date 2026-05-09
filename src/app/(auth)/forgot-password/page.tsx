@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Footer } from "@/components/shared/Footer";
 
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
@@ -17,6 +18,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
+    <>
     <main className="auth-page-bg">
       <div className="auth-wrap">
         <Link href="/" className="auth-logo">
@@ -66,5 +68,7 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </main>
+    <Footer />
+    </>
   );
 }
