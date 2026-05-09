@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Footer } from "@/components/shared/Footer";
-import type { Metadata } from "next";
+import type { Metadata } from "next/types";
 
 export const metadata: Metadata = {
   title: "Kebijakan Privasi — bannana.id",

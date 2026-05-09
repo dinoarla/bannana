@@ -144,14 +144,14 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
 
     const oldIndex = page.blocks.findIndex((b) => b.id === active.id);
     const newIndex = page.blocks.findIndex((b) => b.id === over.id);
-    const reordered = arrayMove(page.blocks, oldIndex, newIndex).map((b, i) => ({ ...b, position: i + 1 }));
+    const reordered = arrayMove(page.blocks, oldIndex, newIndex).map((b: PublicBlock, i: number) => ({ ...b, position: i + 1 }));
 
     setPage((p) => ({ ...p, blocks: reordered }));
     setSaving(true);
     try {
       await mutate(`/api/pages/${page.id}/blocks/reorder`, {
         method: "PUT",
-        body: JSON.stringify(reordered.map((b) => ({ id: b.id, position: b.position }))),
+        body: JSON.stringify(reordered.map((b: PublicBlock & { position: number }) => ({ id: b.id, position: b.position }))),
       });
       showSave("Urutan disimpan ✓");
     } finally {
