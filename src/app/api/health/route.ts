@@ -9,9 +9,15 @@ export async function GET() {
   checks.NEXTAUTH_URL  = process.env.NEXTAUTH_URL  ? "ok" : "MISSING";
   checks.CSRF_SECRET   = process.env.CSRF_SECRET   ? "ok" : "MISSING";
 
+  // Diagnose the raw DATABASE_URL value
+  const rawUrl = process.env.DATABASE_URL ?? "";
+  checks.db_url_length = String(rawUrl.length);
+  checks.db_url_preview = rawUrl.slice(0, 30).replace(/:[^@]+@/, ":***@");
+
   try {
-    const raw = (process.env.DATABASE_URL ?? "").trim();
-    const u = new URL(raw);
+    // Strip surrounding quotes and whitespace if Hostinger added them
+    const clean = rawUrl.trim().replace(/^["']|["']$/g, "");
+    const u = new URL(clean);
     const mysql = await import("mysql2/promise");
     const conn = await mysql.createConnection({
       host: u.hostname,
@@ -28,6 +34,6 @@ export async function GET() {
     checks.database = `ERROR: ${(e as Error).message}`;
   }
 
-  const allOk = Object.values(checks).every((v) => v === "ok");
+  const allOk = ["DATABASE_URL","NEXTAUTH_URL","CSRF_SECRET","database"].every((k) => checks[k] === "ok");
   return NextResponse.json({ status: allOk ? "ok" : "degraded", checks });
 }
