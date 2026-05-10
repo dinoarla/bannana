@@ -205,4 +205,9 @@ export class PageRepository {
   async incrementView(id: string): Promise<void> {
     await db.query("UPDATE Page SET viewCount = viewCount + 1 WHERE id = ?", [id]);
   }
+
+  async countByUser(userId: string): Promise<number> {
+    const [rows] = await db.query("SELECT COUNT(*) AS cnt FROM Page WHERE userId = ?", [userId]);
+    return Number((rows as Record<string, unknown>[])[0]?.cnt ?? 0);
+  }
 }

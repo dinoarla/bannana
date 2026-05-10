@@ -45,11 +45,18 @@ export class AnalyticsService {
         };
       }),
       topLinks: page.blocks.filter((block) => ["LINK", "EMBED"].includes(block.type)).sort((a, b) => b.clickCount - a.clickCount),
-      devices: [
-        { label: "Mobile", percent: 68.4 },
-        { label: "Desktop", percent: 24.2 },
-        { label: "Tablet", percent: 7.4 }
-      ]
+      devices: (() => {
+        const viewEvents = events.filter((e) => e.event === "view");
+        const total = viewEvents.length || 1;
+        const counts: Record<string, number> = {};
+        for (const e of viewEvents) {
+          const d = e.device ?? "Unknown";
+          counts[d] = (counts[d] ?? 0) + 1;
+        }
+        return Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .map(([label, count]) => ({ label, percent: Number(((count / total) * 100).toFixed(1)) }));
+      })()
     };
   }
 }

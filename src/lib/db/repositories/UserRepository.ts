@@ -106,6 +106,11 @@ export class UserRepository {
     await db.query("UPDATE User SET passwordHash = ?, updatedAt = ? WHERE id = ?", [passwordHash, now, id]);
   }
 
+  async updateAvatar(userId: string, avatarUrl: string | null): Promise<void> {
+    const now = new Date();
+    await db.query("UPDATE Profile SET avatarUrl = ?, updatedAt = ? WHERE userId = ?", [avatarUrl, now, userId]);
+  }
+
   async updateUsernameAndProfile(id: string, data: { username?: string; displayName?: string; bio?: string }): Promise<UserWithProfile | null> {
     const now = new Date();
     if (data.username) {

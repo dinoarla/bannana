@@ -1,6 +1,14 @@
 import { db } from "@/lib/db/client";
 import type { Analytics } from "@/types/db.types";
 
+function detectDevice(ua: string | null | undefined): string {
+  if (!ua) return "Unknown";
+  const u = ua.toLowerCase();
+  if (/tablet|ipad/.test(u)) return "Tablet";
+  if (/mobile|android|iphone|ipod|blackberry|windows phone/.test(u)) return "Mobile";
+  return "Desktop";
+}
+
 function parseAnalytics(row: Record<string, unknown>): Analytics {
   return {
     id: row.id as string,
@@ -19,11 +27,12 @@ export class AnalyticsRepository {
   async create(input: { pageId: string; blockId?: string; event: "view" | "click"; referrer?: string | null; userAgent?: string | null }): Promise<Analytics> {
     const id = crypto.randomUUID();
     const now = new Date();
+    const device = detectDevice(input.userAgent);
     await db.query(
-      "INSERT INTO Analytics (id, pageId, blockId, event, referrer, userAgent, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [id, input.pageId, input.blockId ?? null, input.event, input.referrer ?? null, input.userAgent ?? null, now]
+      "INSERT INTO Analytics (id, pageId, blockId, event, referrer, userAgent, device, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [id, input.pageId, input.blockId ?? null, input.event, input.referrer ?? null, input.userAgent ?? null, device, now]
     );
-    return { id, pageId: input.pageId, blockId: input.blockId ?? null, event: input.event, referrer: input.referrer ?? null, userAgent: input.userAgent ?? null, country: null, device: null, createdAt: now };
+    return { id, pageId: input.pageId, blockId: input.blockId ?? null, event: input.event, referrer: input.referrer ?? null, userAgent: input.userAgent ?? null, country: null, device, createdAt: now };
   }
 
   async listPageEvents(pageId: string, from: Date): Promise<Analytics[]> {

@@ -77,7 +77,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
   const selected = useMemo(() => page.blocks.find((b) => b.id === selectedId), [page.blocks, selectedId]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 

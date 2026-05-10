@@ -28,6 +28,10 @@ export class AuthService {
     return user;
   }
 
+  findByEmail(email: string) {
+    return this.users.findByEmail(email.toLowerCase().trim());
+  }
+
   async loginOrCreateGoogle(googleUser: { email: string; name: string }) {
     const email = googleUser.email.toLowerCase().trim();
     const existing = await this.users.findByEmail(email);

@@ -23,6 +23,7 @@ export default async function SettingsPage() {
           email={user.email}
           displayName={user.profile?.displayName ?? ""}
           bio={user.profile?.bio ?? ""}
+          avatarUrl={user.profile?.avatarUrl ?? ""}
         />
       </div>
     </>

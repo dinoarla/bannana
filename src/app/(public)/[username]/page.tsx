@@ -31,12 +31,14 @@ export default async function PublicProfilePage({ params }: Props) {
     const name = profile?.displayName ?? page.user.username;
 
     return (
-      <div style={{ minHeight: "100vh", background: "var(--n-50)", display: "flex", flexDirection: "column" }}>
+      <div className={`pub-page t-${page.theme}`} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div className="pub-wrap">
           {/* Profile Header */}
           <div className="prof-header">
             <div className="prof-avatar">
-              <i className="fa-solid fa-user" />
+              {profile?.avatarUrl
+                ? <img src={profile.avatarUrl} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+                : <i className="fa-solid fa-user" />}
             </div>
             <div className="prof-name">{name}</div>
             <div className="prof-handle">@{page.user.username} · bannana.id/{page.user.username}</div>

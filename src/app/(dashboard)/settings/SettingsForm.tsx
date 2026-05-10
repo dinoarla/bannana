@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string };
+type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string };
 
-export function SettingsForm({ csrfToken, username, email, displayName, bio }: Props) {
+export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl }: Props) {
   const [section, setSection] = useState("profil");
 
   function csrf(): HeadersInit {
@@ -37,7 +37,7 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio }: P
 
       {/* PANELS */}
       <div className="set-panel">
-        {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} />}
+        {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} />}
         {section === "akun" && <AkunPanel csrf={csrf()} email={email} />}
         {section === "notif" && <NotifPanel />}
         {section === "langganan" && <LanggananPanel />}
@@ -48,10 +48,52 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio }: P
   );
 }
 
-function ProfilPanel({ csrfToken, username, displayName, bio }: { csrfToken: string; username: string; displayName: string; bio: string }) {
+function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initialAvatarUrl }: { csrfToken: string; username: string; displayName: string; bio: string; avatarUrl: string }) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  function openFilePicker() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/jpeg,image/png,image/webp";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      if (file.size > 5_000_000) { setErr("Ukuran file maksimal 5MB."); return; }
+      setUploadingAvatar(true);
+      try {
+        const dataUrl = await resizeToDataUrl(file, 200, 200);
+        const res = await fetch("/api/settings/avatar", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+          body: JSON.stringify({ dataUrl }),
+        });
+        const json = await res.json();
+        if (!json.success) { setErr(json.error?.message ?? "Gagal upload foto."); return; }
+        setAvatarUrl(json.data.avatarUrl);
+        setMsg("Foto profil diperbarui!");
+        setTimeout(() => setMsg(""), 3000);
+      } finally { setUploadingAvatar(false); }
+    };
+    input.click();
+  }
+
+  async function deleteAvatar() {
+    if (!avatarUrl) return;
+    setUploadingAvatar(true);
+    try {
+      const res = await fetch("/api/settings/avatar", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+        body: JSON.stringify({ dataUrl: null }),
+      });
+      const json = await res.json();
+      if (json.success) { setAvatarUrl(""); setMsg("Foto dihapus."); setTimeout(() => setMsg(""), 2500); }
+    } finally { setUploadingAvatar(false); }
+  }
 
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -75,11 +117,21 @@ function ProfilPanel({ csrfToken, username, displayName, bio }: { csrfToken: str
       <div className="set-card-body">
         <form onSubmit={save} id="profil-form">
           <div className="avatar-section">
-            <div className="avatar-big"><i className="fa-solid fa-user" /></div>
+            <div className="avatar-big" style={{ overflow: "hidden", padding: 0 }}>
+              {avatarUrl
+                ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <i className="fa-solid fa-user" />}
+            </div>
             <div className="avatar-actions">
-              <button type="button" className="btn btn-secondary btn-sm"><i className="fa-solid fa-upload" /> Upload Foto</button>
-              <button type="button" className="btn btn-ghost btn-sm" style={{ color: "var(--danger-600)", borderColor: "#FECDD3" }}><i className="fa-solid fa-trash" /> Hapus Foto</button>
-              <span>Format: JPG, PNG, WebP. Maks. 2MB.</span>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={openFilePicker} disabled={uploadingAvatar}>
+                {uploadingAvatar ? <><i className="fa-solid fa-spinner fa-spin" /> Mengupload…</> : <><i className="fa-solid fa-upload" /> Upload Foto</>}
+              </button>
+              {avatarUrl && (
+                <button type="button" className="btn btn-ghost btn-sm" style={{ color: "var(--danger-600)", borderColor: "#FECDD3" }} onClick={deleteAvatar} disabled={uploadingAvatar}>
+                  <i className="fa-solid fa-trash" /> Hapus Foto
+                </button>
+              )}
+              <span>Format: JPG, PNG, WebP. Maks. 5MB.</span>
             </div>
           </div>
           <div className="field-row">
@@ -267,6 +319,26 @@ function IntegrasiPanel() {
       </div>
     </>
   );
+}
+
+function resizeToDataUrl(file: File, maxW: number, maxH: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext("2d")!.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
 }
 
 function BahayaPanel() {

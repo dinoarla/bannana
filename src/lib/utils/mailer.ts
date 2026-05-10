@@ -14,6 +14,36 @@ function getTransport() {
   });
 }
 
+export async function sendVerificationEmail(to: string, verifyUrl: string): Promise<boolean> {
+  const transport = getTransport();
+  if (!transport) return false;
+
+  const from = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
+  await transport.sendMail({
+    from: `bannana.id <${from}>`,
+    to,
+    subject: "Verifikasi Email bannana.id",
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#FFFBEB;border-radius:16px">
+        <div style="font-size:2rem;margin-bottom:8px">🍌</div>
+        <h2 style="margin:0 0 8px;color:#1C1409">Verifikasi Emailmu</h2>
+        <p style="color:#78716C;margin:0 0 24px;line-height:1.6">
+          Terima kasih sudah daftar di bannana.id!<br>
+          Klik tombol di bawah untuk verifikasi emailmu — link berlaku <strong>24 jam</strong>.
+        </p>
+        <a href="${verifyUrl}" style="display:inline-block;background:#F59E0B;color:#1C1409;font-weight:700;padding:14px 28px;border-radius:12px;text-decoration:none;font-size:15px">
+          Verifikasi Email Sekarang
+        </a>
+        <p style="margin:24px 0 0;font-size:12px;color:#A8A29E">
+          Kalau kamu tidak mendaftar, abaikan email ini saja.<br>
+          Link: <a href="${verifyUrl}" style="color:#F59E0B">${verifyUrl}</a>
+        </p>
+      </div>
+    `,
+  });
+  return true;
+}
+
 export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<boolean> {
   const transport = getTransport();
   if (!transport) return false;
