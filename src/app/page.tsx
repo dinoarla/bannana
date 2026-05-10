@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Footer } from "@/components/shared/Footer";
+import { getSessionUser } from "@/lib/auth/session";
 
-export default function LandingPage() {
+export const dynamic = "force-dynamic";
+
+export default async function LandingPage() {
+  const user = await getSessionUser();
+
   return (
     <>
       {/* NAVBAR */}
@@ -16,10 +21,18 @@ export default function LandingPage() {
           <li><Link href="/pricing">Pricing</Link></li>
         </ul>
         <div className="navbar-actions">
-          <Link href="/login" className="btn btn-ghost btn-sm">Masuk</Link>
-          <Link href="/register" className="btn btn-primary btn-sm">
-            <i className="fa-solid fa-arrow-right-to-bracket" /> Daftar Gratis
-          </Link>
+          {user ? (
+            <Link href="/dashboard" className="btn btn-primary btn-sm">
+              <i className="fa-solid fa-house" /> Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="btn btn-ghost btn-sm">Masuk</Link>
+              <Link href="/register" className="btn btn-primary btn-sm">
+                <i className="fa-solid fa-arrow-right-to-bracket" /> Daftar Gratis
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 

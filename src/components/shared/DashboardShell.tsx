@@ -9,7 +9,14 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
   const displayName = user.profile?.displayName ?? user.username;
 
   async function logout() {
-    await fetch("/api/auth/logout", { method: "DELETE" });
+    const csrfToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("bid_csrf="))
+      ?.split("=")[1] ?? "";
+    await fetch("/api/auth/logout", {
+      method: "DELETE",
+      headers: { "X-CSRF-Token": decodeURIComponent(csrfToken) },
+    });
     location.href = "/login";
   }
 
@@ -47,16 +54,14 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
           <Link href="/themes" className={`sb-item${isActive("/themes") ? " active" : ""}`}>
             <i className="fa-solid fa-palette" /> Tema
           </Link>
-          <a href="#" className="sb-item"><i className="fa-solid fa-image" /> Gambar &amp; Media</a>
 
           <div className="sb-section">Akun</div>
-          <a href="#" className="sb-item"><i className="fa-solid fa-key" /> API Keys</a>
           <Link href="/settings" className={`sb-item${isActive("/settings") ? " active" : ""}`}>
             <i className="fa-solid fa-gear" /> Pengaturan
           </Link>
-          <a href="#" className="sb-item">
+          <Link href="/pricing" className="sb-item">
             <i className="fa-solid fa-crown" style={{ color: "var(--b-400)" }} /> Upgrade Pro
-          </a>
+          </Link>
         </nav>
 
         <div className="sb-bottom">
