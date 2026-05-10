@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { parseDbUrl } from "@/lib/db/client";
 
 export const dynamic = "force-dynamic";
 
@@ -9,24 +10,17 @@ export async function GET() {
   checks.NEXTAUTH_URL  = process.env.NEXTAUTH_URL  ? "ok" : "MISSING";
   checks.CSRF_SECRET   = process.env.CSRF_SECRET   ? "ok" : "MISSING";
 
-  // Diagnose the raw DATABASE_URL value
   const rawUrl = process.env.DATABASE_URL ?? "";
-  checks.db_url_length = String(rawUrl.length);
-  checks.db_url_preview = rawUrl.slice(0, 30).replace(/:[^@]+@/, ":***@");
+  checks.db_url_length = String(rawUrl.trim().length);
 
   try {
-    // Strip surrounding quotes and whitespace if Hostinger added them
-    const clean = rawUrl.trim().replace(/^["']|["']$/g, "");
-    const u = new URL(clean);
+    const config = parseDbUrl(rawUrl);
+    checks.db_host = config.host as string;
+    checks.db_user = config.user as string;
+    checks.db_database = config.database as string;
+
     const mysql = await import("mysql2/promise");
-    const conn = await mysql.createConnection({
-      host: u.hostname,
-      port: u.port ? parseInt(u.port, 10) : 3306,
-      user: decodeURIComponent(u.username),
-      password: decodeURIComponent(u.password),
-      database: u.pathname.replace(/^\//, ""),
-      connectTimeout: 5000,
-    });
+    const conn = await mysql.createConnection({ ...config, connectTimeout: 5000 });
     await conn.query("SELECT 1");
     await conn.end();
     checks.database = "ok";
