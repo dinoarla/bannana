@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Footer } from "@/components/shared/Footer";
 
 export function LoginClient() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -15,6 +14,11 @@ export function LoginClient() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("mode") === "register") setMode("register");
+    const err = params.get("error");
+    if (err === "google_not_configured") setError("Login Google belum dikonfigurasi.");
+    else if (err === "google_cancelled") setError("Login Google dibatalkan.");
+    else if (err === "google_no_email") setError("Akun Google tidak memiliki email yang bisa diakses.");
+    else if (err) setError("Login Google gagal. Coba lagi.");
   }, []);
 
   function checkPw(v: string) {
@@ -34,7 +38,21 @@ export function LoginClient() {
     setError("");
     setLoading(true);
     const fd = new FormData(e.currentTarget);
-    const body = Object.fromEntries(fd);
+
+    let body: Record<string, string>;
+    if (mode === "register") {
+      const firstName = (fd.get("firstName") as string ?? "").trim();
+      const lastName = (fd.get("lastName") as string ?? "").trim();
+      body = {
+        username: fd.get("username") as string,
+        email: fd.get("email") as string,
+        password: fd.get("password") as string,
+        displayName: [firstName, lastName].filter(Boolean).join(" ") || (fd.get("username") as string),
+      };
+    } else {
+      body = Object.fromEntries(fd) as Record<string, string>;
+    }
+
     try {
       const res = await fetch(`/api/auth/${mode}`, {
         method: "POST",
@@ -52,7 +70,6 @@ export function LoginClient() {
   }
 
   return (
-    <>
     <main className="auth-page-bg">
       <div className="auth-wrap">
         <Link href="/" className="auth-logo">
@@ -75,10 +92,11 @@ export function LoginClient() {
             <button className={`auth-tab${mode === "register" ? " act" : ""}`} onClick={() => setMode("register")}>Daftar</button>
           </div>
 
-          {/* SSO */}
+          {/* Google SSO */}
           <div className="sso-group">
-            <a href="#" className="sso-btn"><i className="fa-brands fa-google" style={{ color: "#EA4335" }} /> Lanjutkan dengan Google</a>
-            <a href="#" className="sso-btn"><i className="fa-brands fa-github" style={{ color: "var(--n-800)" }} /> Lanjutkan dengan GitHub</a>
+            <a href="/api/auth/google" className="sso-btn">
+              <i className="fa-brands fa-google" style={{ color: "#EA4335" }} /> Lanjutkan dengan Google
+            </a>
           </div>
 
           <div className="divider">
@@ -179,7 +197,7 @@ export function LoginClient() {
                   {loading ? <><i className="fa-solid fa-spinner fa-spin" /> Memproses...</> : <><i className="fa-solid fa-rocket" /> Buat Akun Gratis</>}
                 </button>
                 <div className="auth-terms">
-                  Dengan mendaftar, kamu setuju dengan <a href="#">Syarat &amp; Ketentuan</a> dan <a href="#">Kebijakan Privasi</a> bannana.id
+                  Dengan mendaftar, kamu setuju dengan <Link href="/terms">Syarat &amp; Ketentuan</Link> dan <Link href="/privacy">Kebijakan Privasi</Link> bannana.id
                 </div>
                 <div className="auth-switch">Sudah punya akun? <a href="#" onClick={(e) => { e.preventDefault(); setMode("login"); }}>Masuk</a></div>
               </>
@@ -188,7 +206,5 @@ export function LoginClient() {
         </div>
       </div>
     </main>
-    <Footer />
-    </>
   );
 }
