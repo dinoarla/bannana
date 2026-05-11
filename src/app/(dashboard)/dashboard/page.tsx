@@ -42,8 +42,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           <Link href={`/${user.username}`} target="_blank" className="tb-icon-btn" title="Lihat halaman publik">
             <i className="fa-solid fa-eye" />
           </Link>
-          <Link href="/settings" className="sb-avatar" style={{ cursor: "pointer", textDecoration: "none" }}>
-            <i className="fa-solid fa-user" />
+          <Link href="/settings" className="sb-avatar" style={{ cursor: "pointer", textDecoration: "none", overflow: "hidden", padding: user.profile?.avatarUrl ? 0 : undefined }}>
+            {user.profile?.avatarUrl
+              ? <img src={user.profile.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+              : <i className="fa-solid fa-user" />}
           </Link>
         </div>
       </div>
@@ -100,7 +102,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(272px,1fr))", gap: "1rem", marginBottom: "2rem" }}>
           {pages.slice(0, 2).map((page) => (
-            <PageCard key={page.id} page={page} />
+            <PageCard key={page.id} page={page} avatarUrl={user.profile?.avatarUrl ?? null} />
           ))}
           <Link href="/pages/new"
             style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220 }}
@@ -250,7 +252,7 @@ function StatCard({ icon, iconBg, iconColor, value, label, fillGradient }: {
   );
 }
 
-function PageCard({ page }: { page: PageWithBlocks }) {
+function PageCard({ page, avatarUrl }: { page: PageWithBlocks; avatarUrl: string | null }) {
   return (
     <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 20, overflow: "hidden" }}>
       <div style={{ height: 112, background: "linear-gradient(160deg,var(--b-50),#fff)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5 }}>
@@ -258,8 +260,10 @@ function PageCard({ page }: { page: PageWithBlocks }) {
           {page.isPublished && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
           {page.isPublished ? "Live" : "Draft"}
         </div>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem" }}>
-          <i className="fa-solid fa-user" />
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem", overflow: "hidden", padding: avatarUrl ? 0 : undefined }}>
+          {avatarUrl
+            ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            : <i className="fa-solid fa-user" />}
         </div>
         <div style={{ fontFamily: "var(--fd)", fontSize: ".78rem", fontWeight: 700, color: "var(--b-900)" }}>@{page.slug}</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", padding: "0 14px" }}>

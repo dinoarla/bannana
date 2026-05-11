@@ -166,12 +166,15 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
           displayName: combined || undefined,
           bio: bioVal,
           username: usernameVal !== username ? usernameVal : undefined,
-          website: websiteVal,
+          website: websiteVal || undefined,
         }),
       });
       const json = await res.json();
       if (!json.success) { setErr(json.error?.message ?? "Gagal menyimpan."); setTimeout(() => setErr(""), 4000); return; }
       setMsg("Profil tersimpan!"); setTimeout(() => setMsg(""), 3000);
+    } catch {
+      setErr("Gagal terhubung ke server. Coba lagi.");
+      setTimeout(() => setErr(""), 4000);
     } finally { setSaving(false); }
   }
 

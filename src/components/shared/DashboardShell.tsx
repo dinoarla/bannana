@@ -31,7 +31,11 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
         </Link>
 
         <div className="sb-user">
-          <div className="sb-avatar"><i className="fa-solid fa-user" /></div>
+          <div className="sb-avatar" style={{ overflow: "hidden", padding: user.profile?.avatarUrl ? 0 : undefined }}>
+            {user.profile?.avatarUrl
+              ? <img src={user.profile.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+              : <i className="fa-solid fa-user" />}
+          </div>
           <div>
             <div className="sb-uname">{displayName}</div>
             <div className="sb-handle">@{user.username}</div>

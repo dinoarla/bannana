@@ -6,6 +6,7 @@ import { PageActions } from "./PageActions";
 
 export default async function PagesPage() {
   const user = await assertSessionUser();
+  const avatarUrl = user.profile?.avatarUrl ?? null;
   const pages = await new PageService().list(user.id);
 
   return (
@@ -45,8 +46,10 @@ export default async function PagesPage() {
                     {page.isPublished && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
                     {page.isPublished ? "Live" : "Draft"}
                   </div>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem" }}>
-                    <i className="fa-solid fa-user" />
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem", overflow: "hidden", padding: avatarUrl ? 0 : undefined }}>
+                    {avatarUrl
+                      ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      : <i className="fa-solid fa-user" />}
                   </div>
                   <div style={{ fontFamily: "var(--fd)", fontSize: ".78rem", fontWeight: 700, color: "var(--b-900)" }}>@{page.slug}</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", padding: "0 14px" }}>
