@@ -112,17 +112,18 @@ export class UserRepository {
     await db.query("UPDATE Profile SET avatarUrl = ?, updatedAt = ? WHERE userId = ?", [avatarUrl, now, userId]);
   }
 
-  async updateUsernameAndProfile(id: string, data: { username?: string; displayName?: string; bio?: string; website?: string }): Promise<UserWithProfile | null> {
+  async updateUsernameAndProfile(id: string, data: { username?: string; displayName?: string; bio?: string; website?: string; socialLinks?: Array<{ label: string; url: string; icon: string; color?: string }> }): Promise<UserWithProfile | null> {
     const now = new Date();
     if (data.username) {
       await db.query("UPDATE User SET username = ?, updatedAt = ? WHERE id = ?", [data.username, now, id]);
     }
-    if (data.displayName !== undefined || data.bio !== undefined || data.website !== undefined) {
+    if (data.displayName !== undefined || data.bio !== undefined || data.website !== undefined || data.socialLinks !== undefined) {
       const updates: string[] = [];
       const vals: unknown[] = [];
       if (data.displayName !== undefined) { updates.push("displayName = ?"); vals.push(data.displayName); }
       if (data.bio !== undefined) { updates.push("bio = ?"); vals.push(data.bio); }
       if (data.website !== undefined) { updates.push("website = ?"); vals.push(data.website || null); }
+      if (data.socialLinks !== undefined) { updates.push("socialLinks = ?"); vals.push(JSON.stringify(data.socialLinks)); }
       updates.push("updatedAt = ?"); vals.push(now);
       vals.push(id);
       await db.query(`UPDATE Profile SET ${updates.join(", ")} WHERE userId = ?`, vals);

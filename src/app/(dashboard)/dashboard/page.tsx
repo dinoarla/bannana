@@ -102,7 +102,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(272px,1fr))", gap: "1rem", marginBottom: "2rem" }}>
           {pages.slice(0, 2).map((page) => (
-            <PageCard key={page.id} page={page} avatarUrl={user.profile?.avatarUrl ?? null} />
+            <PageCard key={page.id} page={page} avatarUrl={user.profile?.avatarUrl ?? null} username={user.username} />
           ))}
           <Link href="/pages/new"
             style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220 }}
@@ -252,7 +252,7 @@ function StatCard({ icon, iconBg, iconColor, value, label, fillGradient }: {
   );
 }
 
-function PageCard({ page, avatarUrl }: { page: PageWithBlocks; avatarUrl: string | null }) {
+function PageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarUrl: string | null; username: string }) {
   return (
     <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 20, overflow: "hidden" }}>
       <div style={{ height: 112, background: "linear-gradient(160deg,var(--b-50),#fff)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5 }}>
@@ -276,7 +276,7 @@ function PageCard({ page, avatarUrl }: { page: PageWithBlocks; avatarUrl: string
         <div style={{ fontWeight: 700, fontSize: ".92rem", color: "var(--b-900)", marginBottom: ".3rem" }}>
           {page.title}
         </div>
-        <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".75rem" }}>bannana.id/{page.slug}</div>
+        <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".75rem" }}>bannana.id/{username}</div>
         <div style={{ display: "flex", gap: ".875rem", fontSize: ".72rem", color: "var(--n-500)", marginBottom: ".875rem" }}>
           <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
         </div>
@@ -284,7 +284,7 @@ function PageCard({ page, avatarUrl }: { page: PageWithBlocks; avatarUrl: string
           <Link href={`/pages/${page.id}`} style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--b-500)", color: "var(--b-950)", textDecoration: "none" }}>
             <i className="fa-solid fa-pen-to-square" /> Edit
           </Link>
-          <Link href={`/${page.slug}`} target="_blank" style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--n-100)", color: "var(--n-700)", border: "1.5px solid var(--n-200)", textDecoration: "none" }}>
+          <Link href={`/${username}`} target="_blank" style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--n-100)", color: "var(--n-700)", border: "1.5px solid var(--n-200)", textDecoration: "none" }}>
             <i className="fa-solid fa-eye" /> Lihat
           </Link>
         </div>

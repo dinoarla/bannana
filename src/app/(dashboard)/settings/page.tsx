@@ -25,6 +25,7 @@ export default async function SettingsPage() {
           bio={user.profile?.bio ?? ""}
           avatarUrl={user.profile?.avatarUrl ?? ""}
           website={user.profile?.website ?? ""}
+          socialLinks={user.profile?.socialLinks ?? []}
         />
       </div>
     </>

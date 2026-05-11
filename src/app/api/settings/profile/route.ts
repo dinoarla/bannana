@@ -11,6 +11,12 @@ const profileUpdateSchema = z.object({
   bio: z.string().max(160).optional(),
   username: z.string().min(3).max(32).regex(/^[a-zA-Z0-9_-]+$/, "Username hanya boleh huruf, angka, underscore, strip.").optional(),
   website: z.string().max(500).optional(),
+  socialLinks: z.array(z.object({
+    label: z.string().max(64),
+    url: z.string().url("URL social media tidak valid.").max(500),
+    icon: z.string().max(64),
+    color: z.string().optional(),
+  })).optional(),
 });
 
 export async function PUT(request: Request) {
@@ -30,6 +36,7 @@ export async function PUT(request: Request) {
       displayName: input.displayName,
       bio: input.bio,
       website: input.website,
+      socialLinks: input.socialLinks,
     });
 
     if (!updated) throw errors.notFound("User tidak ditemukan.");

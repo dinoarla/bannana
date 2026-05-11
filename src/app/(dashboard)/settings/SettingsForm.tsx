@@ -2,9 +2,10 @@
 
 import { useState, useRef } from "react";
 
-type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string };
+type SocialLink = { label: string; url: string; icon: string; color?: string };
+type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[] };
 
-export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website }: Props) {
+export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website, socialLinks }: Props) {
   const [section, setSection] = useState("profil");
 
   function csrf(): HeadersInit {
@@ -37,7 +38,7 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio, ava
 
       {/* PANELS */}
       <div className="set-panel">
-        {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} website={website} />}
+        {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} website={website} socialLinks={socialLinks} />}
         {section === "akun" && <AkunPanel csrf={csrf()} email={email} />}
         {section === "notif" && <NotifPanel />}
         {section === "langganan" && <LanggananPanel />}
@@ -50,8 +51,17 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio, ava
 
 const BIO_MAX = 160;
 
-function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initialAvatarUrl, website: initialWebsite }: {
-  csrfToken: string; username: string; displayName: string; bio: string; avatarUrl: string; website: string;
+const SOCIAL_PLATFORMS = [
+  { key: "Instagram", label: "Instagram",  fa: "fa-brands fa-instagram", color: "#E1306C", placeholder: "https://instagram.com/username" },
+  { key: "Twitter",   label: "X / Twitter", fa: "fa-brands fa-x-twitter",  color: "#000000", placeholder: "https://x.com/username" },
+  { key: "Youtube",   label: "YouTube",     fa: "fa-brands fa-youtube",    color: "#FF0000", placeholder: "https://youtube.com/@channel" },
+  { key: "LinkedIn",  label: "LinkedIn",    fa: "fa-brands fa-linkedin",   color: "#0A66C2", placeholder: "https://linkedin.com/in/username" },
+  { key: "TikTok",    label: "TikTok",      fa: "fa-brands fa-tiktok",     color: "#000000", placeholder: "https://tiktok.com/@username" },
+  { key: "Facebook",  label: "Facebook",    fa: "fa-brands fa-facebook",   color: "#1877F2", placeholder: "https://facebook.com/username" },
+] as const;
+
+function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initialAvatarUrl, website: initialWebsite, socialLinks: initialSocialLinks }: {
+  csrfToken: string; username: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[];
 }) {
   const nameParts = displayName.split(" ");
   const [firstName, setFirstName] = useState(nameParts[0] ?? "");
@@ -60,6 +70,12 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [bioVal, setBioVal] = useState(bio);
   const [websiteVal, setWebsiteVal] = useState(initialWebsite);
+  const [socialVals, setSocialVals] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    for (const p of SOCIAL_PLATFORMS) init[p.key] = "";
+    for (const sl of initialSocialLinks) { if (sl.icon && sl.url) init[sl.icon] = sl.url; }
+    return init;
+  });
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
@@ -167,6 +183,9 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
           bio: bioVal,
           username: usernameVal !== username ? usernameVal : undefined,
           website: websiteVal || undefined,
+          socialLinks: SOCIAL_PLATFORMS
+            .filter((p) => socialVals[p.key]?.trim())
+            .map((p) => ({ label: p.label, url: socialVals[p.key].trim(), icon: p.key, color: p.color })),
         }),
       });
       const json = await res.json();
@@ -253,7 +272,7 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
           </div>
 
           {/* Website */}
-          <div className="field-full" style={{ marginBottom: 0 }}>
+          <div className="field-full">
             <label className="form-lbl">Website / URL Utama</label>
             <input
               className="form-inp"
@@ -262,6 +281,29 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
               value={websiteVal}
               onChange={(e) => setWebsiteVal(e.target.value)}
             />
+          </div>
+
+          {/* Social Links */}
+          <div className="field-full" style={{ marginBottom: 0 }}>
+            <label className="form-lbl">Link Social Media</label>
+            <div style={{ display: "flex", flexDirection: "column", gap: ".5rem" }}>
+              {SOCIAL_PLATFORMS.map((p) => (
+                <div key={p.key} style={{ display: "flex", alignItems: "center", gap: ".625rem" }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 8, background: "var(--n-100)", display: "flex", alignItems: "center", justifyContent: "center", color: p.color, flexShrink: 0 }}>
+                    <i className={p.fa} />
+                  </div>
+                  <input
+                    className="form-inp"
+                    type="url"
+                    placeholder={p.placeholder}
+                    value={socialVals[p.key] ?? ""}
+                    onChange={(e) => setSocialVals((prev) => ({ ...prev, [p.key]: e.target.value }))}
+                    style={{ marginBottom: 0 }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="form-hint">Masukkan URL lengkap. Kosongkan untuk menyembunyikan ikon.</div>
           </div>
 
           {err && <div style={{ background: "var(--danger-100)", border: "1.5px solid #FECDD3", borderRadius: 10, padding: ".75rem 1rem", fontSize: ".84rem", color: "var(--danger-700)", marginTop: "1rem" }}><i className="fa-solid fa-triangle-exclamation" /> {err}</div>}

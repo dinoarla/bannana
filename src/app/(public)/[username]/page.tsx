@@ -43,18 +43,27 @@ export default async function PublicProfilePage({ params }: Props) {
             <div className="prof-name">{name}</div>
             <div className="prof-handle">@{page.user.username} · bannana.id/{page.user.username}</div>
             {profile?.bio && <div className="prof-bio">{profile.bio}</div>}
-            <div className="social-row">
-              {[
-                { icon: "fa-brands fa-instagram", color: "#E1306C", title: "Instagram" },
-                { icon: "fa-brands fa-x-twitter", color: "#1DA1F2", title: "Twitter" },
-                { icon: "fa-brands fa-youtube", color: "#FF0000", title: "YouTube" },
-                { icon: "fa-brands fa-linkedin", color: "#0A66C2", title: "LinkedIn" },
-              ].map((s) => (
-                <a key={s.title} href="#" className="soc-btn" style={{ color: s.color }} title={s.title}>
-                  <i className={s.icon} />
-                </a>
-              ))}
-            </div>
+            {profile?.socialLinks && profile.socialLinks.length > 0 && (
+              <div className="social-row">
+                {profile.socialLinks.map((s) => {
+                  const iconMap: Record<string, { fa: string; color: string }> = {
+                    Instagram: { fa: "fa-brands fa-instagram", color: "#E1306C" },
+                    Twitter:   { fa: "fa-brands fa-x-twitter",  color: "#000000" },
+                    Youtube:   { fa: "fa-brands fa-youtube",    color: "#FF0000" },
+                    LinkedIn:  { fa: "fa-brands fa-linkedin",   color: "#0A66C2" },
+                    TikTok:    { fa: "fa-brands fa-tiktok",     color: "#000000" },
+                    Facebook:  { fa: "fa-brands fa-facebook",   color: "#1877F2" },
+                    GitHub:    { fa: "fa-brands fa-github",     color: "#333333" },
+                  };
+                  const ico = iconMap[s.icon] ?? { fa: "fa-solid fa-globe", color: "var(--n-500)" };
+                  return (
+                    <a key={s.icon} href={s.url} target="_blank" rel="noopener noreferrer" className="soc-btn" style={{ color: ico.color }} title={s.label}>
+                      <i className={ico.fa} />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Blocks */}
