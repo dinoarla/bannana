@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Footer } from "@/components/shared/Footer";
 
-export function PricingContent({ isLoggedIn }: { isLoggedIn: boolean }) {
-
 const faqs = [
   { q: "Apakah gratis benar-benar gratis?", a: "Ya! Paket Gratis tidak memiliki batas waktu. Kamu bisa menggunakan bannana.id secara gratis selamanya dengan fitur dasar. Tidak perlu kartu kredit untuk mendaftar." },
   { q: "Bisa upgrade/downgrade kapanpun?", a: "Tentu! Kamu bisa upgrade ke Pro kapanpun, dan downgrade kembali ke Gratis jika sudah tidak butuh fitur Pro. Data halamanmu tetap aman." },
@@ -15,7 +13,7 @@ const faqs = [
   { q: "Dataku aman jika saya berhenti berlangganan?", a: "Data halamanmu tetap aman. Jika kamu downgrade ke Gratis, beberapa fitur Pro tidak bisa diakses, tapi semua data link dan halaman tetap tersimpan." },
 ];
 
-export default function _PricingPage() {
+export function PricingContent({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [yearly, setYearly] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
