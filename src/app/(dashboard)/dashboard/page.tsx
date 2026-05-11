@@ -16,9 +16,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const pages = await new PageService().list(user.id);
   const displayName = user.profile?.displayName ?? user.username;
 
-  const [subRows] = await db.query("SELECT plan, status FROM Subscription WHERE userId = ? LIMIT 1", [user.id]);
-  const subRow = (subRows as Record<string, unknown>[])[0];
-  const isPro = subRow?.plan === "pro" && subRow?.status === "active";
+  let isPro = false;
+  try {
+    const [subRows] = await db.query("SELECT plan, status FROM Subscription WHERE userId = ? LIMIT 1", [user.id]);
+    const subRow = (subRows as Record<string, unknown>[])[0];
+    isPro = subRow?.plan === "pro" && subRow?.status === "active";
+  } catch { /* Subscription table may not exist yet */ }
   const canCreatePage = isPro || pages.length === 0;
 
   const report = pages[0]

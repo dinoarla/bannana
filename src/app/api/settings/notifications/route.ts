@@ -15,11 +15,14 @@ const prefsSchema = z.object({
 export async function GET() {
   try {
     const user = await assertSessionUser();
-    const [rows] = await db.query(
-      "SELECT emailWeekly, alertHighClick, productUpdates, tipsTutorial FROM UserNotifPrefs WHERE userId = ? LIMIT 1",
-      [user.id]
-    );
-    const row = (rows as Record<string, unknown>[])[0];
+    let row: Record<string, unknown> | undefined;
+    try {
+      const [rows] = await db.query(
+        "SELECT emailWeekly, alertHighClick, productUpdates, tipsTutorial FROM UserNotifPrefs WHERE userId = ? LIMIT 1",
+        [user.id]
+      );
+      row = (rows as Record<string, unknown>[])[0];
+    } catch { /* table may not exist yet */ }
     if (!row) {
       return ok({ emailWeekly: true, alertHighClick: true, productUpdates: false, tipsTutorial: true });
     }

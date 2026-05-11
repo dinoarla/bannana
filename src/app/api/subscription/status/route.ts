@@ -6,11 +6,14 @@ import { db } from "@/lib/db/client";
 export async function GET() {
   try {
     const user = await assertSessionUser();
-    const [rows] = await db.query(
-      "SELECT * FROM Subscription WHERE userId = ? LIMIT 1",
-      [user.id]
-    );
-    const row = (rows as Record<string, unknown>[])[0];
+    let row: Record<string, unknown> | undefined;
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM Subscription WHERE userId = ? LIMIT 1",
+        [user.id]
+      );
+      row = (rows as Record<string, unknown>[])[0];
+    } catch { /* table may not exist yet */ }
     if (!row) {
       return ok({ plan: "free", status: "active", billingCycle: null, currentPeriodEnd: null });
     }
