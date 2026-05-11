@@ -21,9 +21,9 @@ export default function PricingPage() {
     setOpenFaq(openFaq === i ? null : i);
   }
 
-  const proPrice = yearly ? "37K" : "49K";
+  const proPrice = yearly ? "12.5K" : "15K";
   const proPeriod = yearly
-    ? <><span className="strike">Rp 49K</span> /bulan, dibayar tahunan</>
+    ? <><span className="strike">Rp 15K</span> /bulan · Rp 150K/tahun</>
     : "/bulan";
 
   return (
@@ -50,7 +50,7 @@ export default function PricingPage() {
           <span className={`toggle-label${yearly ? " act" : ""}`}>Tahunan</span>
           <div className={`toggle${yearly ? "" : " off"}`} onClick={() => setYearly(!yearly)} />
           <span className={`toggle-label${!yearly ? " act" : ""}`}>
-            Bulanan <span className="save-pill">Hemat 25%</span>
+            Bulanan <span className="save-pill">Hemat 2 bulan</span>
           </span>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { UserWithProfile } from "@/types/db.types";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 
 export function DashboardShell({ user, children }: { user: UserWithProfile; children: React.ReactNode }) {
   const pathname = usePathname();
@@ -62,6 +63,14 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
           <Link href="/pricing" className="sb-item">
             <i className="fa-solid fa-crown" style={{ color: "var(--b-400)" }} /> Upgrade Pro
           </Link>
+          {user.role === "ADMIN" && (
+            <>
+              <div className="sb-section">Admin</div>
+              <Link href="/admin" className={`sb-item${isActive("/admin") ? " active" : ""}`} style={{ color: "#7C3AED" }}>
+                <i className="fa-solid fa-shield-halved" /> Admin Panel
+              </Link>
+            </>
+          )}
         </nav>
 
         <div className="sb-bottom">
@@ -72,6 +81,7 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
       </aside>
 
       <div className="main-area">{children}</div>
+      <OnboardingModal userId={user.id} username={user.username} />
     </div>
   );
 }

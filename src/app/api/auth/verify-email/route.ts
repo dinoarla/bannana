@@ -48,4 +48,3 @@ export async function POST(request: Request) {
   return GET(request);
 }
 
-export { ensureTable as ensureVerificationTable };
