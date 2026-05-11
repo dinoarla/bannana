@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 type SocialLink = { label: string; url: string; icon: string; color?: string };
 type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[] };
@@ -82,6 +82,16 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const checkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => { setWebsiteVal(initialWebsite); }, [initialWebsite]);
+  useEffect(() => {
+    setSocialVals(() => {
+      const init: Record<string, string> = {};
+      for (const p of SOCIAL_PLATFORMS) init[p.key] = "";
+      for (const sl of initialSocialLinks) { if (sl.icon && sl.url) init[sl.icon] = sl.url; }
+      return init;
+    });
+  }, [initialSocialLinks]);
 
   function handleUsernameChange(val: string) {
     setUsernameVal(val);

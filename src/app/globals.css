@@ -672,6 +672,8 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 .pub-page-bg { min-height:100vh; display:flex; flex-direction:column; background:var(--n-50); }
 .prof-handle { font-size:.84rem; color:var(--n-500); margin-top:2px; margin-bottom:.875rem; }
 .prof-bio { font-size:.9rem; color:var(--n-600); line-height:1.65; max-width:360px; margin:0 auto; }
+.prof-website { display:inline-flex; align-items:center; gap:5px; font-size:.8rem; color:var(--b-600); text-decoration:none; margin-top:.5rem; opacity:.85; transition:opacity 150ms; }
+.prof-website:hover { opacity:1; text-decoration:underline; }
 .prof-tags { display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; margin-top:.875rem; }
 .ptag-pill { font-size:.72rem; font-weight:700; background:var(--b-100); color:var(--b-800); border-radius:9999px; padding:3px 10px; }
 .social-row { display:flex; gap:.625rem; justify-content:center; margin-top:1rem; }

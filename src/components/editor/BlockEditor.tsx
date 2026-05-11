@@ -328,7 +328,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
 
         {/* CANVAS */}
         <div className="canvas-wrap">
-          <div className="canvas">
+          <div className="canvas" style={pvMode === "mob" ? { maxWidth: 420, margin: "0 auto" } : undefined}>
             <div className="canvas-meta">
               <div className="canvas-meta-txt">
                 <i className="fa-solid fa-grip-vertical" /> {page.blocks.length} blok aktif
@@ -413,6 +413,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
                       Pengaturan Blok: {BLOCK_LABELS[selected.type]}
                     </div>
                     <form
+                      id="blok-form"
                       onSubmit={saveBlock}
                       style={{ display: "flex", flexDirection: "column", gap: ".75rem" }}
                     >
@@ -560,6 +561,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
               <div>
                 <div className="pr-sec-title">Profil Halaman</div>
                 <form
+                  id="hal-form"
                   onSubmit={savePage}
                   style={{ display: "flex", flexDirection: "column", gap: ".75rem" }}
                 >
@@ -780,9 +782,16 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
             </div>
           )}
 
-          <button className="save-bottom" onClick={() => showSave("Tersimpan ✓")} disabled={saving}>
-            <i className="fa-solid fa-check" /> Simpan Perubahan
-          </button>
+          {activeTab !== "tema" && (
+            <button
+              type="submit"
+              form={activeTab === "blok" ? "blok-form" : "hal-form"}
+              className="save-bottom"
+              disabled={saving}
+            >
+              <i className="fa-solid fa-check" /> {activeTab === "hal" ? "Simpan Halaman" : "Simpan Perubahan"}
+            </button>
+          )}
         </div>
       </div>
     </>

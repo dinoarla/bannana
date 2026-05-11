@@ -43,6 +43,11 @@ export default async function PublicProfilePage({ params }: Props) {
             <div className="prof-name">{name}</div>
             <div className="prof-handle">@{page.user.username} · bannana.id/{page.user.username}</div>
             {profile?.bio && <div className="prof-bio">{profile.bio}</div>}
+            {profile?.website && (
+              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="prof-website">
+                <i className="fa-solid fa-globe" /> {profile.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+              </a>
+            )}
             {profile?.socialLinks && profile.socialLinks.length > 0 && (
               <div className="social-row">
                 {profile.socialLinks.map((s) => {

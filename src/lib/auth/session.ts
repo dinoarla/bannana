@@ -63,7 +63,7 @@ export async function getSessionUser(): Promise<UserWithProfile | null> {
   const [rows] = await db.query(
     `SELECT s.expiresAt,
       u.*, p.id AS p_id, p.displayName, p.bio, p.avatarUrl, p.avatarIcon,
-      p.tags, p.socialLinks, p.createdAt AS p_createdAt, p.updatedAt AS p_updatedAt
+      p.website, p.tags, p.socialLinks, p.createdAt AS p_createdAt, p.updatedAt AS p_updatedAt
      FROM Session s
      JOIN User u ON u.id = s.userId
      LEFT JOIN Profile p ON p.userId = u.id

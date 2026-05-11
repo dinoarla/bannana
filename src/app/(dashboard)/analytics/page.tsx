@@ -43,7 +43,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: ".75rem", alignItems: "center" }}>
           <AnalyticsPageSelector pages={pages.map((p) => ({ id: p.id, title: p.title }))} activePageId={activePageId} />
-          <a href="#" className="export-btn"><i className="fa-solid fa-file-csv" /> Export CSV</a>
+          <a href={`/api/analytics/export?pageId=${activePageId}&range=${range}`} className="export-btn" download><i className="fa-solid fa-file-csv" /> Export CSV</a>
         </div>
       </div>
 
