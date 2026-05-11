@@ -3,10 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 
 type SocialLink = { label: string; url: string; icon: string; color?: string };
-type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[] };
+type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[]; initialTab?: string };
 
-export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website, socialLinks }: Props) {
-  const [section, setSection] = useState("profil");
+export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website, socialLinks, initialTab }: Props) {
+  const VALID_TABS = ["profil", "akun", "notif", "langganan", "integrasi", "bahaya"];
+  const [section, setSection] = useState(initialTab && VALID_TABS.includes(initialTab) ? initialTab : "profil");
 
   function csrf(): HeadersInit {
     return { "Content-Type": "application/json", "X-CSRF-Token": csrfToken };
@@ -541,14 +542,44 @@ function LanggananPanel({ csrfToken }: { csrfToken: string }) {
               <div><div style={{ fontFamily: "var(--fd)", fontSize: "1.4rem", fontWeight: 700, color: "var(--b-900)" }}>Gratis</div><div style={{ fontSize: ".84rem", color: "var(--n-500)", marginTop: 3 }}>Paket saat ini</div></div>
               <span style={{ background: "var(--n-100)", color: "var(--n-600)", borderRadius: 9999, padding: "4px 12px", fontSize: ".75rem", fontWeight: 700 }}>FREE</span>
             </div>
-            <div style={{ background: "linear-gradient(135deg,var(--b-50),#FFFBEB)", border: "1.5px solid var(--b-200)", borderRadius: 12, padding: "1.25rem", marginBottom: "1.25rem" }}>
-              <div style={{ fontFamily: "var(--fd)", fontWeight: 700, color: "var(--b-900)", marginBottom: ".75rem" }}>🚀 Upgrade ke Pro</div>
-              {[
-                "Unlimited halaman & blok",
-                "Analytics lengkap + Export CSV",
-                "Custom domain (segera)",
-                "Prioritas support",
-              ].map((f) => <div key={f} style={{ fontSize: ".84rem", color: "var(--b-800)", marginBottom: ".35rem" }}><i className="fa-solid fa-check" style={{ color: "var(--success-600)", marginRight: 6 }} />{f}</div>)}
+            <div style={{ background: "linear-gradient(135deg,var(--b-50),#FFFBEB)", border: "1.5px solid var(--b-200)", borderRadius: 14, padding: "1.25rem", marginBottom: "1.25rem" }}>
+              <div style={{ fontFamily: "var(--fd)", fontWeight: 700, color: "var(--b-900)", marginBottom: "1rem", fontSize: "1rem" }}>🚀 Upgrade ke Pro — perbandingan fitur</div>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: ".8rem" }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: "left", color: "var(--n-500)", fontWeight: 600, paddingBottom: ".5rem", width: "55%" }}>Fitur</th>
+                    <th style={{ textAlign: "center", color: "var(--n-500)", fontWeight: 600, paddingBottom: ".5rem" }}>Gratis</th>
+                    <th style={{ textAlign: "center", color: "var(--b-700)", fontWeight: 700, paddingBottom: ".5rem" }}>Pro ⭐</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { label: "Jumlah halaman", free: "1", pro: "Tak terbatas" },
+                    { label: "Blok per halaman", free: "10", pro: "Tak terbatas" },
+                    { label: "Tema preset", free: "3 tema", pro: "12+ tema" },
+                    { label: "Custom CSS", free: false, pro: true },
+                    { label: "Analytics dasar", free: true, pro: true },
+                    { label: "Retensi data analytics", free: "7 hari", pro: "90 hari" },
+                    { label: "Export CSV", free: false, pro: true },
+                    { label: "REST API access", free: false, pro: true },
+                    { label: "Priority support", free: false, pro: true },
+                  ].map((row) => (
+                    <tr key={row.label} style={{ borderTop: "1px solid var(--b-100)" }}>
+                      <td style={{ padding: ".4rem 0", color: "var(--n-700)" }}>{row.label}</td>
+                      <td style={{ textAlign: "center", padding: ".4rem 0" }}>
+                        {typeof row.free === "boolean"
+                          ? row.free ? <i className="fa-solid fa-check" style={{ color: "var(--success-600)" }} /> : <i className="fa-solid fa-xmark" style={{ color: "var(--n-300)" }} />
+                          : <span style={{ color: "var(--n-600)", fontWeight: 500 }}>{row.free}</span>}
+                      </td>
+                      <td style={{ textAlign: "center", padding: ".4rem 0", background: "rgba(251,191,36,.08)", borderRadius: 4 }}>
+                        {typeof row.pro === "boolean"
+                          ? row.pro ? <i className="fa-solid fa-check" style={{ color: "var(--b-600)" }} /> : <i className="fa-solid fa-xmark" style={{ color: "var(--n-300)" }} />
+                          : <span style={{ color: "var(--b-800)", fontWeight: 700 }}>{row.pro}</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div style={{ display: "flex", gap: ".75rem", marginBottom: "1rem" }}>
               {(["monthly", "yearly"] as const).map((c) => (

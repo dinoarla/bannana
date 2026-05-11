@@ -4,7 +4,10 @@ import { assertSessionUser } from "@/lib/auth/session";
 import { CSRF_COOKIE } from "@/lib/auth/session";
 import { SettingsForm } from "./SettingsForm";
 
-export default async function SettingsPage() {
+type SearchParams = Promise<{ tab?: string }>;
+
+export default async function SettingsPage({ searchParams }: { searchParams: SearchParams }) {
+  const sp = await searchParams;
   const user = await assertSessionUser();
   const jar = await cookies();
   const csrfToken = jar.get(CSRF_COOKIE)?.value ?? "";
@@ -26,6 +29,7 @@ export default async function SettingsPage() {
           avatarUrl={user.profile?.avatarUrl ?? ""}
           website={user.profile?.website ?? ""}
           socialLinks={user.profile?.socialLinks ?? []}
+          initialTab={sp.tab}
         />
       </div>
     </>

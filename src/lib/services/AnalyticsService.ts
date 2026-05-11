@@ -21,10 +21,12 @@ export class AnalyticsService {
   async report(pageId: string, range: "7d" | "30d" | "90d" = "30d") {
     const page = await this.pages.findById(pageId);
     if (!page) throw errors.notFound("Halaman tidak ditemukan.");
+    const TZ_OFFSET = 7; // WIB = UTC+7
     const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
+    // from = WIB midnight (days-1) days ago = 17:00 UTC (days-1) days ago
     const from = new Date();
-    from.setDate(from.getDate() - (days - 1));
-    from.setHours(0, 0, 0, 0);
+    from.setTime(from.getTime() - (days - 1) * 86400000);
+    from.setUTCHours(24 - TZ_OFFSET, 0, 0, 0);
     const events = await this.analytics.listPageEvents(pageId, from);
     const clicks = page.blocks.reduce((sum, block) => sum + block.clickCount, 0);
     const viewEvents = events.filter((e) => e.event === "view");
@@ -40,10 +42,16 @@ export class AnalyticsService {
         uniqueVisitors: page.uniqueVisitors,
       },
       trend: Array.from({ length: days }, (_, index) => {
-        const day = new Date(from);
-        day.setDate(from.getDate() + index);
-        const label = `${day.getDate()}/${day.getMonth() + 1}`;
-        const dayEvents = events.filter((e) => e.createdAt.toDateString() === day.toDateString());
+        // day boundary in WIB: from is already 00:00 WIB, advance by index days
+        const dayStartUtcMs = from.getTime() + index * 86400000;
+        const dayEndUtcMs = dayStartUtcMs + 86400000;
+        // label using WIB date
+        const wibDate = new Date(dayStartUtcMs + TZ_OFFSET * 3600000);
+        const label = `${wibDate.getUTCDate()}/${wibDate.getUTCMonth() + 1}`;
+        const dayEvents = events.filter((e) => {
+          const t = e.createdAt.getTime();
+          return t >= dayStartUtcMs && t < dayEndUtcMs;
+        });
         return {
           day: index + 1,
           label,
@@ -92,7 +100,10 @@ export class AnalyticsService {
       })(),
       heatmap: (() => {
         const hours = new Array(24).fill(0) as number[];
-        for (const e of viewEvents) hours[e.createdAt.getHours()]++;
+        for (const e of viewEvents) {
+          const localHour = (e.createdAt.getUTCHours() + TZ_OFFSET) % 24;
+          hours[localHour]++;
+        }
         return hours;
       })(),
     };

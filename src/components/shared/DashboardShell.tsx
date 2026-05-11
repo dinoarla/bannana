@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import type { UserWithProfile } from "@/types/db.types";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
@@ -8,6 +9,7 @@ import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 export function DashboardShell({ user, children }: { user: UserWithProfile; children: React.ReactNode }) {
   const pathname = usePathname();
   const displayName = user.profile?.displayName ?? user.username;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   async function logout() {
     const csrfToken = document.cookie
@@ -22,11 +24,15 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
   }
 
   const isActive = (href: string) => pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+  const closeNav = () => setSidebarOpen(false);
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <Link href="/" className="sb-logo">
+      {/* Mobile sidebar overlay */}
+      <div className={`sb-overlay${sidebarOpen ? " open" : ""}`} onClick={closeNav} />
+
+      <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
+        <Link href="/" className="sb-logo" onClick={closeNav}>
           <span className="bana">🍌</span> bannana
         </Link>
 
@@ -48,32 +54,32 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
 
         <nav className="sb-nav">
           <div className="sb-section">Menu Utama</div>
-          <Link href="/dashboard" className={`sb-item${isActive("/dashboard") ? " active" : ""}`}>
+          <Link href="/dashboard" className={`sb-item${isActive("/dashboard") ? " active" : ""}`} onClick={closeNav}>
             <i className="fa-solid fa-house" /> Dashboard
           </Link>
-          <Link href="/pages" className={`sb-item${isActive("/pages") ? " active" : ""}`}>
+          <Link href="/pages" className={`sb-item${isActive("/pages") ? " active" : ""}`} onClick={closeNav}>
             <i className="fa-solid fa-table-columns" /> Halaman Saya
           </Link>
-          <Link href="/analytics" className={`sb-item${isActive("/analytics") ? " active" : ""}`}>
+          <Link href="/analytics" className={`sb-item${isActive("/analytics") ? " active" : ""}`} onClick={closeNav}>
             <i className="fa-solid fa-chart-line" /> Analytics
           </Link>
 
           <div className="sb-section">Kustomisasi</div>
-          <Link href="/themes" className={`sb-item${isActive("/themes") ? " active" : ""}`}>
+          <Link href="/themes" className={`sb-item${isActive("/themes") ? " active" : ""}`} onClick={closeNav}>
             <i className="fa-solid fa-palette" /> Tema
           </Link>
 
           <div className="sb-section">Akun</div>
-          <Link href="/settings" className={`sb-item${isActive("/settings") ? " active" : ""}`}>
+          <Link href="/settings" className={`sb-item${isActive("/settings") ? " active" : ""}`} onClick={closeNav}>
             <i className="fa-solid fa-gear" /> Pengaturan
           </Link>
-          <Link href="/pricing" className="sb-item">
+          <Link href="/settings?tab=langganan" className="sb-item" onClick={closeNav}>
             <i className="fa-solid fa-crown" style={{ color: "var(--b-400)" }} /> Upgrade Pro
           </Link>
           {user.role === "ADMIN" && (
             <>
               <div className="sb-section">Admin</div>
-              <Link href="/admin" className={`sb-item${isActive("/admin") ? " active" : ""}`} style={{ color: "#7C3AED" }}>
+              <Link href="/admin" className={`sb-item${isActive("/admin") ? " active" : ""}`} style={{ color: "#7C3AED" }} onClick={closeNav}>
                 <i className="fa-solid fa-shield-halved" /> Admin Panel
               </Link>
             </>
@@ -87,7 +93,19 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
         </div>
       </aside>
 
-      <div className="main-area">{children}</div>
+      <div className="main-area">
+        {/* Mobile top bar — only visible on small screens */}
+        <div className="sb-mob-bar">
+          <Link href="/dashboard" className="sb-mob-logo" onClick={closeNav}>
+            <span className="bana">🍌</span> bannana
+          </Link>
+          <button className="mob-hamburger" aria-label="Buka menu" onClick={() => setSidebarOpen((v) => !v)}>
+            <i className={`fa-solid ${sidebarOpen ? "fa-xmark" : "fa-bars"}`} />
+          </button>
+        </div>
+        {children}
+      </div>
+
       <OnboardingModal userId={user.id} username={user.username} />
     </div>
   );

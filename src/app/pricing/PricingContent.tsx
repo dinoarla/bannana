@@ -62,7 +62,7 @@ export function PricingContent({ isLoggedIn }: { isLoggedIn: boolean }) {
       </div>
 
       <div className="pricing-sec">
-        <div className="pricing-grid">
+        <div className="pricing-grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", maxWidth: 760, margin: "0 auto" }}>
           {/* Gratis */}
           <div className="pc">
             <div className="pc-icon" style={{ background: "var(--b-100)", color: "var(--b-600)" }}>
@@ -81,8 +81,6 @@ export function PricingContent({ isLoggedIn }: { isLoggedIn: boolean }) {
               <li className="li-yes"><i className="fa-solid fa-check" /> Hingga 10 blok per halaman</li>
               <li className="li-yes"><i className="fa-solid fa-check" /> 3 tema preset</li>
               <li className="li-yes"><i className="fa-solid fa-check" /> Analytics dasar (7 hari)</li>
-              <li className="li-yes"><i className="fa-solid fa-check" /> Subdomain bannana.id/username</li>
-              <li className="li-no"><i className="fa-solid fa-xmark" /> Custom domain</li>
               <li className="li-no"><i className="fa-solid fa-xmark" /> Custom CSS</li>
               <li className="li-no"><i className="fa-solid fa-xmark" /> Analytics lengkap + CSV</li>
               <li className="li-no"><i className="fa-solid fa-xmark" /> REST API access</li>
@@ -114,36 +112,8 @@ export function PricingContent({ isLoggedIn }: { isLoggedIn: boolean }) {
               <li className="li-yes"><i className="fa-solid fa-check" /> <strong>12+ tema preset</strong></li>
               <li className="li-yes"><i className="fa-solid fa-check" /> <strong>Custom CSS hingga 5KB</strong></li>
               <li className="li-yes"><i className="fa-solid fa-check" /> Analytics lengkap (90 hari) + export CSV</li>
-              <li className="li-yes"><i className="fa-solid fa-check" /> <strong>Custom domain</strong></li>
               <li className="li-yes"><i className="fa-solid fa-check" /> REST API access</li>
-              <li className="li-yes"><i className="fa-solid fa-check" /> <strong>Hapus branding bannana</strong></li>
               <li className="li-yes"><i className="fa-solid fa-check" /> Priority support</li>
-            </ul>
-          </div>
-
-          {/* Self-Hosted */}
-          <div className="pc">
-            <div className="pc-icon" style={{ background: "#EDE9FE", color: "#7C3AED" }}>
-              <i className="fa-solid fa-server" />
-            </div>
-            <div className="pc-name">Self-Hosted</div>
-            <div className="pc-desc">Deploy di server sendiri, kontrol penuh. Cocok untuk developer &amp; tim teknis.</div>
-            <div className="pc-price">
-              <div className="pc-amount" style={{ color: "#7C3AED" }}>Gratis</div>
-              <div className="pc-period">open source · MIT License</div>
-            </div>
-            <a href="#" className="btn btn-lg btn-full" style={{ background: "#EDE9FE", color: "#7C3AED", border: "2px solid #DDD6FE", fontWeight: 700 }}>
-              <i className="fa-brands fa-github" /> Lihat di GitHub
-            </a>
-            <hr className="pc-divider" />
-            <ul className="pc-features">
-              <li style={{ color: "var(--n-700)" }}><i className="fa-solid fa-check" style={{ color: "#7C3AED" }} /> Semua fitur Pro, gratis</li>
-              <li style={{ color: "var(--n-700)" }}><i className="fa-solid fa-check" style={{ color: "#7C3AED" }} /> Kode sumber lengkap</li>
-              <li style={{ color: "var(--n-700)" }}><i className="fa-solid fa-check" style={{ color: "#7C3AED" }} /> Kontrol data sepenuhnya</li>
-              <li style={{ color: "var(--n-700)" }}><i className="fa-solid fa-check" style={{ color: "#7C3AED" }} /> Next.js 15 + Prisma + MySQL</li>
-              <li style={{ color: "var(--n-700)" }}><i className="fa-solid fa-check" style={{ color: "#7C3AED" }} /> Deploy PM2 + Nginx</li>
-              <li className="li-no"><i className="fa-solid fa-xmark" /> Setup manual (butuh teknis)</li>
-              <li className="li-no"><i className="fa-solid fa-xmark" /> Tanpa cloud support</li>
             </ul>
           </div>
         </div>
@@ -159,91 +129,62 @@ export function PricingContent({ isLoggedIn }: { isLoggedIn: boolean }) {
           <table className="cmp-table">
             <thead>
               <tr>
-                <th style={{ width: "40%" }}>Fitur</th>
+                <th style={{ width: "55%" }}>Fitur</th>
                 <th>Gratis</th>
                 <th className="th-pro">Pro</th>
-                <th>Self-Hosted</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="cmp-cat"><td colSpan={4}>Halaman &amp; Blok</td></tr>
+              <tr className="cmp-cat"><td colSpan={3}>Halaman &amp; Blok</td></tr>
               <tr>
                 <td>Jumlah halaman</td><td>1</td>
                 <td style={{ background: "var(--b-50)", fontWeight: 600 }}>Tidak terbatas</td>
-                <td>Tidak terbatas</td>
               </tr>
               <tr>
                 <td>Blok per halaman</td><td>10</td>
                 <td style={{ background: "var(--b-50)", fontWeight: 600 }}>Tidak terbatas</td>
-                <td>Tidak terbatas</td>
               </tr>
               <tr>
                 <td>Semua jenis blok</td>
                 <td><i className="fa-solid fa-check cmp-yes" /></td>
                 <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
               </tr>
-              <tr className="cmp-cat"><td colSpan={4}>Tampilan &amp; Tema</td></tr>
+              <tr className="cmp-cat"><td colSpan={3}>Tampilan &amp; Tema</td></tr>
               <tr>
                 <td>Tema preset</td><td>3 tema</td>
                 <td style={{ background: "var(--b-50)", fontWeight: 600 }}>12+ tema</td>
-                <td>12+ tema</td>
               </tr>
               <tr>
                 <td>Custom CSS</td>
                 <td><i className="fa-solid fa-xmark cmp-no" /></td>
                 <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
               </tr>
-              <tr className="cmp-cat"><td colSpan={4}>Domain &amp; Branding</td></tr>
-              <tr>
-                <td>Subdomain bannana.id</td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
-                <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
-              </tr>
-              <tr>
-                <td>Custom domain</td>
-                <td><i className="fa-solid fa-xmark cmp-no" /></td>
-                <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
-              </tr>
-              <tr>
-                <td>Hapus branding bannana</td>
-                <td><i className="fa-solid fa-xmark cmp-no" /></td>
-                <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
-              </tr>
-              <tr className="cmp-cat"><td colSpan={4}>Analytics</td></tr>
+              <tr className="cmp-cat"><td colSpan={3}>Analytics</td></tr>
               <tr>
                 <td>Analytics dasar</td>
                 <td><i className="fa-solid fa-check cmp-yes" /></td>
                 <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
               </tr>
               <tr>
                 <td>Retensi data</td><td>7 hari</td>
                 <td style={{ background: "var(--b-50)", fontWeight: 600 }}>90 hari</td>
-                <td>Tidak terbatas</td>
               </tr>
               <tr>
                 <td>Export CSV</td>
                 <td><i className="fa-solid fa-xmark cmp-no" /></td>
                 <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
               </tr>
-              <tr className="cmp-cat"><td colSpan={4}>Developer</td></tr>
+              <tr className="cmp-cat"><td colSpan={3}>Developer</td></tr>
               <tr>
                 <td>REST API access</td>
                 <td><i className="fa-solid fa-xmark cmp-no" /></td>
                 <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
               </tr>
+              <tr className="cmp-cat"><td colSpan={3}>Support</td></tr>
               <tr>
-                <td>Akses kode sumber</td>
+                <td>Priority support</td>
                 <td><i className="fa-solid fa-xmark cmp-no" /></td>
-                <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-xmark cmp-no" /></td>
-                <td><i className="fa-solid fa-check cmp-yes" /></td>
+                <td style={{ background: "var(--b-50)" }}><i className="fa-solid fa-check cmp-yes" /></td>
               </tr>
             </tbody>
           </table>

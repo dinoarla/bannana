@@ -1,6 +1,22 @@
+import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import Link from "next/link";
 import { Footer } from "@/components/shared/Footer";
+import { LandingNavMobile } from "@/components/shared/LandingNavMobile";
 import { getSessionUser } from "@/lib/auth/session";
+
+export const metadata: Metadata = {
+  title: "bannana.id — Satu Link, Semua Tempat 🍌",
+  description: "Platform link-in-bio yang simple, cepat, dan bisa dikostumasi. Cocok buat kreator, influencer, affiliator, dan freelancer. Gratis selamanya!",
+  keywords: ["link in bio", "bannana", "link page", "social media", "kreator", "influencer"],
+  openGraph: {
+    title: "bannana.id — Satu Link, Semua Tempat",
+    description: "Buat halaman link-in-bio kamu dalam hitungan menit. Gratis selamanya!",
+    type: "website",
+    locale: "id_ID",
+  },
+  twitter: { card: "summary_large_image", title: "bannana.id", description: "Satu link, semua tempat." },
+  alternates: { canonical: "/" },
+};
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +49,7 @@ export default async function LandingPage() {
               </Link>
             </>
           )}
+          <LandingNavMobile isLoggedIn={!!user} />
         </div>
       </nav>
 
