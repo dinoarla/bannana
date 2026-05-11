@@ -5,6 +5,7 @@ import { BlockFactory } from "@/components/blocks/BlockFactory";
 import { PublicPageService } from "@/lib/services/PublicPageService";
 import type { PublicBlock } from "@/types";
 import { ShareFab } from "./ShareFab";
+import { Tracker } from "./Tracker";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -97,6 +98,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
         {/* Share FAB */}
         <ShareFab name={name} />
+        <Tracker pageId={page.id} />
       </div>
     );
   } catch {

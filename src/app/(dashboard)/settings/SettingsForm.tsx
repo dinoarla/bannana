@@ -40,10 +40,10 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio, ava
       <div className="set-panel">
         {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} website={website} socialLinks={socialLinks} />}
         {section === "akun" && <AkunPanel csrf={csrf()} email={email} />}
-        {section === "notif" && <NotifPanel />}
-        {section === "langganan" && <LanggananPanel />}
-        {section === "integrasi" && <IntegrasiPanel />}
-        {section === "bahaya" && <BahayaPanel />}
+        {section === "notif" && <NotifPanel csrfToken={csrfToken} />}
+        {section === "langganan" && <LanggananPanel csrfToken={csrfToken} />}
+        {section === "integrasi" && <IntegrasiPanel csrfToken={csrfToken} />}
+        {section === "bahaya" && <BahayaPanel csrfToken={csrfToken} username={username} />}
       </div>
     </div>
   );
@@ -334,6 +334,12 @@ function AkunPanel({ csrf, email }: { csrf: HeadersInit; email: string }) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  type SessionRow = { id: string; createdAt: string; expiresAt: string; isCurrent: boolean };
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
+
+  useEffect(() => {
+    fetch("/api/settings/sessions").then((r) => r.json()).then((j) => { if (j.success) setSessions(j.data); }).catch(() => {});
+  }, []);
 
   async function changePassword(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -348,6 +354,12 @@ function AkunPanel({ csrf, email }: { csrf: HeadersInit; email: string }) {
       if (!json.success) { setErr(json.error?.message ?? "Gagal."); return; }
       setMsg("Password berhasil diganti ✓"); (e.target as HTMLFormElement).reset();
     } finally { setSaving(false); setTimeout(() => { setMsg(""); setErr(""); }, 3500); }
+  }
+
+  async function revokeSession(id: string) {
+    if (!confirm("Akhiri sesi ini?")) return;
+    await fetch("/api/settings/sessions", { method: "DELETE", headers: csrf as RequestInit["headers"], body: JSON.stringify({ sessionId: id }) });
+    setSessions((prev) => prev.filter((s) => s.id !== id));
   }
 
   return (
@@ -383,11 +395,21 @@ function AkunPanel({ csrf, email }: { csrf: HeadersInit; email: string }) {
         <div className="set-card-head"><div className="set-card-title"><i className="fa-solid fa-mobile-screen" /> Sesi Aktif</div></div>
         <div className="set-card-body">
           <div style={{ display: "flex", flexDirection: "column", gap: ".875rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: ".875rem", background: "var(--b-50)", border: "1.5px solid var(--b-200)", borderRadius: 12 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: "var(--b-100)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-700)" }}><i className="fa-solid fa-desktop" /></div>
-              <div style={{ flex: 1 }}><div style={{ fontSize: ".84rem", fontWeight: 600, color: "var(--n-800)" }}>Chrome · Browser saat ini</div><div style={{ fontSize: ".72rem", color: "var(--n-500)" }}>Aktif sekarang</div></div>
-              <span style={{ fontSize: ".72rem", fontWeight: 700, color: "var(--success-600)", display: "flex", alignItems: "center", gap: 4 }}><i className="fa-solid fa-circle" style={{ fontSize: ".4rem" }} /> Ini perangkat kamu</span>
-            </div>
+            {sessions.length === 0 ? (
+              <div style={{ fontSize: ".84rem", color: "var(--n-400)" }}>Memuat sesi...</div>
+            ) : sessions.map((s) => (
+              <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: ".875rem", background: s.isCurrent ? "var(--b-50)" : "var(--n-50)", border: `1.5px solid ${s.isCurrent ? "var(--b-200)" : "var(--n-200)"}`, borderRadius: 12 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: s.isCurrent ? "var(--b-100)" : "var(--n-100)", display: "flex", alignItems: "center", justifyContent: "center", color: s.isCurrent ? "var(--b-700)" : "var(--n-500)" }}><i className="fa-solid fa-desktop" /></div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: ".84rem", fontWeight: 600, color: "var(--n-800)" }}>{s.isCurrent ? "Sesi saat ini" : "Sesi aktif"}</div>
+                  <div style={{ fontSize: ".72rem", color: "var(--n-500)" }}>Mulai: {new Date(s.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</div>
+                </div>
+                {s.isCurrent
+                  ? <span style={{ fontSize: ".72rem", fontWeight: 700, color: "var(--success-600)", display: "flex", alignItems: "center", gap: 4 }}><i className="fa-solid fa-circle" style={{ fontSize: ".4rem" }} /> Ini perangkat kamu</span>
+                  : <button className="btn btn-ghost btn-sm" style={{ color: "var(--danger-600)" }} onClick={() => revokeSession(s.id)}><i className="fa-solid fa-xmark" /> Akhiri</button>
+                }
+              </div>
+            ))}
           </div>
         </div>
         <div className="set-footer"><span /></div>
@@ -396,62 +418,190 @@ function AkunPanel({ csrf, email }: { csrf: HeadersInit; email: string }) {
   );
 }
 
-function Toggle({ defaultOn = true }: { defaultOn?: boolean }) {
-  const [on, setOn] = useState(defaultOn);
-  return <div className={`toggle${on ? "" : " off"}`} onClick={() => setOn(!on)} />;
-}
+function NotifPanel({ csrfToken }: { csrfToken: string }) {
+  const [prefs, setPrefs] = useState({ emailWeekly: true, alertHighClick: true, productUpdates: false, tipsTutorial: true });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState("");
 
-function NotifPanel() {
+  useEffect(() => {
+    fetch("/api/settings/notifications").then((r) => r.json()).then((j) => { if (j.success) setPrefs(j.data); }).finally(() => setLoading(false));
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/settings/notifications", { method: "PUT", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken }, body: JSON.stringify(prefs) });
+      const json = await res.json();
+      if (json.success) { setMsg("Preferensi disimpan ✓"); setTimeout(() => setMsg(""), 2500); }
+    } finally { setSaving(false); }
+  }
+
+  const items = [
+    { key: "emailWeekly" as const, title: "Notifikasi Email", desc: "Terima ringkasan mingguan performa halamanmu via email." },
+    { key: "alertHighClick" as const, title: "Alert Klik Tinggi", desc: "Dapat notifikasi kalau ada lonjakan kunjungan lebih dari 2x." },
+    { key: "productUpdates" as const, title: "Update Produk", desc: "Dapat info fitur baru, update sistem, dan promo bannana.id." },
+    { key: "tipsTutorial" as const, title: "Tips & Tutorial", desc: "Email berisi tips untuk meningkatkan performa link page kamu." },
+  ];
+
   return (
     <div className="set-card">
       <div className="set-card-head"><div className="set-card-title"><i className="fa-solid fa-bell" /> Preferensi Notifikasi</div></div>
       <div className="set-card-body">
-        {[
-          { title: "Notifikasi Email", desc: "Terima ringkasan mingguan performa halamanmu via email.", defaultOn: true },
-          { title: "Alert Klik Tinggi", desc: "Dapat notifikasi kalau ada lonjakan kunjungan lebih dari 2x.", defaultOn: true },
-          { title: "Update Produk", desc: "Dapat info fitur baru, update sistem, dan promo bannana.id.", defaultOn: false },
-          { title: "Tips & Tutorial", desc: "Email berisi tips untuk meningkatkan performa link page kamu.", defaultOn: true },
-        ].map((item) => (
-          <div key={item.title} className="toggle-setting">
+        {loading ? <div style={{ fontSize: ".84rem", color: "var(--n-400)" }}>Memuat preferensi...</div> : items.map((item) => (
+          <div key={item.key} className="toggle-setting">
             <div className="ts-left"><div className="ts-title">{item.title}</div><div className="ts-desc">{item.desc}</div></div>
-            <Toggle defaultOn={item.defaultOn} />
+            <div className={`toggle${prefs[item.key] ? "" : " off"}`} onClick={() => setPrefs((p) => ({ ...p, [item.key]: !p[item.key] }))} />
           </div>
         ))}
+        {msg && <div style={{ background: "#D1FAE5", borderRadius: 8, padding: ".5rem .875rem", fontSize: ".84rem", color: "#065F46", marginTop: ".875rem" }}><i className="fa-solid fa-check" /> {msg}</div>}
       </div>
-      <div className="set-footer"><span /><button className="btn btn-primary btn-sm"><i className="fa-solid fa-check" /> Simpan Preferensi</button></div>
+      <div className="set-footer"><span /><button className="btn btn-primary btn-sm" onClick={save} disabled={saving || loading}><i className="fa-solid fa-check" /> {saving ? "Menyimpan…" : "Simpan Preferensi"}</button></div>
     </div>
   );
 }
 
-function LanggananPanel() {
+function LanggananPanel({ csrfToken }: { csrfToken: string }) {
+  type SubStatus = { plan: string; status: string; billingCycle: string | null; midtransPaymentType: string | null; currentPeriodStart: string | null; currentPeriodEnd: string | null; cancelledAt: string | null };
+  const [sub, setSub] = useState<SubStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [cycle, setCycle] = useState<"monthly" | "yearly">("yearly");
+  const [paying, setPaying] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    fetch("/api/subscription/status").then((r) => r.json()).then((j) => { if (j.success) setSub(j.data); }).finally(() => setLoading(false));
+  }, []);
+
+  async function checkout() {
+    setPaying(true);
+    try {
+      const res = await fetch("/api/subscription/checkout", { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken }, body: JSON.stringify({ billingCycle: cycle }) });
+      const json = await res.json();
+      if (!json.success) { alert(json.error?.message ?? "Gagal memulai pembayaran."); return; }
+      const { snapToken, clientKey, isProduction } = json.data as { snapToken: string; clientKey: string; isProduction: boolean };
+      const snapSrc = isProduction ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js";
+      if (!document.querySelector(`script[src="${snapSrc}"]`)) {
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement("script"); s.src = snapSrc; s.setAttribute("data-client-key", clientKey);
+          s.onload = () => resolve(); s.onerror = () => reject();
+          document.head.appendChild(s);
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).snap.pay(snapToken, {
+        onSuccess: () => { setMsg("Pembayaran berhasil! Halaman akan diperbarui…"); setTimeout(() => window.location.reload(), 2000); },
+        onPending: () => { setMsg("Pembayaran sedang diproses. Cek email kamu untuk konfirmasi."); },
+        onError: (result: unknown) => { console.error(result); alert("Pembayaran gagal. Silakan coba lagi."); },
+        onClose: () => {},
+      });
+    } catch { alert("Gagal terhubung ke server pembayaran."); }
+    finally { setPaying(false); }
+  }
+
+  async function cancel() {
+    if (!confirm("Yakin ingin membatalkan langganan? Akses Pro akan berakhir di akhir periode.")) return;
+    await fetch("/api/subscription/cancel", { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken } });
+    window.location.reload();
+  }
+
+  if (loading) return <div className="set-card"><div className="set-card-body" style={{ color: "var(--n-400)", fontSize: ".84rem" }}>Memuat info langganan...</div></div>;
+
+  const isPro = sub?.plan === "pro" && sub?.status === "active";
+  const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "-";
+
   return (
     <div className="set-card">
       <div className="set-card-head"><div className="set-card-title"><i className="fa-solid fa-crown" /> Paket Langganan</div></div>
       <div className="set-card-body">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
-          <div><div style={{ fontFamily: "var(--fd)", fontSize: "1.4rem", fontWeight: 700, color: "var(--b-900)" }}>Pro Plan</div><div style={{ fontSize: ".84rem", color: "var(--n-500)", marginTop: 3 }}>Rp 37.000 / bulan (dibayar tahunan)</div></div>
-          <span className="plan-badge"><i className="fa-solid fa-star" /> AKTIF</span>
-        </div>
-        <div style={{ background: "var(--b-50)", border: "1.5px solid var(--b-200)", borderRadius: 12, padding: "1rem", marginBottom: "1.5rem" }}>
-          <div style={{ fontSize: ".82rem", fontWeight: 700, color: "var(--b-800)", marginBottom: ".625rem" }}><i className="fa-solid fa-circle-info" style={{ marginRight: 5 }} /> Detail Langganan</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem", fontSize: ".8rem", color: "var(--n-700)" }}>
-            <div><span style={{ color: "var(--n-400)" }}>Periode saat ini</span><br /><strong>1 Jan – 31 Des 2025</strong></div>
-            <div><span style={{ color: "var(--n-400)" }}>Renewal berikutnya</span><br /><strong>1 Jan 2026</strong></div>
-            <div><span style={{ color: "var(--n-400)" }}>Metode pembayaran</span><br /><strong>GoPay ****1234</strong></div>
-            <div><span style={{ color: "var(--n-400)" }}>Total tagihan per tahun</span><br /><strong>Rp 444.000</strong></div>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: ".75rem" }}>
-          <button className="btn btn-secondary btn-sm"><i className="fa-solid fa-credit-card" /> Kelola Pembayaran</button>
-          <button className="btn btn-ghost btn-sm"><i className="fa-solid fa-file-invoice" /> Riwayat Invoice</button>
-          <button className="btn btn-danger btn-sm" style={{ marginLeft: "auto" }}><i className="fa-solid fa-xmark" /> Cancel Langganan</button>
-        </div>
+        {isPro ? (
+          <>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+              <div><div style={{ fontFamily: "var(--fd)", fontSize: "1.4rem", fontWeight: 700, color: "var(--b-900)" }}>Pro Plan</div><div style={{ fontSize: ".84rem", color: "var(--n-500)", marginTop: 3 }}>
+                {sub?.billingCycle === "yearly" ? "Rp 150.000 / tahun" : "Rp 15.000 / bulan"}
+              </div></div>
+              <span className="plan-badge"><i className="fa-solid fa-star" /> AKTIF</span>
+            </div>
+            <div style={{ background: "var(--b-50)", border: "1.5px solid var(--b-200)", borderRadius: 12, padding: "1rem", marginBottom: "1.5rem" }}>
+              <div style={{ fontSize: ".82rem", fontWeight: 700, color: "var(--b-800)", marginBottom: ".625rem" }}><i className="fa-solid fa-circle-info" style={{ marginRight: 5 }} /> Detail Langganan</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem", fontSize: ".8rem", color: "var(--n-700)" }}>
+                <div><span style={{ color: "var(--n-400)" }}>Periode mulai</span><br /><strong>{fmt(sub?.currentPeriodStart ?? null)}</strong></div>
+                <div><span style={{ color: "var(--n-400)" }}>Berlaku hingga</span><br /><strong>{fmt(sub?.currentPeriodEnd ?? null)}</strong></div>
+                <div><span style={{ color: "var(--n-400)" }}>Siklus tagihan</span><br /><strong>{sub?.billingCycle === "yearly" ? "Tahunan" : "Bulanan"}</strong></div>
+                <div><span style={{ color: "var(--n-400)" }}>Metode bayar</span><br /><strong>{sub?.midtransPaymentType ?? "-"}</strong></div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: ".75rem" }}>
+              <button className="btn btn-danger btn-sm" style={{ marginLeft: "auto" }} onClick={cancel}><i className="fa-solid fa-xmark" /> Cancel Langganan</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+              <div><div style={{ fontFamily: "var(--fd)", fontSize: "1.4rem", fontWeight: 700, color: "var(--b-900)" }}>Gratis</div><div style={{ fontSize: ".84rem", color: "var(--n-500)", marginTop: 3 }}>Paket saat ini</div></div>
+              <span style={{ background: "var(--n-100)", color: "var(--n-600)", borderRadius: 9999, padding: "4px 12px", fontSize: ".75rem", fontWeight: 700 }}>FREE</span>
+            </div>
+            <div style={{ background: "linear-gradient(135deg,var(--b-50),#FFFBEB)", border: "1.5px solid var(--b-200)", borderRadius: 12, padding: "1.25rem", marginBottom: "1.25rem" }}>
+              <div style={{ fontFamily: "var(--fd)", fontWeight: 700, color: "var(--b-900)", marginBottom: ".75rem" }}>🚀 Upgrade ke Pro</div>
+              {[
+                "Unlimited halaman & blok",
+                "Analytics lengkap + Export CSV",
+                "Custom domain (segera)",
+                "Prioritas support",
+              ].map((f) => <div key={f} style={{ fontSize: ".84rem", color: "var(--b-800)", marginBottom: ".35rem" }}><i className="fa-solid fa-check" style={{ color: "var(--success-600)", marginRight: 6 }} />{f}</div>)}
+            </div>
+            <div style={{ display: "flex", gap: ".75rem", marginBottom: "1rem" }}>
+              {(["monthly", "yearly"] as const).map((c) => (
+                <button key={c} onClick={() => setCycle(c)} style={{ flex: 1, height: 44, borderRadius: 10, border: `2px solid ${cycle === c ? "var(--b-500)" : "var(--n-200)"}`, background: cycle === c ? "var(--b-500)" : "var(--n-0)", color: cycle === c ? "var(--b-950)" : "var(--n-700)", fontWeight: 700, fontSize: ".84rem", cursor: "pointer" }}>
+                  {c === "monthly" ? "Bulanan · Rp 15.000" : "Tahunan · Rp 150.000"}
+                  {c === "yearly" && <span style={{ marginLeft: 6, fontSize: ".68rem", background: "#D1FAE5", color: "#065F46", borderRadius: 4, padding: "1px 5px" }}>HEMAT 17%</span>}
+                </button>
+              ))}
+            </div>
+            {msg && <div style={{ background: "#D1FAE5", borderRadius: 8, padding: ".75rem", fontSize: ".84rem", color: "#065F46", marginBottom: ".75rem" }}>{msg}</div>}
+            <button className="btn btn-primary btn-sm btn-full" onClick={checkout} disabled={paying} style={{ width: "100%", height: 44, borderRadius: 10 }}>
+              {paying ? <><i className="fa-solid fa-spinner fa-spin" /> Memproses…</> : <><i className="fa-solid fa-crown" /> Bayar Sekarang</>}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-function IntegrasiPanel() {
+function IntegrasiPanel({ csrfToken }: { csrfToken: string }) {
+  type ApiKeyRow = { id: string; name: string; scopes: string[]; lastUsedAt: string | null; createdAt: string; revokedAt: string | null };
+  const [keys, setKeys] = useState<ApiKeyRow[]>([]);
+  const [newKeyName, setNewKeyName] = useState("");
+  const [newKeyRaw, setNewKeyRaw] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/settings/apikeys").then((r) => r.json()).then((j) => { if (j.success) setKeys(j.data); }).catch(() => {});
+  }, []);
+
+  async function createKey() {
+    if (!newKeyName.trim()) return;
+    setCreating(true);
+    try {
+      const res = await fetch("/api/settings/apikeys", { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken }, body: JSON.stringify({ name: newKeyName.trim() }) });
+      const json = await res.json();
+      if (!json.success) { alert(json.error?.message ?? "Gagal."); return; }
+      const { id, name, rawKey, createdAt } = json.data as { id: string; name: string; rawKey: string; createdAt: string };
+      setKeys((prev) => [{ id, name, scopes: ["analytics:read", "pages:read"], lastUsedAt: null, createdAt, revokedAt: null }, ...prev]);
+      setNewKeyRaw(rawKey);
+      setNewKeyName("");
+      setShowCreate(false);
+    } finally { setCreating(false); }
+  }
+
+  async function revokeKey(id: string) {
+    if (!confirm("Hapus API key ini?")) return;
+    await fetch(`/api/settings/apikeys/${id}`, { method: "DELETE", headers: { "X-CSRF-Token": csrfToken } });
+    setKeys((prev) => prev.filter((k) => k.id !== id));
+  }
+
   return (
     <>
       <div className="set-card">
@@ -459,28 +609,44 @@ function IntegrasiPanel() {
         <div className="set-card-body">
           <div className="connected-row">
             <div className="conn-ico"><i className="fa-brands fa-google" style={{ color: "#EA4335" }} /></div>
-            <div><div className="conn-title">Google</div><div className="conn-sub">Belum terhubung</div></div>
-            <button className="btn btn-secondary btn-sm" style={{ marginLeft: "auto" }}><i className="fa-solid fa-plus" /> Hubungkan</button>
-          </div>
-          <div className="connected-row">
-            <div className="conn-ico"><i className="fa-brands fa-github" style={{ color: "var(--n-800)" }} /></div>
-            <div><div className="conn-title">GitHub</div><div className="conn-sub">Belum terhubung</div></div>
-            <button className="btn btn-secondary btn-sm" style={{ marginLeft: "auto" }}><i className="fa-solid fa-plus" /> Hubungkan</button>
+            <div><div className="conn-title">Google</div><div className="conn-sub">Login dengan akun Google</div></div>
+            <a href="/api/auth/google" className="btn btn-secondary btn-sm" style={{ marginLeft: "auto" }}><i className="fa-brands fa-google" /> Hubungkan</a>
           </div>
         </div>
       </div>
       <div className="set-card">
         <div className="set-card-head">
           <div className="set-card-title"><i className="fa-solid fa-key" /> API Keys</div>
-          <button className="btn btn-primary btn-sm"><i className="fa-solid fa-plus" /> Buat API Key</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(!showCreate)}><i className="fa-solid fa-plus" /> Buat API Key</button>
         </div>
         <div className="set-card-body">
           <div style={{ fontSize: ".84rem", color: "var(--n-600)", marginBottom: "1rem", lineHeight: 1.65 }}>Gunakan API Key untuk mengakses bannana.id API secara programatik. Jaga kerahasiaan API key kamu!</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--n-50)", border: "1.5px solid var(--n-200)", borderRadius: 12, padding: ".875rem" }}>
-            <div style={{ flex: 1 }}><div style={{ fontSize: ".84rem", fontWeight: 600, color: "var(--n-800)" }}>My API Key — Read/Write</div><div style={{ fontFamily: "var(--fm)", fontSize: ".75rem", color: "var(--n-500)", marginTop: 2 }}>bna_••••••••••••••••••••Xk3A</div></div>
-            <button className="btn btn-ghost btn-sm"><i className="fa-solid fa-eye" /> Tampilkan</button>
-            <button className="btn btn-danger btn-sm"><i className="fa-solid fa-trash" /></button>
-          </div>
+          {showCreate && (
+            <div style={{ display: "flex", gap: ".5rem", marginBottom: "1rem" }}>
+              <input className="form-inp" type="text" placeholder="Nama API key..." value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} style={{ marginBottom: 0 }} />
+              <button className="btn btn-primary btn-sm" onClick={createKey} disabled={creating}>{creating ? "Membuat…" : "Buat"}</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowCreate(false)}>Batal</button>
+            </div>
+          )}
+          {newKeyRaw && (
+            <div style={{ background: "#D1FAE5", border: "1.5px solid #6EE7B7", borderRadius: 10, padding: ".875rem", marginBottom: "1rem", fontSize: ".82rem" }}>
+              <div style={{ fontWeight: 700, color: "#065F46", marginBottom: .4 + "rem" }}><i className="fa-solid fa-triangle-exclamation" /> Simpan key ini sekarang — tidak akan ditampilkan lagi!</div>
+              <div style={{ fontFamily: "var(--fm)", wordBreak: "break-all", color: "#065F46" }}>{newKeyRaw}</div>
+              <button className="btn btn-ghost btn-sm" style={{ marginTop: ".5rem" }} onClick={() => { navigator.clipboard.writeText(newKeyRaw); }}><i className="fa-solid fa-copy" /> Salin</button>
+            </div>
+          )}
+          {keys.filter((k) => !k.revokedAt).length === 0 && !newKeyRaw && (
+            <div style={{ fontSize: ".84rem", color: "var(--n-400)" }}>Belum ada API key aktif.</div>
+          )}
+          {keys.filter((k) => !k.revokedAt).map((k) => (
+            <div key={k.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--n-50)", border: "1.5px solid var(--n-200)", borderRadius: 12, padding: ".875rem", marginBottom: ".5rem" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: ".84rem", fontWeight: 600, color: "var(--n-800)" }}>{k.name}</div>
+                <div style={{ fontFamily: "var(--fm)", fontSize: ".75rem", color: "var(--n-500)", marginTop: 2 }}>{(k.scopes ?? []).join(", ")} · Dibuat {new Date(k.createdAt).toLocaleDateString("id-ID")}</div>
+              </div>
+              <button className="btn btn-danger btn-sm" onClick={() => revokeKey(k.id)}><i className="fa-solid fa-trash" /></button>
+            </div>
+          ))}
         </div>
       </div>
     </>
@@ -507,23 +673,59 @@ function resizeToDataUrl(file: File, maxW: number, maxH: number): Promise<string
   });
 }
 
-function BahayaPanel() {
+function BahayaPanel({ csrfToken, username }: { csrfToken: string; username: string }) {
+  const [deactivating, setDeactivating] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  async function deactivate() {
+    if (!confirm("Nonaktifkan akun? Semua halamanmu akan disembunyikan dari publik.")) return;
+    setDeactivating(true);
+    try {
+      await fetch("/api/settings/deactivate", { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken } });
+      await fetch("/api/auth/logout", { method: "POST", headers: { "X-CSRF-Token": csrfToken } });
+      window.location.href = "/login?notice=deactivated";
+    } finally { setDeactivating(false); }
+  }
+
+  async function deleteAccount() {
+    if (deleteInput !== username) { alert("Username tidak cocok."); return; }
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/settings/delete-account", { method: "DELETE", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken }, body: JSON.stringify({ confirmation: username }) });
+      const json = await res.json();
+      if (!json.success) { alert(json.error?.message ?? "Gagal menghapus akun."); return; }
+      window.location.href = "/";
+    } finally { setDeleting(false); }
+  }
+
   return (
-    <div className={`set-card danger-zone`}>
+    <div className="set-card danger-zone">
       <div className="set-card-head"><div className="set-card-title"><i className="fa-solid fa-triangle-exclamation" /> Danger Zone</div></div>
       <div className="set-card-body">
         <div className="danger-row">
           <div><div className="danger-title">Export Semua Data</div><div className="danger-desc">Download semua data akun, halaman, dan analytics dalam format JSON.</div></div>
-          <button className="btn btn-ghost btn-sm"><i className="fa-solid fa-download" /> Export Data</button>
+          <a href="/api/settings/export-data" download className="btn btn-ghost btn-sm"><i className="fa-solid fa-download" /> Export Data</a>
         </div>
         <div className="danger-row">
           <div><div className="danger-title">Nonaktifkan Akun Sementara</div><div className="danger-desc">Semua halaman publikmu akan disembunyikan. Kamu bisa aktifkan lagi kapanpun.</div></div>
-          <button className="btn btn-ghost btn-sm"><i className="fa-solid fa-eye-slash" /> Nonaktifkan</button>
+          <button className="btn btn-ghost btn-sm" onClick={deactivate} disabled={deactivating}><i className="fa-solid fa-eye-slash" /> {deactivating ? "Memproses…" : "Nonaktifkan"}</button>
         </div>
         <div className="danger-row">
           <div><div className="danger-title">Hapus Akun Permanen</div><div className="danger-desc">Akun dan semua data akan dihapus selamanya. Tindakan ini tidak bisa dibatalkan!</div></div>
-          <button className="btn btn-danger btn-sm" onClick={() => alert("Fitur hapus akun akan segera hadir.")}><i className="fa-solid fa-trash" /> Hapus Akun</button>
+          <button className="btn btn-danger btn-sm" onClick={() => setShowDeleteModal(true)}><i className="fa-solid fa-trash" /> Hapus Akun</button>
         </div>
+        {showDeleteModal && (
+          <div style={{ marginTop: "1rem", background: "var(--danger-100)", border: "1.5px solid #FECDD3", borderRadius: 12, padding: "1rem" }}>
+            <div style={{ fontSize: ".84rem", color: "var(--danger-700)", marginBottom: ".75rem", fontWeight: 600 }}>Ketik username <strong>{username}</strong> untuk konfirmasi:</div>
+            <input className="form-inp" type="text" value={deleteInput} onChange={(e) => setDeleteInput(e.target.value)} placeholder={username} style={{ marginBottom: ".75rem" }} />
+            <div style={{ display: "flex", gap: ".5rem" }}>
+              <button className="btn btn-danger btn-sm" onClick={deleteAccount} disabled={deleting || deleteInput !== username}>{deleting ? "Menghapus…" : "Hapus Permanen"}</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => { setShowDeleteModal(false); setDeleteInput(""); }}>Batal</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -99,7 +99,7 @@ export class PageRepository {
 
   async findPublicByUsername(username: string): Promise<PageWithUserAndBlocks | null> {
     const [userRows] = await db.query(
-      `SELECT u.*, p.id AS p_id, p.displayName, p.bio, p.avatarUrl, p.avatarIcon, p.tags, p.socialLinks, p.createdAt AS p_createdAt, p.updatedAt AS p_updatedAt
+      `SELECT u.*, p.id AS p_id, p.displayName, p.bio, p.avatarUrl, p.avatarIcon, p.website, p.tags, p.socialLinks, p.createdAt AS p_createdAt, p.updatedAt AS p_updatedAt
        FROM User u LEFT JOIN Profile p ON p.userId = u.id WHERE u.username = ? LIMIT 1`,
       [username]
     );
