@@ -8,8 +8,9 @@ import { z } from "zod";
 
 const profileUpdateSchema = z.object({
   displayName: z.string().min(1).max(64).optional(),
-  bio: z.string().max(300).optional(),
+  bio: z.string().max(160).optional(),
   username: z.string().min(3).max(32).regex(/^[a-zA-Z0-9_-]+$/, "Username hanya boleh huruf, angka, underscore, strip.").optional(),
+  website: z.string().max(500).optional(),
 });
 
 export async function PUT(request: Request) {
@@ -28,6 +29,7 @@ export async function PUT(request: Request) {
       username: input.username,
       displayName: input.displayName,
       bio: input.bio,
+      website: input.website,
     });
 
     if (!updated) throw errors.notFound("User tidak ditemukan.");

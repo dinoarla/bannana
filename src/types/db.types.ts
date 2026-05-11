@@ -20,6 +20,7 @@ export type Profile = {
   bio: string | null;
   avatarUrl: string | null;
   avatarIcon: string | null;
+  website: string | null;
   tags: string[];
   socialLinks: Array<{ label: string; url: string; icon: string; color?: string }>;
   createdAt: Date;

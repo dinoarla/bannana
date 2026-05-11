@@ -29,6 +29,7 @@ CREATE TABLE `Profile` (
   `avatarUrl`   TEXT             NULL,
   `avatarIcon`  VARCHAR(191)     NULL,
   `tags`        JSON         NOT NULL,
+  `website`     VARCHAR(500)     NULL,
   `socialLinks` JSON         NOT NULL,
   `createdAt`   DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updatedAt`   DATETIME(3)  NOT NULL,

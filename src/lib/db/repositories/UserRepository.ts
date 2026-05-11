@@ -9,6 +9,7 @@ function parseProfile(row: Record<string, unknown>): Profile {
     bio: row.bio as string | null,
     avatarUrl: row.avatarUrl as string | null,
     avatarIcon: row.avatarIcon as string | null,
+    website: row.website as string | null,
     tags: typeof row.tags === "string" ? JSON.parse(row.tags) : (row.tags ?? []),
     socialLinks: typeof row.socialLinks === "string" ? JSON.parse(row.socialLinks) : (row.socialLinks ?? []),
     createdAt: row.p_createdAt as Date,
@@ -47,7 +48,7 @@ export class UserRepository {
     const [rows] = await db.query(
       `SELECT u.*,
         p.id AS p_id, p.displayName, p.bio, p.avatarUrl, p.avatarIcon,
-        p.tags, p.socialLinks,
+        p.website, p.tags, p.socialLinks,
         p.createdAt AS p_createdAt, p.updatedAt AS p_updatedAt
        FROM User u
        LEFT JOIN Profile p ON p.userId = u.id
@@ -97,7 +98,7 @@ export class UserRepository {
     return {
       id, email: input.email, username: input.username, passwordHash: input.passwordHash,
       emailVerified: null, role: "USER", deletedAt: null, createdAt: now, updatedAt: now,
-      profile: { id: profileId, userId: id, displayName, bio: "Satu link, semua tempat.", avatarUrl: null, avatarIcon: "User", tags: ["Creator"], socialLinks: [], createdAt: now, updatedAt: now },
+      profile: { id: profileId, userId: id, displayName, bio: "Satu link, semua tempat.", avatarUrl: null, avatarIcon: "User", website: null, tags: ["Creator"], socialLinks: [], createdAt: now, updatedAt: now },
     };
   }
 
@@ -111,16 +112,17 @@ export class UserRepository {
     await db.query("UPDATE Profile SET avatarUrl = ?, updatedAt = ? WHERE userId = ?", [avatarUrl, now, userId]);
   }
 
-  async updateUsernameAndProfile(id: string, data: { username?: string; displayName?: string; bio?: string }): Promise<UserWithProfile | null> {
+  async updateUsernameAndProfile(id: string, data: { username?: string; displayName?: string; bio?: string; website?: string }): Promise<UserWithProfile | null> {
     const now = new Date();
     if (data.username) {
       await db.query("UPDATE User SET username = ?, updatedAt = ? WHERE id = ?", [data.username, now, id]);
     }
-    if (data.displayName !== undefined || data.bio !== undefined) {
+    if (data.displayName !== undefined || data.bio !== undefined || data.website !== undefined) {
       const updates: string[] = [];
       const vals: unknown[] = [];
       if (data.displayName !== undefined) { updates.push("displayName = ?"); vals.push(data.displayName); }
       if (data.bio !== undefined) { updates.push("bio = ?"); vals.push(data.bio); }
+      if (data.website !== undefined) { updates.push("website = ?"); vals.push(data.website || null); }
       updates.push("updatedAt = ?"); vals.push(now);
       vals.push(id);
       await db.query(`UPDATE Profile SET ${updates.join(", ")} WHERE userId = ?`, vals);

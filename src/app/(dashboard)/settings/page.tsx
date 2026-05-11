@@ -24,6 +24,7 @@ export default async function SettingsPage() {
           displayName={user.profile?.displayName ?? ""}
           bio={user.profile?.bio ?? ""}
           avatarUrl={user.profile?.avatarUrl ?? ""}
+          website={user.profile?.website ?? ""}
         />
       </div>
     </>

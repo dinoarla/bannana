@@ -12,6 +12,7 @@ function parseUserWithProfile(row: Record<string, unknown>): UserWithProfile {
     ? {
         id: row.p_id as string, userId: row.id as string, displayName: row.displayName as string,
         bio: row.bio as string | null, avatarUrl: row.avatarUrl as string | null, avatarIcon: row.avatarIcon as string | null,
+        website: row.website as string | null,
         tags: typeof row.tags === "string" ? JSON.parse(row.tags as string) : (row.tags ?? []),
         socialLinks: typeof row.socialLinks === "string" ? JSON.parse(row.socialLinks as string) : (row.socialLinks ?? []),
         createdAt: row.p_createdAt as Date, updatedAt: row.p_updatedAt as Date,

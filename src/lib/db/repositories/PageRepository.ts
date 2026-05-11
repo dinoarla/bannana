@@ -79,6 +79,7 @@ export class PageRepository {
       ? {
           id: ur.p_id as string, userId: ur.id as string, displayName: ur.displayName as string,
           bio: ur.bio as string | null, avatarUrl: ur.avatarUrl as string | null, avatarIcon: ur.avatarIcon as string | null,
+          website: ur.website as string | null,
           tags: typeof ur.tags === "string" ? JSON.parse(ur.tags as string) : (ur.tags ?? []),
           socialLinks: typeof ur.socialLinks === "string" ? JSON.parse(ur.socialLinks as string) : (ur.socialLinks ?? []),
           createdAt: ur.p_createdAt as Date, updatedAt: ur.p_updatedAt as Date,
@@ -123,6 +124,7 @@ export class PageRepository {
       ? {
           id: ur.p_id as string, userId: ur.id as string, displayName: ur.displayName as string,
           bio: ur.bio as string | null, avatarUrl: ur.avatarUrl as string | null, avatarIcon: ur.avatarIcon as string | null,
+          website: ur.website as string | null,
           tags: typeof ur.tags === "string" ? JSON.parse(ur.tags as string) : (ur.tags ?? []),
           socialLinks: typeof ur.socialLinks === "string" ? JSON.parse(ur.socialLinks as string) : (ur.socialLinks ?? []),
           createdAt: ur.p_createdAt as Date, updatedAt: ur.p_updatedAt as Date,

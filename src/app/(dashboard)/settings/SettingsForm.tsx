@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
-type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string };
+type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string };
 
-export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl }: Props) {
+export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website }: Props) {
   const [section, setSection] = useState("profil");
 
   function csrf(): HeadersInit {
@@ -37,7 +37,7 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio, ava
 
       {/* PANELS */}
       <div className="set-panel">
-        {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} />}
+        {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} website={website} />}
         {section === "akun" && <AkunPanel csrf={csrf()} email={email} />}
         {section === "notif" && <NotifPanel />}
         {section === "langganan" && <LanggananPanel />}
@@ -48,35 +48,88 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio, ava
   );
 }
 
-function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initialAvatarUrl }: { csrfToken: string; username: string; displayName: string; bio: string; avatarUrl: string }) {
+const BIO_MAX = 160;
+
+function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initialAvatarUrl, website: initialWebsite }: {
+  csrfToken: string; username: string; displayName: string; bio: string; avatarUrl: string; website: string;
+}) {
+  const nameParts = displayName.split(" ");
+  const [firstName, setFirstName] = useState(nameParts[0] ?? "");
+  const [lastName, setLastName] = useState(nameParts.slice(1).join(" "));
+  const [usernameVal, setUsernameVal] = useState(username);
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const [bioVal, setBioVal] = useState(bio);
+  const [websiteVal, setWebsiteVal] = useState(initialWebsite);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const checkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleUsernameChange(val: string) {
+    setUsernameVal(val);
+    setUsernameStatus("idle");
+    if (val === username || val.length < 3) return;
+    if (checkTimer.current) clearTimeout(checkTimer.current);
+    setUsernameStatus("checking");
+    checkTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/settings/check-username?u=${encodeURIComponent(val)}`);
+        const json = await res.json();
+        setUsernameStatus(json.data?.available ? "available" : "taken");
+      } catch { setUsernameStatus("idle"); }
+    }, 500);
+  }
 
   function openFilePicker() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/jpeg,image/png,image/webp";
+    // Must append to DOM for Safari compatibility
+    input.style.display = "none";
+    document.body.appendChild(input);
     input.onchange = async () => {
+      document.body.removeChild(input);
       const file = input.files?.[0];
       if (!file) return;
-      if (file.size > 5_000_000) { setErr("Ukuran file maksimal 5MB."); return; }
+      if (file.size > 5_000_000) {
+        setErr("Ukuran file terlalu besar. Maksimal 5MB.");
+        setTimeout(() => setErr(""), 4000);
+        return;
+      }
       setUploadingAvatar(true);
+      setErr("");
       try {
-        const dataUrl = await resizeToDataUrl(file, 200, 200);
+        const dataUrl = await resizeToDataUrl(file, 400, 400);
+        // Client-side size guard before hitting the API
+        const base64 = dataUrl.split(",")[1] ?? "";
+        const compressedBytes = Math.ceil((base64.length * 3) / 4);
+        if (compressedBytes > 300_000) {
+          setErr("Foto terlalu besar setelah dikompres (maks. 300KB). Gunakan foto dengan resolusi lebih rendah.");
+          setTimeout(() => setErr(""), 5000);
+          return;
+        }
         const res = await fetch("/api/settings/avatar", {
           method: "PUT",
           headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
           body: JSON.stringify({ dataUrl }),
         });
         const json = await res.json();
-        if (!json.success) { setErr(json.error?.message ?? "Gagal upload foto."); return; }
+        if (!json.success) {
+          setErr(json.error?.message ?? "Gagal upload foto.");
+          setTimeout(() => setErr(""), 4000);
+          return;
+        }
         setAvatarUrl(json.data.avatarUrl);
         setMsg("Foto profil diperbarui!");
         setTimeout(() => setMsg(""), 3000);
-      } finally { setUploadingAvatar(false); }
+      } catch {
+        setErr("Terjadi kesalahan saat memproses foto. Coba lagi.");
+        setTimeout(() => setErr(""), 4000);
+      } finally {
+        setUploadingAvatar(false);
+      }
     };
     input.click();
   }
@@ -97,13 +150,24 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
 
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (usernameStatus === "taken") {
+      setErr("Username sudah dipakai, pilih yang lain.");
+      setTimeout(() => setErr(""), 4000);
+      return;
+    }
     setSaving(true);
-    const fd = new FormData(e.currentTarget);
+    setErr("");
+    const combined = [firstName.trim(), lastName.trim()].filter(Boolean).join(" ");
     try {
       const res = await fetch("/api/settings/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
-        body: JSON.stringify({ displayName: fd.get("displayName"), bio: fd.get("bio"), username: fd.get("username") }),
+        body: JSON.stringify({
+          displayName: combined || undefined,
+          bio: bioVal,
+          username: usernameVal !== username ? usernameVal : undefined,
+          website: websiteVal,
+        }),
       });
       const json = await res.json();
       if (!json.success) { setErr(json.error?.message ?? "Gagal menyimpan."); setTimeout(() => setErr(""), 4000); return; }
@@ -111,11 +175,19 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
     } finally { setSaving(false); }
   }
 
+  const usernameHintContent = () => {
+    if (usernameStatus === "checking") return <span style={{ color: "var(--n-400)" }}><i className="fa-solid fa-spinner fa-spin" /> Mengecek ketersediaan...</span>;
+    if (usernameStatus === "taken") return <span style={{ color: "#DC2626" }}><i className="fa-solid fa-xmark" /> Username sudah dipakai</span>;
+    if (usernameStatus === "available") return <span style={{ color: "#059669" }}><i className="fa-solid fa-check" /> Username tersedia</span>;
+    return <><i className="fa-solid fa-globe" /> bannana.id/<strong>{usernameVal || "..."}</strong> — <a href={`/${usernameVal}`} target="_blank">lihat halaman publik</a></>;
+  };
+
   return (
     <div className="set-card">
       <div className="set-card-head"><div className="set-card-title"><i className="fa-solid fa-user" /> Informasi Profil</div></div>
       <div className="set-card-body">
         <form onSubmit={save} id="profil-form">
+          {/* Avatar */}
           <div className="avatar-section">
             <div className="avatar-big" style={{ overflow: "hidden", padding: 0 }}>
               {avatarUrl
@@ -134,31 +206,70 @@ function ProfilPanel({ csrfToken, username, displayName, bio, avatarUrl: initial
               <span>Format: JPG, PNG, WebP. Maks. 5MB.</span>
             </div>
           </div>
+
+          {/* Nama Depan + Belakang */}
           <div className="field-row">
-            <div><label className="form-lbl">Nama Depan</label><input className="form-inp" name="displayName" type="text" defaultValue={displayName} /></div>
-            <div><label className="form-lbl">Nama Belakang</label><input className="form-inp" type="text" /></div>
+            <div>
+              <label className="form-lbl">Nama Depan</label>
+              <input className="form-inp" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            </div>
+            <div>
+              <label className="form-lbl">Nama Belakang</label>
+              <input className="form-inp" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            </div>
           </div>
+
+          {/* Username */}
           <div className="field-full">
             <label className="form-lbl">Username</label>
-            <input className="form-inp" name="username" type="text" defaultValue={username} />
-            <div className="form-hint"><i className="fa-solid fa-globe" /> bannana.id/<strong>{username}</strong> — <a href={`/${username}`} target="_blank">lihat halaman publik</a></div>
+            <input
+              className="form-inp"
+              type="text"
+              value={usernameVal}
+              onChange={(e) => handleUsernameChange(e.target.value)}
+              style={usernameStatus === "taken" ? { borderColor: "#DC2626" } : usernameStatus === "available" ? { borderColor: "#059669" } : undefined}
+            />
+            <div className="form-hint">{usernameHintContent()}</div>
           </div>
+
+          {/* Bio */}
           <div className="field-full">
-            <label className="form-lbl">Bio Singkat</label>
-            <textarea className="form-inp form-ta" name="bio" defaultValue={bio} />
-            <div className="form-hint">Tampil di halaman profil publik kamu. Maks. 160 karakter.</div>
+            <label className="form-lbl" style={{ display: "flex", justifyContent: "space-between" }}>
+              Bio Singkat
+              <span style={{ fontWeight: 400, color: bioVal.length > BIO_MAX ? "#DC2626" : "var(--n-400)" }}>
+                {bioVal.length}/{BIO_MAX}
+              </span>
+            </label>
+            <textarea
+              className="form-inp form-ta"
+              value={bioVal}
+              onChange={(e) => { if (e.target.value.length <= BIO_MAX) setBioVal(e.target.value); }}
+              maxLength={BIO_MAX}
+            />
+            <div className="form-hint">Tampil di halaman profil publik kamu. Maks. {BIO_MAX} karakter.</div>
           </div>
+
+          {/* Website */}
           <div className="field-full" style={{ marginBottom: 0 }}>
             <label className="form-lbl">Website / URL Utama</label>
-            <input className="form-inp" type="url" placeholder="https://..." />
+            <input
+              className="form-inp"
+              type="url"
+              placeholder="https://..."
+              value={websiteVal}
+              onChange={(e) => setWebsiteVal(e.target.value)}
+            />
           </div>
+
           {err && <div style={{ background: "var(--danger-100)", border: "1.5px solid #FECDD3", borderRadius: 10, padding: ".75rem 1rem", fontSize: ".84rem", color: "var(--danger-700)", marginTop: "1rem" }}><i className="fa-solid fa-triangle-exclamation" /> {err}</div>}
           {msg && <div style={{ background: "#D1FAE5", border: "1.5px solid #6EE7B7", borderRadius: 10, padding: ".75rem 1rem", fontSize: ".84rem", color: "#065F46", marginTop: "1rem" }}><i className="fa-solid fa-check" /> {msg}</div>}
         </form>
       </div>
       <div className="set-footer">
         <span>Perubahan akan langsung tampil di halaman publikmu.</span>
-        <button type="submit" form="profil-form" className="btn btn-primary btn-sm" disabled={saving}><i className="fa-solid fa-check" /> {saving ? "Menyimpan…" : "Simpan Profil"}</button>
+        <button type="submit" form="profil-form" className="btn btn-primary btn-sm" disabled={saving || usernameStatus === "taken"}>
+          <i className="fa-solid fa-check" /> {saving ? "Menyimpan…" : "Simpan Profil"}
+        </button>
       </div>
     </div>
   );
