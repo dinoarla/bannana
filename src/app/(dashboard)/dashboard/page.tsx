@@ -265,7 +265,7 @@ function PageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarU
             ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : <i className="fa-solid fa-user" />}
         </div>
-        <div style={{ fontFamily: "var(--fd)", fontSize: ".78rem", fontWeight: 700, color: "var(--b-900)" }}>@{page.slug}</div>
+        <div style={{ fontFamily: "var(--fd)", fontSize: ".78rem", fontWeight: 700, color: "var(--b-900)" }}>@{username}</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", padding: "0 14px" }}>
           <div style={{ height: 7, background: "var(--b-300)", borderRadius: 4, width: "82%" }} />
           <div style={{ height: 7, background: "var(--b-200)", borderRadius: 4, width: "66%" }} />

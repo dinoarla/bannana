@@ -10,7 +10,7 @@ export class AnalyticsService {
     private readonly blocks = new BlockRepository()
   ) {}
 
-  async track(input: { pageId: string; blockId?: string; event: "view" | "click"; referrer?: string | null; userAgent?: string | null }) {
+  async track(input: { pageId: string; blockId?: string; event: "view" | "click"; referrer?: string | null; userAgent?: string | null; country?: string | null }) {
     const page = await this.pages.findById(input.pageId);
     if (!page) throw errors.notFound("Halaman tidak ditemukan.");
     if (input.event === "view") await this.pages.incrementView(input.pageId);
@@ -22,7 +22,9 @@ export class AnalyticsService {
     const page = await this.pages.findById(pageId);
     if (!page) throw errors.notFound("Halaman tidak ditemukan.");
     const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
-    const from = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const from = new Date();
+    from.setDate(from.getDate() - (days - 1));
+    from.setHours(0, 0, 0, 0);
     const events = await this.analytics.listPageEvents(pageId, from);
     const clicks = page.blocks.reduce((sum, block) => sum + block.clickCount, 0);
     const viewEvents = events.filter((e) => e.event === "view");
@@ -38,7 +40,8 @@ export class AnalyticsService {
         uniqueVisitors: page.uniqueVisitors,
       },
       trend: Array.from({ length: days }, (_, index) => {
-        const day = new Date(from.getTime() + index * 24 * 60 * 60 * 1000);
+        const day = new Date(from);
+        day.setDate(from.getDate() + index);
         const label = `${day.getDate()}/${day.getMonth() + 1}`;
         const dayEvents = events.filter((e) => e.createdAt.toDateString() === day.toDateString());
         return {

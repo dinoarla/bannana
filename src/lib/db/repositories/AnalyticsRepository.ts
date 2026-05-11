@@ -24,15 +24,15 @@ function parseAnalytics(row: Record<string, unknown>): Analytics {
 }
 
 export class AnalyticsRepository {
-  async create(input: { pageId: string; blockId?: string; event: "view" | "click"; referrer?: string | null; userAgent?: string | null }): Promise<Analytics> {
+  async create(input: { pageId: string; blockId?: string; event: "view" | "click"; referrer?: string | null; userAgent?: string | null; country?: string | null }): Promise<Analytics> {
     const id = crypto.randomUUID();
     const now = new Date();
     const device = detectDevice(input.userAgent);
     await db.query(
-      "INSERT INTO Analytics (id, pageId, blockId, event, referrer, userAgent, device, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-      [id, input.pageId, input.blockId ?? null, input.event, input.referrer ?? null, input.userAgent ?? null, device, now]
+      "INSERT INTO Analytics (id, pageId, blockId, event, referrer, userAgent, country, device, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [id, input.pageId, input.blockId ?? null, input.event, input.referrer ?? null, input.userAgent ?? null, input.country ?? null, device, now]
     );
-    return { id, pageId: input.pageId, blockId: input.blockId ?? null, event: input.event, referrer: input.referrer ?? null, userAgent: input.userAgent ?? null, country: null, device, createdAt: now };
+    return { id, pageId: input.pageId, blockId: input.blockId ?? null, event: input.event, referrer: input.referrer ?? null, userAgent: input.userAgent ?? null, country: input.country ?? null, device, createdAt: now };
   }
 
   async listPageEvents(pageId: string, from: Date): Promise<Analytics[]> {

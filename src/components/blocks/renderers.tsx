@@ -1,7 +1,16 @@
+"use client";
 import type { CSSProperties } from "react";
 import type { PublicBlock } from "@/types";
 
 type Props = { block: PublicBlock; style?: CSSProperties };
+
+function trackClick(pageId: string, blockId: string) {
+  fetch("/api/analytics/track", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pageId, blockId, event: "click" }),
+  }).catch(() => {});
+}
 
 export function HeaderBlock({ block, style }: Props) {
   return (
@@ -17,7 +26,13 @@ export function HeaderBlock({ block, style }: Props) {
 export function LinkBlock({ block, style }: Props) {
   return (
     <div className="block-item" style={style}>
-      <a className="link-card" href={block.url ?? "#"} data-block-id={block.id}>
+      <a
+        className="link-card"
+        href={block.url ?? "#"}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => block.url && trackClick(block.pageId, block.id)}
+      >
         <span className="link-icon" style={{ background: block.config.bg ?? "var(--b-100)", color: block.config.color ?? "var(--b-700)" }}>
           {block.config.icon ?? "↗"}
         </span>
@@ -64,7 +79,8 @@ export function SocialBlock({ block, style }: Props) {
     <div className="block-item" style={style}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", justifyContent: "center" }}>
         {socials.map((item) => (
-          <a key={item.url} className="badge badge-muted" href={item.url} style={{ color: item.color }}>
+          <a key={item.url} className="badge badge-muted" href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: item.color }}
+            onClick={() => trackClick(block.pageId, block.id)}>
             {item.icon} {item.label}
           </a>
         ))}
