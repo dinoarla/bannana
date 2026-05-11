@@ -25,6 +25,8 @@ export class AnalyticsService {
     const from = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const events = await this.analytics.listPageEvents(pageId, from);
     const clicks = page.blocks.reduce((sum, block) => sum + block.clickCount, 0);
+    const viewEvents = events.filter((e) => e.event === "view");
+    const viewTotal = viewEvents.length || 1;
 
     return {
       pageId,
@@ -33,21 +35,23 @@ export class AnalyticsService {
         views: page.viewCount,
         clicks,
         ctr: page.viewCount ? Number(((clicks / page.viewCount) * 100).toFixed(1)) : 0,
-        uniqueVisitors: page.uniqueVisitors
+        uniqueVisitors: page.uniqueVisitors,
       },
       trend: Array.from({ length: days }, (_, index) => {
         const day = new Date(from.getTime() + index * 24 * 60 * 60 * 1000);
-        const sameDay = events.filter((event) => event.createdAt.toDateString() === day.toDateString());
+        const label = `${day.getDate()}/${day.getMonth() + 1}`;
+        const dayEvents = events.filter((e) => e.createdAt.toDateString() === day.toDateString());
         return {
           day: index + 1,
-          views: sameDay.filter((event) => event.event === "view").length,
-          clicks: sameDay.filter((event) => event.event === "click").length
+          label,
+          views: dayEvents.filter((e) => e.event === "view").length,
+          clicks: dayEvents.filter((e) => e.event === "click").length,
         };
       }),
-      topLinks: page.blocks.filter((block) => ["LINK", "EMBED"].includes(block.type)).sort((a, b) => b.clickCount - a.clickCount),
+      topLinks: page.blocks
+        .filter((b) => ["LINK", "EMBED"].includes(b.type))
+        .sort((a, b) => b.clickCount - a.clickCount),
       devices: (() => {
-        const viewEvents = events.filter((e) => e.event === "view");
-        const total = viewEvents.length || 1;
         const counts: Record<string, number> = {};
         for (const e of viewEvents) {
           const d = e.device ?? "Unknown";
@@ -55,8 +59,39 @@ export class AnalyticsService {
         }
         return Object.entries(counts)
           .sort((a, b) => b[1] - a[1])
-          .map(([label, count]) => ({ label, percent: Number(((count / total) * 100).toFixed(1)) }));
-      })()
+          .map(([label, count]) => ({ label, count, percent: Number(((count / viewTotal) * 100).toFixed(1)) }));
+      })(),
+      referrers: (() => {
+        const counts: Record<string, number> = {};
+        for (const e of viewEvents) {
+          let ref = "Direct";
+          if (e.referrer) {
+            try { ref = new URL(e.referrer).hostname.replace(/^www\./, ""); } catch { ref = e.referrer.slice(0, 40); }
+          }
+          counts[ref] = (counts[ref] ?? 0) + 1;
+        }
+        return Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6)
+          .map(([source, count]) => ({ source, count, pct: Number(((count / viewTotal) * 100).toFixed(1)) }));
+      })(),
+      countries: (() => {
+        const counts: Record<string, number> = {};
+        for (const e of viewEvents) {
+          const c = e.country ?? "Unknown";
+          counts[c] = (counts[c] ?? 0) + 1;
+        }
+        return Object.entries(counts)
+          .filter(([k]) => k !== "Unknown")
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6)
+          .map(([country, count]) => ({ country, count, pct: Number(((count / viewTotal) * 100).toFixed(1)) }));
+      })(),
+      heatmap: (() => {
+        const hours = new Array(24).fill(0) as number[];
+        for (const e of viewEvents) hours[e.createdAt.getHours()]++;
+        return hours;
+      })(),
     };
   }
 }

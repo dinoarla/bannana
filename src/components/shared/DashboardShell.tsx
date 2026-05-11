@@ -36,7 +36,10 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
             <div className="sb-uname">{displayName}</div>
             <div className="sb-handle">@{user.username}</div>
           </div>
-          <span className="sb-badge" style={{ background: "var(--b-500)", color: "var(--b-950)" }}>PRO</span>
+          {user.role === "ADMIN"
+            ? <span className="sb-badge" style={{ background: "#7C3AED", color: "#fff" }}>ADMIN</span>
+            : <span className="sb-badge" style={{ background: "var(--n-200)", color: "var(--n-600)" }}>Gratis</span>
+          }
         </div>
 
         <nav className="sb-nav">
