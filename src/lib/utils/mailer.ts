@@ -18,7 +18,7 @@ export async function sendVerificationEmail(to: string, verifyUrl: string): Prom
   const transport = getTransport();
   if (!transport) return false;
 
-  const from = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
+  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
   await transport.sendMail({
     from: `bannana.id <${from}>`,
     to,
@@ -48,7 +48,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
   const transport = getTransport();
   if (!transport) return false;
 
-  const from = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
+  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
   await transport.sendMail({
     from: `bannana.id <${from}>`,
     to,

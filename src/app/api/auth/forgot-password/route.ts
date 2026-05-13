@@ -41,12 +41,15 @@ export async function POST(request: Request) {
         [crypto.randomUUID(), user.id, tokenHash, expiresAt, now]
       );
 
-      const baseUrl = process.env.NEXTAUTH_URL ?? "https://bannana.id";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? "https://bannana.id";
       const resetUrl = `${baseUrl}/reset-password/${rawToken}`;
       const emailSent = await sendPasswordResetEmail(user.email, resetUrl);
 
       if (!emailSent) {
-        return ok({ resetUrl });
+        // Only expose link in local dev (no SMTP configured)
+        if (process.env.NODE_ENV !== "production") {
+          return ok({ resetUrl });
+        }
       }
     }
 

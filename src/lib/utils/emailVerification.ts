@@ -1,7 +1,7 @@
 import { db } from "@/lib/db/client";
 import { randomToken, sha256 } from "./hash";
 
-const BASE_URL = process.env.NEXTAUTH_URL ?? "https://bannana.id";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? "https://bannana.id";
 
 async function ensureTable() {
   await db.query(`
