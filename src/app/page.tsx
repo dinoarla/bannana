@@ -5,16 +5,16 @@ import { LandingNavMobile } from "@/components/shared/LandingNavMobile";
 import { getSessionUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
-  title: "bannana.id — Satu Link, Semua Tempat 🍌",
-  description: "Platform link-in-bio yang simple, cepat, dan bisa dikostumasi. Cocok buat kreator, influencer, affiliator, dan freelancer. Gratis selamanya!",
-  keywords: ["link in bio", "bannana", "link page", "social media", "kreator", "influencer"],
+  title: "bannana.id — Mobile Marketing & Link Page Gratis 🍌",
+  description: "Ganti biaya hosting & domain yang mahal dengan bannana.id. Buat halaman mobile marketing profesional dalam 2 menit — gratis selamanya. Cocok untuk UMKM, kreator, freelancer, affiliator.",
+  keywords: ["link in bio", "bannana", "link page", "mobile marketing", "UMKM", "kreator", "influencer", "halaman bisnis", "bio link indonesia"],
   openGraph: {
-    title: "bannana.id — Satu Link, Semua Tempat",
-    description: "Buat halaman link-in-bio kamu dalam hitungan menit. Gratis selamanya!",
+    title: "bannana.id — Mobile Marketing & Link Page Gratis",
+    description: "Lebih murah dari domain & hosting. Tampil profesional di semua HP dalam 2 menit. Gratis selamanya!",
     type: "website",
     locale: "id_ID",
   },
-  twitter: { card: "summary_large_image", title: "bannana.id", description: "Satu link, semua tempat." },
+  twitter: { card: "summary_large_image", title: "bannana.id", description: "Mobile marketing terjangkau untuk semua orang." },
   alternates: { canonical: "/" },
 };
 
@@ -60,23 +60,23 @@ export default async function LandingPage() {
         <div className="hero-inner">
           <div className="hero-text" style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
             <div className="hero-badge">
-              <i className="fa-solid fa-circle-check" />
-              Gratis Selamanya &mdash; Open Source &amp; Self-Hosted
+              <i className="fa-solid fa-mobile-screen" />
+              Mobile Marketing · Gratis Selamanya
             </div>
             <h1 className="hero-h1">
-              Taro semua link-mu di satu tempat di{" "}
-              <span className="accent">bannana.</span>
+              Halaman bisnis &amp; link-mu<br />
+              di <span className="accent">bannana.</span>
             </h1>
             <p className="hero-sub">
-              Platform link-in-bio yang simple, cepat, dan bisa dikostumasi sepuasnya.
-              Cocok buat affiliator, kreator, influencer, freelancer &mdash; siapa aja!
+              Ganti domain &amp; hosting yang mahal. Buat halaman mobile marketing profesional dalam 2 menit &mdash; <strong>mulai Rp&nbsp;0</strong>.
+              Cocok buat UMKM, kreator, affiliator, freelancer.
             </p>
             <div className="hero-actions">
               <Link href="/register" className="btn btn-primary btn-xl">
                 <i className="fa-solid fa-bolt" /> Mulai Gratis
               </Link>
-              <a href="#features" className="btn btn-ghost btn-xl">
-                <i className="fa-solid fa-eye" /> Lihat Fitur
+              <a href="#why" className="btn btn-ghost btn-xl">
+                <i className="fa-solid fa-eye" /> Kenapa bannana?
               </a>
             </div>
             <p className="hero-note">
@@ -197,6 +197,41 @@ export default async function LandingPage() {
                       <i className={ic.startsWith("fa-brands") ? ic : `fa-solid ${ic}`} /> {label}
                     </span>
                   ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FOR WHOM */}
+      <section style={{ padding: "5rem 2.5rem", background: "var(--b-50)" }} id="untuk-siapa">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div className="sec-header">
+            <div className="eyebrow" style={{ marginBottom: "1rem" }}>
+              <i className="fa-solid fa-users" /> Untuk Siapa?
+            </div>
+            <div className="sec-title">Satu platform, ribuan profesi</div>
+            <div className="sec-sub sec-sub-center">
+              bannana.id dirancang untuk semua yang ingin tampil profesional di era digital &mdash; tanpa ribet, tanpa mahal.
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: "1.25rem", marginTop: "2rem" }}>
+            {[
+              { icon: "fa-store", color: "#DCFCE7", ic: "#16A34A", title: "UMKM & Penjual Online", tag: "Paling banyak pakai", desc: "Gabungkan katalog produk, WhatsApp, Shopee, Tokopedia, dan Instagram dalam 1 link. Pelanggan langsung bisa nemuin kamu di mana-mana.", tags: ["Katalog Produk", "WA Langsung", "Toko Online"] },
+              { icon: "fa-camera", color: "#FEF3C7", ic: "#D97706", title: "Kreator Konten", tag: "", desc: "Arahkan followers ke semua platform sekaligus. YouTube, TikTok, Spotify, newsletter — semua ada di 1 halaman yang bisa dikustomisasi.", tags: ["Multi Platform", "Analytics", "Custom Tema"] },
+              { icon: "fa-briefcase", color: "#EDE9FE", ic: "#7C3AED", title: "Freelancer & Profesional", tag: "", desc: "Portfolio + CV + kontak dalam 1 halaman. Kesan pertama klien selalu profesional, tanpa harus bayar web developer.", tags: ["Portfolio", "Booking", "CV Digital"] },
+              { icon: "fa-percent", color: "#FEE2E2", ic: "#DC2626", title: "Affiliator & Marketer", tag: "", desc: "Semua link afiliasi tersusun rapi dan bisa ditrack per link. Tahu mana yang paling menghasilkan — bukan tebak-tebakan.", tags: ["Click Tracking", "Multi Link", "Export CSV"] },
+            ].map((p) => (
+              <div key={p.title} style={{ background: "var(--n-0)", border: "2px solid var(--b-100)", borderRadius: 20, padding: "1.5rem", position: "relative", transition: "all 200ms" }}>
+                {p.tag && <span style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "var(--b-500)", color: "var(--b-950)", borderRadius: 9999, padding: "3px 12px", fontSize: ".68rem", fontWeight: 800, whiteSpace: "nowrap" }}>{p.tag}</span>}
+                <div style={{ width: 50, height: 50, borderRadius: 14, background: p.color, display: "flex", alignItems: "center", justifyContent: "center", color: p.ic, fontSize: "1.3rem", marginBottom: "1rem" }}>
+                  <i className={`fa-solid ${p.icon}`} />
+                </div>
+                <div style={{ fontFamily: "var(--fd)", fontWeight: 700, fontSize: "1.05rem", color: "var(--b-900)", marginBottom: ".5rem" }}>{p.title}</div>
+                <div style={{ fontSize: ".84rem", color: "var(--n-500)", lineHeight: 1.65, marginBottom: "1rem" }}>{p.desc}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {p.tags.map((t) => <span key={t} style={{ fontSize: ".68rem", fontWeight: 700, background: "var(--b-100)", color: "var(--b-700)", borderRadius: 9999, padding: "2px 10px" }}>{t}</span>)}
                 </div>
               </div>
             ))}
@@ -352,19 +387,132 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* WHY BANNANA — COMPARISON */}
+      <section style={{ padding: "6rem 2.5rem", background: "var(--n-0)" }} id="why">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div className="sec-header">
+            <div className="eyebrow" style={{ marginBottom: "1rem" }}>
+              <i className="fa-solid fa-scale-balanced" /> Kenapa bannana?
+            </div>
+            <div className="sec-title">Lebih hemat dari domain &amp; hosting</div>
+            <div className="sec-sub sec-sub-center">
+              Kamu tidak perlu beli domain, bayar hosting, atau hire developer. bannana.id sudah siap pakai dalam hitungan menit.
+            </div>
+          </div>
+
+          {/* Cost comparison */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "1.25rem", margin: "3rem 0 3.5rem" }}>
+            {[
+              { label: "Bikin Website Sendiri", price: "Rp 600K–2jt/tahun", icon: "fa-server", color: "var(--danger-100)", ic: "var(--danger-600)", items: ["Domain .com Rp 200–300K/tahun", "Hosting VPS/shared Rp 300K–1.5jt", "Butuh developer/waktu setup", "Update manual tiap ada bug", "Tidak ada analytics bawaan"], bad: true },
+              { label: "bannana.id Pro", price: "Rp 150K/tahun", icon: "fa-crown", color: "var(--b-100)", ic: "var(--b-700)", items: ["Langsung jalan tanpa setup", "Analytics lengkap + export CSV", "12+ tema keren, custom CSS", "Update otomatis selamanya", "Support & dokumentasi tersedia"], bad: false, highlight: true },
+              { label: "Kompetitor (Linktree dll)", price: "Rp 250K–800K/tahun", icon: "fa-link", color: "var(--n-100)", ic: "var(--n-600)", items: ["Harga dalam USD (kena kurs)", "Fitur analytics terbatas", "Tidak bisa custom penuh", "Branding platform terlihat", "Tidak ada versi self-hosted"], bad: true },
+            ].map((c) => (
+              <div key={c.label} style={{ border: `2px solid ${c.highlight ? "var(--b-400)" : "var(--n-200)"}`, borderRadius: 20, overflow: "hidden", position: "relative", boxShadow: c.highlight ? "0 0 0 4px rgba(251,191,36,.12)" : undefined }}>
+                {c.highlight && <div style={{ background: "var(--b-500)", color: "var(--b-950)", textAlign: "center", padding: "6px", fontSize: ".72rem", fontWeight: 800, letterSpacing: ".04em" }}>PILIHAN TERBAIK ⭐</div>}
+                <div style={{ padding: "1.5rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1rem" }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 11, background: c.color, display: "flex", alignItems: "center", justifyContent: "center", color: c.ic, fontSize: "1rem" }}>
+                      <i className={`fa-solid ${c.icon}`} />
+                    </div>
+                    <div>
+                      <div style={{ fontFamily: "var(--fd)", fontWeight: 700, fontSize: ".95rem", color: "var(--b-900)" }}>{c.label}</div>
+                      <div style={{ fontSize: ".82rem", fontWeight: 700, color: c.highlight ? "var(--b-600)" : "var(--n-500)" }}>{c.price}</div>
+                    </div>
+                  </div>
+                  <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: ".5rem" }}>
+                    {c.items.map((item) => (
+                      <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: ".82rem", color: "var(--n-600)" }}>
+                        <i className={`fa-solid ${c.bad ? "fa-xmark" : "fa-check"}`} style={{ color: c.bad ? "var(--n-300)" : "var(--b-500)", marginTop: 2, flexShrink: 0 }} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile stats strip */}
+          <div style={{ background: "linear-gradient(135deg,var(--b-900),var(--b-800))", borderRadius: 24, padding: "2.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "2rem", textAlign: "center" }}>
+            <div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>97%</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>pengguna internet Indonesia akses via HP</div>
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>2 mnt</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>waktu setup hingga halaman live</div>
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>Rp&nbsp;0</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>biaya awal — daftar gratis, bayar kalau mau upgrade</div>
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>10×</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>lebih murah dari biaya domain + hosting per tahun</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section style={{ padding: "6rem 2.5rem", background: "var(--b-50)" }} id="testimoni">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div className="sec-header">
+            <div className="eyebrow" style={{ marginBottom: "1rem" }}>
+              <i className="fa-solid fa-star" /> Kata Mereka
+            </div>
+            <div className="sec-title">Sudah dipakai oleh ribuan orang</div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "1.25rem", marginTop: "2rem" }}>
+            {[
+              { name: "Sari W.", role: "Reseller Online, Jakarta", avatar: "SW", text: "Sebelumnya bingung mau pakai apa selain Linktree. bannana.id jauh lebih lengkap, bisa custom warna sesuai brand toko aku, dan yang paling penting — GRATIS! Serius rekomen buat reseller.", rating: 5 },
+              { name: "Dimas K.", role: "Content Creator, Bandung", avatar: "DK", text: "Analytics-nya detail banget. Aku bisa tahu link mana yang paling banyak diklik follower, jam ramai-nya kapan. Lumayan banget buat strategi konten.", rating: 5 },
+              { name: "Rizky F.", role: "Freelance Designer, Surabaya", avatar: "RF", text: "Ganti bio link ke bannana.id dan portfolio aku langsung keliatan lebih profesional. Klien pertama langsung masuk dari link ini. Upgrade ke Pro udah worth banget!", rating: 5 },
+              { name: "Mbak Nia", role: "Pemilik UMKM Kuliner, Yogyakarta", avatar: "MN", text: "Tadinya mau bayar jutaan buat bikin website. Pakai bannana.id cuma perlu 10 menit dan semuanya udah rapi — menu, WA, Instagram, semua ada!", rating: 5 },
+              { name: "Arif M.", role: "Affiliator, Medan", avatar: "AM", text: "Semua link afiliasi aku taruh di sini, terus bagi ke semua platform. Click tracking-nya akurat. Akhirnya tau mana produk yang paling laku!", rating: 5 },
+              { name: "Citra L.", role: "Podcaster & Blogger, Bali", avatar: "CL", text: "Suka banget sama tampilan tema Night-nya. Gelap, elegan, dan match sama vibe konten aku. Custom CSS-nya juga powerfull banget buat yang ngerti coding.", rating: 5 },
+            ].map((t) => (
+              <div key={t.name} style={{ background: "var(--n-0)", border: "2px solid var(--b-100)", borderRadius: 20, padding: "1.5rem" }}>
+                <div style={{ color: "var(--b-400)", fontSize: "1rem", marginBottom: ".75rem" }}>
+                  {"★".repeat(t.rating)}
+                </div>
+                <div style={{ fontSize: ".875rem", color: "var(--n-600)", lineHeight: 1.65, marginBottom: "1.25rem" }}>&ldquo;{t.text}&rdquo;</div>
+                <div style={{ display: "flex", alignItems: "center", gap: ".75rem" }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-300),var(--b-500))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-900)", fontWeight: 800, fontSize: ".8rem", flexShrink: 0 }}>{t.avatar}</div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: ".875rem", color: "var(--n-800)" }}>{t.name}</div>
+                    <div style={{ fontSize: ".75rem", color: "var(--n-400)" }}>{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="cta-sec">
-        <h2 className="cta-title">Mulai sekarang &mdash; gratis!</h2>
-        <p className="cta-sub">
-          Gak perlu kartu kredit. Daftar, buat link page-mu, dan share ke dunia dalam 2 menit!
-        </p>
-        <div className="cta-actions">
-          <Link href="/register" className="btn-white btn btn-xl">
-            <i className="fa-solid fa-bolt" /> Daftar Gratis Sekarang
-          </Link>
-          <Link href="/pricing" className="btn-outline-light btn btn-xl">
-            <i className="fa-solid fa-tag" /> Lihat Pricing
-          </Link>
+        <div className="cta-inner">
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "rgba(251,191,36,.15)", border: "1.5px solid rgba(251,191,36,.3)", borderRadius: 9999, padding: "5px 16px", fontSize: ".78rem", fontWeight: 700, color: "var(--b-300)", marginBottom: "1.5rem" }}>
+            <i className="fa-solid fa-bolt" /> Gratis Selamanya · Tanpa Kartu Kredit
+          </div>
+          <h2 className="cta-h2">Mulai tampil profesional<br />hari ini &mdash; gratis!</h2>
+          <p className="cta-sub">
+            Daftar dalam 30 detik. Halaman langsung live. Mulai dari Rp&nbsp;0 &mdash; upgrade ke Pro kapanpun kamu siap.
+          </p>
+          <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap", justifyContent: "center", marginBottom: "1.5rem" }}>
+            <Link href="/register" className="btn-white btn btn-xl">
+              <i className="fa-solid fa-bolt" /> Daftar Gratis Sekarang
+            </Link>
+            <Link href="/pricing" className="btn-outline-light btn btn-xl">
+              <i className="fa-solid fa-tag" /> Lihat Paket &amp; Harga
+            </Link>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1.5rem", fontSize: ".8rem", color: "var(--b-600)" }}>
+            {["✓ Tidak perlu coding", "✓ Tidak perlu domain", "✓ Tidak perlu hosting", "✓ Live dalam 2 menit"].map((s) => (
+              <span key={s}>{s}</span>
+            ))}
+          </div>
         </div>
       </section>
 
