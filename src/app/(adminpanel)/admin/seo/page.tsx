@@ -157,13 +157,7 @@ export default async function AdminSeoPage() {
                     const rowBg = isHighTraffic ? "rgba(16,185,129,.04)" : isZeroViews ? "rgba(239,68,68,.03)" : "";
 
                     return (
-                      <tr key={pg.id} style={{ borderBottom: "1px solid var(--n-100)", background: rowBg, transition: "background .15s" }}
-                        onMouseEnter={(e) => {
-                          if (!isHighTraffic && !isZeroViews) (e.currentTarget as HTMLTableRowElement).style.background = "var(--n-50)";
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLTableRowElement).style.background = rowBg;
-                        }}>
+                      <tr key={pg.id} style={{ borderBottom: "1px solid var(--n-100)", background: rowBg }}>
 
                         {/* Status */}
                         <td style={{ padding: ".875rem 1rem" }}>

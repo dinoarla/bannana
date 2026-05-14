@@ -149,9 +149,7 @@ export default async function AdminOverviewPage() {
                     </td>
                   </tr>
                 ) : recentUsers.map((u) => (
-                  <tr key={u.id as string} style={{ borderBottom: "1px solid var(--n-100)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = "var(--n-50)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = ""; }}>
+                  <tr key={u.id as string} style={{ borderBottom: "1px solid var(--n-100)" }}>
                     <td style={{ padding: ".875rem 1rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: ".75rem" }}>
                         <div style={{
