@@ -1,10 +1,12 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
-import { assertSessionUser } from "@/lib/auth/session";
+import { cookies } from "next/headers";
+import { assertSessionUser, CSRF_COOKIE } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
 import { AnalyticsService } from "@/lib/services/AnalyticsService";
 import { db } from "@/lib/db/client";
 import type { PageWithBlocks } from "@/types/db.types";
+import { DashboardTopbar } from "@/components/shared/DashboardTopbar";
 
 type SearchParams = Promise<{ range?: string }>;
 
@@ -13,6 +15,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const range = (sp.range as "7d" | "30d" | "90d") ?? "30d";
 
   const user = await assertSessionUser();
+  const jar = await cookies();
+  const csrfToken = jar.get(CSRF_COOKIE)?.value ?? "";
   const pages = await new PageService().list(user.id);
   const displayName = user.profile?.displayName ?? user.username;
 
@@ -34,36 +38,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
   return (
     <>
-      {/* TOPBAR */}
-      <div className="topbar">
-        <div className="tb-search">
-          <i className="fa-solid fa-search" />
-          <input type="text" placeholder="Cari halaman, blok, pengaturan..." readOnly />
-        </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: ".75rem", alignItems: "center" }}>
-          <div className="tb-icon-btn">
-            <i className="fa-solid fa-bell" />
-            <div className="notif-dot" />
-          </div>
-          {canCreatePage ? (
-            <Link href="/pages/new" className="btn btn-primary btn-sm">
-              <i className="fa-solid fa-plus" /> Halaman Baru
-            </Link>
-          ) : (
-            <Link href="/settings?tab=langganan" className="btn btn-primary btn-sm" title="Upgrade ke Pro untuk halaman tak terbatas">
-              <i className="fa-solid fa-crown" /> Upgrade Pro
-            </Link>
-          )}
-          <Link href={`/${user.username}`} target="_blank" className="tb-icon-btn" title="Lihat halaman publik">
-            <i className="fa-solid fa-eye" />
-          </Link>
-          <Link href="/settings" className="sb-avatar" style={{ cursor: "pointer", textDecoration: "none", overflow: "hidden", padding: user.profile?.avatarUrl ? 0 : undefined }}>
-            {user.profile?.avatarUrl
-              ? <img src={user.profile.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
-              : <i className="fa-solid fa-user" />}
-          </Link>
-        </div>
-      </div>
+      <DashboardTopbar
+        pages={pages.map((p) => ({ id: p.id, title: p.title, isPublished: p.isPublished }))}
+        username={user.username}
+        avatarUrl={user.profile?.avatarUrl ?? null}
+        csrfToken={csrfToken}
+        canCreatePage={canCreatePage}
+      />
 
       <div className="page-content">
         {/* PAGE TITLE */}

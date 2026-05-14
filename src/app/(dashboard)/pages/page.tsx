@@ -3,11 +3,20 @@ import Link from "next/link";
 import { assertSessionUser } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
 import { PageActions } from "./PageActions";
+import { db } from "@/lib/db/client";
 
 export default async function PagesPage() {
   const user = await assertSessionUser();
   const avatarUrl = user.profile?.avatarUrl ?? null;
   const pages = await new PageService().list(user.id);
+
+  let isPro = false;
+  try {
+    const [subRows] = await db.query("SELECT plan, status FROM Subscription WHERE userId = ? LIMIT 1", [user.id]);
+    const subRow = (subRows as Record<string, unknown>[])[0];
+    isPro = subRow?.plan === "pro" && subRow?.status === "active";
+  } catch { /* Subscription table may not exist yet */ }
+  const canCreatePage = isPro || pages.length === 0;
 
   return (
     <>
@@ -16,9 +25,15 @@ export default async function PagesPage() {
           <i className="fa-solid fa-table-columns" style={{ color: "var(--b-500)", marginRight: 8 }} /> Halaman Saya
         </div>
         <div style={{ marginLeft: "auto" }}>
-          <Link href="/pages/new" className="btn btn-primary btn-sm">
-            <i className="fa-solid fa-plus" /> Halaman Baru
-          </Link>
+          {canCreatePage ? (
+            <Link href="/pages/new" className="btn btn-primary btn-sm">
+              <i className="fa-solid fa-plus" /> Halaman Baru
+            </Link>
+          ) : (
+            <Link href="/langganan" className="btn btn-primary btn-sm" title="Upgrade ke Pro untuk halaman tak terbatas">
+              <i className="fa-solid fa-crown" /> Upgrade Pro
+            </Link>
+          )}
         </div>
       </div>
 
@@ -88,14 +103,28 @@ export default async function PagesPage() {
               </div>
             ))}
 
-            {/* Create new card */}
-            <Link href="/pages/new" style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220 }}>
-              <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--b-100)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-500)", fontSize: "1.2rem" }}>
-                <i className="fa-solid fa-plus" />
-              </div>
-              <div style={{ fontFamily: "var(--fd)", fontSize: ".95rem", fontWeight: 700, color: "var(--b-700)" }}>Buat Halaman Baru</div>
-              <div style={{ fontSize: ".75rem", color: "var(--n-500)", textAlign: "center" }}>Link page, about me, portofolio — bebas!</div>
-            </Link>
+            {/* Create new card / Upgrade card */}
+            {canCreatePage ? (
+              <Link href="/pages/new" style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220 }}>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--b-100)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-500)", fontSize: "1.2rem" }}>
+                  <i className="fa-solid fa-plus" />
+                </div>
+                <div style={{ fontFamily: "var(--fd)", fontSize: ".95rem", fontWeight: 700, color: "var(--b-700)" }}>Buat Halaman Baru</div>
+                <div style={{ fontSize: ".75rem", color: "var(--n-500)", textAlign: "center" }}>Link page, about me, portofolio — bebas!</div>
+              </Link>
+            ) : (
+              <Link href="/langganan" style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220, position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(3px)", background: "rgba(255,251,235,.65)", zIndex: 1, borderRadius: 18 }} />
+                <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: ".6rem" }}>
+                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--b-200)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-600)", fontSize: "1.2rem" }}>
+                    <i className="fa-solid fa-crown" />
+                  </div>
+                  <div style={{ fontFamily: "var(--fd)", fontSize: ".95rem", fontWeight: 700, color: "var(--b-800)" }}>Upgrade ke Pro</div>
+                  <div style={{ fontSize: ".75rem", color: "var(--b-700)", textAlign: "center", fontWeight: 600 }}>Buat halaman tak terbatas</div>
+                  <div style={{ fontSize: ".7rem", color: "var(--n-500)", textAlign: "center" }}>Paket Gratis hanya 1 halaman</div>
+                </div>
+              </Link>
+            )}
           </div>
         )}
       </div>

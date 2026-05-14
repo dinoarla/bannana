@@ -73,8 +73,8 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
           <Link href="/settings" className={`sb-item${isActive("/settings") ? " active" : ""}`} onClick={closeNav}>
             <i className="fa-solid fa-gear" /> Pengaturan
           </Link>
-          <Link href="/settings?tab=langganan" className="sb-item" onClick={closeNav}>
-            <i className="fa-solid fa-crown" style={{ color: "var(--b-400)" }} /> Upgrade Pro
+          <Link href="/langganan" className={`sb-item${isActive("/langganan") ? " active" : ""}`} onClick={closeNav}>
+            <i className="fa-solid fa-crown" style={{ color: "var(--b-400)" }} /> Langganan
           </Link>
           {user.role === "ADMIN" && (
             <>
