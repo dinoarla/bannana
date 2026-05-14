@@ -5,10 +5,10 @@ import { useState, useEffect } from "react";
 const WORDS = [
   "link-in-bio",
   "kartu nama digital",
+  "katalog produk",
   "portofolio",
-  "toko online",
-  "bio link",
-  "halaman bisnis",
+  "link affiliate",
+  "daftar layanan",
 ];
 
 export function HeroHeadline() {
