@@ -111,7 +111,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
               <div style={{ fontSize: ".75rem", color: "var(--n-500)", textAlign: "center" }}>Link page, about me, portofolio — bebas!</div>
             </Link>
           ) : (
-            <Link href="/settings?tab=langganan"
+            <Link href="/langganan"
               style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220, position: "relative", overflow: "hidden" }}
             >
               <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(3px)", background: "rgba(255,251,235,.65)", zIndex: 1, borderRadius: 18 }} />

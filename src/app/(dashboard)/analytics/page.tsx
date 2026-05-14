@@ -104,9 +104,10 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
                 ))}
               </div>
               <div className="chart-labels">
-                {trend.map((d, i) => (
-                  <span key={i} style={{ fontSize: ".6rem" }}>{d.label}</span>
-                ))}
+                {trend.map((d, i) => {
+                  const step = trend.length > 30 ? 7 : trend.length > 14 ? 3 : 1;
+                  return <span key={i} style={{ fontSize: ".6rem" }}>{i % step === 0 ? d.label : ""}</span>;
+                })}
               </div>
             </>
           )}

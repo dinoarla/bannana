@@ -2,6 +2,7 @@ import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import Link from "next/link";
 import { Footer } from "@/components/shared/Footer";
 import { LandingNavMobile } from "@/components/shared/LandingNavMobile";
+import { HeroHeadline } from "@/components/landing/HeroHeadline";
 import { getSessionUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
@@ -63,26 +64,25 @@ export default async function LandingPage() {
               <i className="fa-solid fa-mobile-screen" />
               Mobile Marketing · Gratis Selamanya
             </div>
-            <h1 className="hero-h1">
-              Halaman bisnis &amp; link-mu<br />
-              di <span className="accent">bannana.</span>
-            </h1>
+            <HeroHeadline />
             <p className="hero-sub">
-              Ganti domain &amp; hosting yang mahal. Buat halaman mobile marketing profesional dalam 2 menit &mdash; <strong>mulai Rp&nbsp;0</strong>.
-              Cocok buat UMKM, kreator, affiliator, freelancer.
+              Tidak perlu domain. Tidak perlu hosting. Cukup daftar, buat halaman profesionalmu dalam <strong>2 menit</strong>, dan bagikan satu link ke semua platform &mdash; <strong>mulai Rp&nbsp;0</strong>.
             </p>
             <div className="hero-actions">
               <Link href="/register" className="btn btn-primary btn-xl">
-                <i className="fa-solid fa-bolt" /> Mulai Gratis
+                <i className="fa-solid fa-bolt" /> Mulai Gratis Sekarang
               </Link>
               <a href="#why" className="btn btn-ghost btn-xl">
                 <i className="fa-solid fa-eye" /> Kenapa bannana?
               </a>
             </div>
-            <p className="hero-note">
-              <i className="fa-solid fa-circle-info" /> Langsung coba tanpa daftar &mdash;{" "}
-              <Link href="/demo">bannana.id/demo</Link>
-            </p>
+            <div style={{ display: "flex", gap: "1.25rem", marginTop: ".75rem", flexWrap: "wrap" }}>
+              {["Tanpa kartu kredit", "Setup 2 menit", "Gratis selamanya"].map((t) => (
+                <span key={t} style={{ fontSize: ".78rem", color: "var(--n-600)", display: "flex", alignItems: "center", gap: 5 }}>
+                  <i className="fa-solid fa-check" style={{ color: "var(--success-600)", fontSize: ".65rem" }} /> {t}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* PHONES */}
