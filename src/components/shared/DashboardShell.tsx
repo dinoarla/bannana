@@ -128,14 +128,6 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
           <Link href="/langganan" className={`sb-item${isActive("/langganan") ? " active" : ""}`} onClick={closeNav}>
             <i className="fa-solid fa-crown" style={{ color: "var(--b-400)" }} /> Langganan
           </Link>
-          {user.role === "ADMIN" && (
-            <>
-              <div className="sb-section">Admin</div>
-              <Link href="/admin" className={`sb-item${isActive("/admin") ? " active" : ""}`} style={{ color: "#7C3AED" }} onClick={closeNav}>
-                <i className="fa-solid fa-shield-halved" /> Admin Panel
-              </Link>
-            </>
-          )}
         </nav>
 
         <div className="sb-bottom">

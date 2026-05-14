@@ -83,14 +83,6 @@ export function AdminSidebar({ displayName, email }: AdminSidebarProps) {
 
       {/* Bottom actions */}
       <div className="sb-bottom" style={{ display: "flex", flexDirection: "column", gap: ".5rem" }}>
-        <Link
-          href="/dashboard"
-          className="sb-item"
-          style={{ color: "var(--b-500)" }}
-        >
-          <i className="fa-solid fa-arrow-left" />
-          Kembali ke Dashboard
-        </Link>
         <button
           onClick={logout}
           className="sb-item"
