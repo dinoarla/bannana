@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { assertSessionUser } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
 import { PageActions } from "./PageActions";
@@ -7,6 +8,7 @@ import { db } from "@/lib/db/client";
 
 export default async function PagesPage() {
   const user = await assertSessionUser();
+  if (user.role === "ADMIN") redirect("/admin");
   const avatarUrl = user.profile?.avatarUrl ?? null;
   const pages = await new PageService().list(user.id);
 

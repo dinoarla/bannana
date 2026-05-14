@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { assertSessionUser, CSRF_COOKIE } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
@@ -15,6 +16,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const range = (sp.range as "7d" | "30d" | "90d") ?? "30d";
 
   const user = await assertSessionUser();
+  if (user.role === "ADMIN") redirect("/admin");
   const jar = await cookies();
   const csrfToken = jar.get(CSRF_COOKIE)?.value ?? "";
   const pages = await new PageService().list(user.id);

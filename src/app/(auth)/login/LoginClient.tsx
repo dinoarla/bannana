@@ -61,7 +61,7 @@ export function LoginClient() {
       });
       const json = await res.json();
       if (!json.success) { setError(json.error?.message ?? "Terjadi kesalahan."); return; }
-      location.href = "/dashboard";
+      location.href = json.data?.user?.role === "ADMIN" ? "/admin" : "/dashboard";
     } catch {
       setError("Koneksi gagal. Coba lagi.");
     } finally {

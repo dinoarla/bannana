@@ -4,6 +4,6 @@ import { LoginClient } from "./LoginClient";
 
 export default async function LoginPage() {
   const user = await getSessionUser();
-  if (user) redirect("/dashboard");
+  if (user) redirect(user.role === "ADMIN" ? "/admin" : "/dashboard");
   return <LoginClient />;
 }
