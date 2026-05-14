@@ -5,6 +5,7 @@ import { assertSessionUser } from "@/lib/auth/session";
 import { CSRF_COOKIE } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
 import { ThemeSelector } from "./ThemeSelector";
+import { db } from "@/lib/db/client";
 
 export default async function ThemesPage() {
   const user = await assertSessionUser();
@@ -12,6 +13,16 @@ export default async function ThemesPage() {
   const page = pages[0];
   const jar = await cookies();
   const csrfToken = jar.get(CSRF_COOKIE)?.value ?? "";
+
+  let isPro = false;
+  try {
+    const [subRows] = await db.query(
+      "SELECT plan, status FROM Subscription WHERE userId = ? AND status = 'active' LIMIT 1",
+      [user.id]
+    );
+    const sub = (subRows as Record<string, unknown>[])[0];
+    isPro = sub?.plan === "pro";
+  } catch { /* Subscription table may not exist yet */ }
 
   return (
     <>
@@ -25,7 +36,7 @@ export default async function ThemesPage() {
       </div>
       <div className="page-content">
         {page ? (
-          <ThemeSelector pageId={page.id} currentTheme={page.theme} csrfToken={csrfToken} />
+          <ThemeSelector pageId={page.id} currentTheme={page.theme} csrfToken={csrfToken} isPro={isPro} />
         ) : (
           <div className="anl-card" style={{ textAlign: "center", padding: "3rem" }}>
             <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🎨</div>

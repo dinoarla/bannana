@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { assertSessionUser, CSRF_COOKIE } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
 import { BlockEditor } from "@/components/editor/BlockEditor";
+import { db } from "@/lib/db/client";
 import type { PublicBlock } from "@/types";
 
 type Props = { params: Promise<{ pageId: string }> };
@@ -33,6 +34,16 @@ export default async function EditorPage({ params }: Props) {
 
   if (page.userId !== user.id) notFound();
 
+  let isPro = false;
+  try {
+    const [subRows] = await db.query(
+      "SELECT plan, status FROM Subscription WHERE userId = ? AND status = 'active' LIMIT 1",
+      [user.id]
+    );
+    const sub = (subRows as Record<string, unknown>[])[0];
+    isPro = sub?.plan === "pro";
+  } catch { /* Subscription table may not exist yet */ }
+
   return (
     <div
       style={{
@@ -56,6 +67,7 @@ export default async function EditorPage({ params }: Props) {
         csrfToken={csrfToken}
         username={user.username}
         bio={user.profile?.bio ?? ""}
+        isPro={isPro}
       />
     </div>
   );

@@ -29,11 +29,15 @@ type PageState = {
   blocks: PublicBlock[];
 };
 
+const FREE_BLOCK_LIMIT = 10;
+const FREE_THEMES = ["classic", "night", "vanilla"];
+
 type Props = {
   initialPage: PageState;
   csrfToken: string;
   username: string;
   bio: string;
+  isPro: boolean;
 };
 
 const BLOCK_TYPES: { type: PublicBlock["type"]; label: string; icon: string; desc: string; section: string; badge?: string }[] = [
@@ -65,7 +69,7 @@ const BLOCK_LABELS: Record<PublicBlock["type"], string> = {
 
 const SECTIONS = ["Dasar", "Media", "Sosial"] as const;
 
-export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
+export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Props) {
   const [page, setPage] = useState<PageState>(initialPage);
   const [selectedId, setSelectedId] = useState<string | undefined>(initialPage.blocks[0]?.id);
   const [saving, setSaving] = useState(false);
@@ -97,6 +101,10 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
   }
 
   async function addBlock(type: PublicBlock["type"]) {
+    if (!isPro && page.blocks.length >= FREE_BLOCK_LIMIT) {
+      showSave(`⚠ Limit ${FREE_BLOCK_LIMIT} blok — upgrade ke Pro`);
+      return;
+    }
     setSaving(true);
     try {
       const block = await mutate<PublicBlock>(`/api/pages/${page.id}/blocks`, {
@@ -283,8 +291,18 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
         {/* LEFT PANEL */}
         <div className="panel-left">
           <div className="pl-head">
-            <div className="pl-title">
-              <i className="fa-solid fa-plus-circle" /> Tambah Blok
+            <div className="pl-title" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+              <span><i className="fa-solid fa-plus-circle" /> Tambah Blok</span>
+              {!isPro && (
+                <span style={{
+                  fontSize: ".68rem", fontWeight: 700,
+                  color: page.blocks.length >= FREE_BLOCK_LIMIT ? "#DC2626" : "var(--n-500)",
+                  background: page.blocks.length >= FREE_BLOCK_LIMIT ? "#FEE2E2" : "var(--n-100)",
+                  padding: "2px 7px", borderRadius: 99,
+                }}>
+                  {page.blocks.length}/{FREE_BLOCK_LIMIT}
+                </span>
+              )}
             </div>
             <div className="pl-search-wrap">
               <i className="pl-search-ico fa-solid fa-search" />
@@ -324,6 +342,25 @@ export function BlockEditor({ initialPage, csrfToken, username, bio }: Props) {
               </div>
             );
           })}
+          {!isPro && page.blocks.length >= FREE_BLOCK_LIMIT && (
+            <div style={{
+              margin: "1rem .75rem .25rem", padding: ".75rem 1rem",
+              background: "#FEF3C7", border: "1.5px solid #FDE68A", borderRadius: 12,
+              fontSize: ".78rem", color: "#92400E",
+            }}>
+              <div style={{ fontWeight: 700, marginBottom: ".25rem" }}>
+                <i className="fa-solid fa-lock" style={{ marginRight: 5 }} />Batas 10 blok tercapai
+              </div>
+              <div style={{ marginBottom: ".5rem" }}>Upgrade ke Pro untuk blok tak terbatas.</div>
+              <a href="/langganan" style={{
+                display: "inline-block", background: "#F59E0B", color: "#1C1409",
+                fontWeight: 700, fontSize: ".75rem", padding: "4px 12px",
+                borderRadius: 8, textDecoration: "none",
+              }}>
+                <i className="fa-solid fa-crown" /> Upgrade Pro
+              </a>
+            </div>
+          )}
         </div>
 
         {/* CANVAS */}

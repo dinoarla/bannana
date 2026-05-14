@@ -17,11 +17,13 @@ const THEMES = [
   { id: "glitter",    name: "Glitter Honey",     mood: "Dark · Glamour",   tags: ["Dark", "Mewah"],       icon: "fa-gem",              bg: "bg-glitter",    btnColor: "#F59E0B", avColor: "#F59E0B", dark: true  },
 ];
 
+const FREE_THEMES = ["classic", "night", "vanilla"];
+
 type Filter = "all" | "light" | "dark" | "playful" | "minimal";
 const PLAYFUL = ["classic", "rainbow", "strawberry", "peach"];
 const MINIMAL = ["cloud", "licorice", "vanilla"];
 
-export function ThemeSelector({ pageId, currentTheme, csrfToken }: { pageId: string; currentTheme: string; csrfToken: string }) {
+export function ThemeSelector({ pageId, currentTheme, csrfToken, isPro }: { pageId: string; currentTheme: string; csrfToken: string; isPro: boolean }) {
   const [selected, setSelected] = useState(currentTheme);
   const [filter, setFilter] = useState<Filter>("all");
   const [saving, setSaving] = useState(false);
@@ -38,6 +40,7 @@ export function ThemeSelector({ pageId, currentTheme, csrfToken }: { pageId: str
   });
 
   async function applyTheme(id: string) {
+    if (!isPro && !FREE_THEMES.includes(id)) return;
     setSelected(id);
     const name = THEMES.find((t) => t.id === id)?.name ?? id;
     setPendingName(name);
@@ -85,44 +88,89 @@ export function ThemeSelector({ pageId, currentTheme, csrfToken }: { pageId: str
 
       {/* THEMES GRID */}
       <div className="themes-grid">
-        {visible.map((t) => (
-          <button key={t.id} className={`theme-card tc-${t.id}${selected === t.id ? " active" : ""}`} onClick={() => applyTheme(t.id)}>
-            {selected === t.id && <div className="active-badge"><i className="fa-solid fa-check" /> Aktif</div>}
-            <div className={`theme-preview ${t.bg}`}>
-              <div className="tp-phone" style={{ background: `rgba(255,255,255,${t.dark ? ".12" : ".9"})` }}>
-                <div className="tp-av" style={{ background: t.avColor }} />
-                <div className="tp-bar" style={{ background: t.btnColor, width: "85%" }} />
-                <div className="tp-bar" style={{ background: t.btnColor, opacity: .6, width: "70%" }} />
-                <div className="tp-bar" style={{ background: t.btnColor, opacity: .4, width: "60%" }} />
+        {visible.map((t) => {
+          const isLocked = !isPro && !FREE_THEMES.includes(t.id);
+          return (
+            <button
+              key={t.id}
+              className={`theme-card tc-${t.id}${selected === t.id ? " active" : ""}${isLocked ? " locked" : ""}`}
+              onClick={() => applyTheme(t.id)}
+              title={isLocked ? "Tema Pro — upgrade untuk akses semua tema" : undefined}
+              style={isLocked ? { opacity: .65, cursor: "pointer" } : undefined}
+            >
+              {selected === t.id && <div className="active-badge"><i className="fa-solid fa-check" /> Aktif</div>}
+              {isLocked && (
+                <div className="active-badge" style={{ background: "#7C3AED", color: "#fff" }}>
+                  <i className="fa-solid fa-lock" /> PRO
+                </div>
+              )}
+              <div className={`theme-preview ${t.bg}`}>
+                <div className="tp-phone" style={{ background: `rgba(255,255,255,${t.dark ? ".12" : ".9"})` }}>
+                  <div className="tp-av" style={{ background: t.avColor }} />
+                  <div className="tp-bar" style={{ background: t.btnColor, width: "85%" }} />
+                  <div className="tp-bar" style={{ background: t.btnColor, opacity: .6, width: "70%" }} />
+                  <div className="tp-bar" style={{ background: t.btnColor, opacity: .4, width: "60%" }} />
+                </div>
               </div>
-            </div>
-            <div className="theme-info" style={{ background: t.dark ? "#1C1917" : "white" }}>
-              <div className="theme-name" style={{ color: t.dark ? "#FEF3C7" : undefined }}>
-                <span><i className={`fa-solid ${t.icon}`} style={{ color: t.btnColor, marginRight: 5 }} />{t.name}</span>
+              <div className="theme-info" style={{ background: t.dark ? "#1C1917" : "white" }}>
+                <div className="theme-name" style={{ color: t.dark ? "#FEF3C7" : undefined }}>
+                  <span><i className={`fa-solid ${t.icon}`} style={{ color: t.btnColor, marginRight: 5 }} />{t.name}</span>
+                </div>
+                <div className="theme-mood" style={{ color: t.dark ? "#78716C" : undefined }}>{t.mood}</div>
+                <div className="theme-tags">{t.tags.map((tg) => <span key={tg} className="theme-tag">{tg}</span>)}</div>
               </div>
-              <div className="theme-mood" style={{ color: t.dark ? "#78716C" : undefined }}>{t.mood}</div>
-              <div className="theme-tags">{t.tags.map((tg) => <span key={tg} className="theme-tag">{tg}</span>)}</div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
+      {!isPro && (
+        <div style={{
+          background: "#F5F3FF", border: "1.5px solid #DDD6FE", borderRadius: 14,
+          padding: "1rem 1.25rem", marginBottom: "1.5rem",
+          display: "flex", alignItems: "center", gap: "1rem",
+        }}>
+          <i className="fa-solid fa-palette" style={{ color: "#7C3AED", fontSize: "1.25rem", flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, color: "#5B21B6", marginBottom: ".2rem", fontSize: ".875rem" }}>
+              9 tema premium terkunci
+            </div>
+            <div style={{ fontSize: ".8rem", color: "#6D28D9" }}>
+              Upgrade ke Pro untuk akses semua 12 tema.
+            </div>
+          </div>
+          <a href="/langganan" style={{
+            background: "#7C3AED", color: "#fff", fontWeight: 700, fontSize: ".78rem",
+            padding: "6px 14px", borderRadius: 9, textDecoration: "none", flexShrink: 0,
+          }}>
+            <i className="fa-solid fa-crown" /> Upgrade
+          </a>
+        </div>
+      )}
 
       {/* CUSTOM CSS */}
-      <div className="custom-panel">
+      <div className="custom-panel" style={!isPro ? { opacity: .6, pointerEvents: "none", position: "relative" } : undefined}>
         <div className="custom-title">
           <i className="fa-solid fa-code" /> Custom CSS
           <span className="badge badge-sunny" style={{ fontSize: ".65rem", marginLeft: 4 }}>PRO</span>
         </div>
+        {!isPro && (
+          <div style={{ background: "#F5F3FF", border: "1.5px solid #DDD6FE", borderRadius: 10, padding: ".75rem 1rem", fontSize: ".8rem", color: "#6D28D9", marginBottom: ".75rem", pointerEvents: "auto" }}>
+            <i className="fa-solid fa-lock" style={{ marginRight: 5 }} />
+            Fitur Custom CSS hanya untuk pengguna Pro.{" "}
+            <a href="/langganan" style={{ color: "#7C3AED", fontWeight: 700 }}>Upgrade →</a>
+          </div>
+        )}
         <textarea
           className="css-editor"
           placeholder={"/* Tulis CSS kustom kamu di sini — hingga 5KB */\n/* Contoh: */\n.link-card {\n  border-radius: 24px;\n}\n\n.avatar {\n  border: 3px solid #F59E0B;\n}"}
           onChange={(e) => setCssBytes(new TextEncoder().encode(e.target.value).length)}
+          disabled={!isPro}
         />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: ".75rem" }}>
           <div style={{ fontSize: ".72rem", color: "var(--n-400)" }}>
             <i className="fa-solid fa-circle-info" style={{ color: "var(--b-400)" }} /> {cssBytes} / 5120 bytes digunakan
           </div>
-          <button className="btn btn-secondary btn-sm"><i className="fa-solid fa-play" /> Terapkan CSS</button>
+          <button className="btn btn-secondary btn-sm" disabled={!isPro}><i className="fa-solid fa-play" /> Terapkan CSS</button>
         </div>
       </div>
 
