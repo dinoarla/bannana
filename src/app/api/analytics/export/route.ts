@@ -3,10 +3,24 @@ import { handleApiError } from "@/lib/errors/errorHandler";
 import { errors } from "@/lib/errors/AppError";
 import { AnalyticsService } from "@/lib/services/AnalyticsService";
 import { PageService } from "@/lib/services/PageService";
+import { db } from "@/lib/db/client";
 
 export async function GET(request: Request) {
   try {
     const user = await assertSessionUser();
+
+    let isPro = false;
+    try {
+      const [subRows] = await db.query(
+        "SELECT plan, status FROM Subscription WHERE userId = ? AND status = 'active' LIMIT 1",
+        [user.id]
+      );
+      const sub = (subRows as Record<string, unknown>[])[0];
+      isPro = sub?.plan === "pro";
+    } catch { /* Subscription table may not exist yet */ }
+
+    if (!isPro) throw errors.forbidden("Export CSV hanya tersedia untuk pengguna Pro.");
+
     const { searchParams } = new URL(request.url);
     const pageId = searchParams.get("pageId") ?? "";
     const range = (searchParams.get("range") as "7d" | "30d" | "90d") || "30d";

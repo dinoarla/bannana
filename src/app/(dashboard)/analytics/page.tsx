@@ -4,6 +4,7 @@ import { assertSessionUser } from "@/lib/auth/session";
 import { AnalyticsService } from "@/lib/services/AnalyticsService";
 import { PageService } from "@/lib/services/PageService";
 import { AnalyticsPageSelector } from "./AnalyticsControls";
+import { db } from "@/lib/db/client";
 
 type SearchParams = Promise<{ range?: string; pageId?: string }>;
 
@@ -15,7 +16,20 @@ const COUNTRY_FLAGS: Record<string, string> = {
 export default async function AnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
   const user = await assertSessionUser();
   const sp = await searchParams;
-  const range = (sp.range as "7d" | "30d" | "90d") || "30d";
+
+  let isPro = false;
+  try {
+    const [subRows] = await db.query(
+      "SELECT plan, status FROM Subscription WHERE userId = ? AND status = 'active' LIMIT 1",
+      [user.id]
+    );
+    const sub = (subRows as Record<string, unknown>[])[0];
+    isPro = sub?.plan === "pro";
+  } catch { /* Subscription table may not exist yet */ }
+
+  // Free users capped at 7-day retention
+  const rawRange = (sp.range as "7d" | "30d" | "90d") || "30d";
+  const range: "7d" | "30d" | "90d" = isPro ? rawRange : "7d";
 
   const pages = await new PageService().list(user.id);
   const activePageId = sp.pageId ?? pages[0]?.id ?? "";
@@ -43,11 +57,33 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: ".75rem", alignItems: "center" }}>
           <AnalyticsPageSelector pages={pages.map((p) => ({ id: p.id, title: p.title }))} activePageId={activePageId} />
-          <a href={`/api/analytics/export?pageId=${activePageId}&range=${range}`} className="export-btn" download><i className="fa-solid fa-file-csv" /> Export CSV</a>
+          {isPro
+            ? <a href={`/api/analytics/export?pageId=${activePageId}&range=${range}`} className="export-btn" download><i className="fa-solid fa-file-csv" /> Export CSV</a>
+            : <span className="export-btn" style={{ opacity: .5, cursor: "not-allowed" }} title="Export CSV hanya untuk Pro"><i className="fa-solid fa-lock" /> Export CSV</span>
+          }
         </div>
       </div>
 
       <div className="page-content">
+        {!isPro && (
+          <div style={{
+            background: "#F5F3FF", border: "1.5px solid #DDD6FE", borderRadius: 14,
+            padding: ".875rem 1.25rem", marginBottom: "1.5rem",
+            display: "flex", alignItems: "center", gap: ".875rem", flexWrap: "wrap",
+          }}>
+            <i className="fa-solid fa-clock-rotate-left" style={{ color: "#7C3AED", fontSize: "1rem", flexShrink: 0 }} />
+            <div style={{ flex: 1, fontSize: ".84rem", color: "#5B21B6" }}>
+              <strong>Retensi data: 7 hari</strong> — Upgrade ke Pro untuk akses data 90 hari, Export CSV, dan REST API.
+            </div>
+            <a href="/langganan" style={{
+              background: "#7C3AED", color: "#fff", fontWeight: 700, fontSize: ".78rem",
+              padding: "5px 14px", borderRadius: 9, textDecoration: "none", flexShrink: 0,
+            }}>
+              <i className="fa-solid fa-crown" /> Upgrade Pro
+            </a>
+          </div>
+        )}
+
         {/* STATS */}
         <div className="stats-grid">
           {[
@@ -78,11 +114,12 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
                 </span>
               </div>
               <div className="rng-btns">
-                {(["7d", "30d", "90d"] as const).map((r) => (
-                  <Link key={r} href={`/analytics?range=${r}${activePageId ? `&pageId=${activePageId}` : ""}`} className={`rng-btn${range === r ? " act" : ""}`}>
-                    {r === "7d" ? "7h" : r === "30d" ? "30h" : "90h"}
-                  </Link>
-                ))}
+                {(["7d", "30d", "90d"] as const).map((r) => {
+                  const locked = !isPro && r !== "7d";
+                  return locked
+                    ? <span key={r} className="rng-btn" style={{ opacity: .45, cursor: "not-allowed" }} title="Upgrade ke Pro untuk data 30/90 hari"><i className="fa-solid fa-lock" style={{ fontSize: ".6rem", marginRight: 3 }} />{r === "30d" ? "30h" : "90h"}</span>
+                    : <Link key={r} href={`/analytics?range=${r}${activePageId ? `&pageId=${activePageId}` : ""}`} className={`rng-btn${range === r ? " act" : ""}`}>{r === "7d" ? "7h" : r === "30d" ? "30h" : "90h"}</Link>;
+                })}
               </div>
             </div>
           </div>

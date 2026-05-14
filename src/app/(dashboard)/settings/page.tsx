@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { assertSessionUser } from "@/lib/auth/session";
 import { CSRF_COOKIE } from "@/lib/auth/session";
 import { SettingsForm } from "./SettingsForm";
+import { db } from "@/lib/db/client";
 
 type SearchParams = Promise<{ tab?: string }>;
 
@@ -11,6 +12,16 @@ export default async function SettingsPage({ searchParams }: { searchParams: Sea
   const user = await assertSessionUser();
   const jar = await cookies();
   const csrfToken = jar.get(CSRF_COOKIE)?.value ?? "";
+
+  let isPro = false;
+  try {
+    const [subRows] = await db.query(
+      "SELECT plan, status FROM Subscription WHERE userId = ? AND status = 'active' LIMIT 1",
+      [user.id]
+    );
+    const sub = (subRows as Record<string, unknown>[])[0];
+    isPro = sub?.plan === "pro";
+  } catch { /* Subscription table may not exist yet */ }
 
   return (
     <>
@@ -30,6 +41,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Sea
           website={user.profile?.website ?? ""}
           socialLinks={user.profile?.socialLinks ?? []}
           initialTab={sp.tab}
+          isPro={isPro}
         />
       </div>
     </>

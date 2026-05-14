@@ -3,9 +3,9 @@
 import { useState, useRef, useEffect } from "react";
 
 type SocialLink = { label: string; url: string; icon: string; color?: string };
-type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[]; initialTab?: string };
+type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[]; initialTab?: string; isPro?: boolean };
 
-export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website, socialLinks, initialTab }: Props) {
+export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website, socialLinks, initialTab, isPro = false }: Props) {
   const VALID_TABS = ["profil", "akun", "notif", "integrasi", "bahaya"];
   const [section, setSection] = useState(initialTab && VALID_TABS.includes(initialTab) ? initialTab : "profil");
 
@@ -41,7 +41,7 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio, ava
         {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} website={website} socialLinks={socialLinks} />}
         {section === "akun" && <AkunPanel csrf={csrf()} email={email} />}
         {section === "notif" && <NotifPanel csrfToken={csrfToken} />}
-        {section === "integrasi" && <IntegrasiPanel csrfToken={csrfToken} />}
+        {section === "integrasi" && <IntegrasiPanel csrfToken={csrfToken} isPro={isPro} />}
         {section === "bahaya" && <BahayaPanel csrfToken={csrfToken} username={username} />}
       </div>
     </div>
@@ -460,7 +460,7 @@ function NotifPanel({ csrfToken }: { csrfToken: string }) {
   );
 }
 
-function IntegrasiPanel({ csrfToken }: { csrfToken: string }) {
+function IntegrasiPanel({ csrfToken, isPro }: { csrfToken: string; isPro: boolean }) {
   type ApiKeyRow = { id: string; name: string; scopes: string[]; lastUsedAt: string | null; createdAt: string; revokedAt: string | null };
   const [keys, setKeys] = useState<ApiKeyRow[]>([]);
   const [newKeyName, setNewKeyName] = useState("");
@@ -507,37 +507,53 @@ function IntegrasiPanel({ csrfToken }: { csrfToken: string }) {
       </div>
       <div className="set-card">
         <div className="set-card-head">
-          <div className="set-card-title"><i className="fa-solid fa-key" /> API Keys</div>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(!showCreate)}><i className="fa-solid fa-plus" /> Buat API Key</button>
+          <div className="set-card-title">
+            <i className="fa-solid fa-key" /> API Keys
+            {!isPro && <span className="badge badge-sunny" style={{ fontSize: ".62rem", marginLeft: 6 }}>PRO</span>}
+          </div>
+          {isPro && <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(!showCreate)}><i className="fa-solid fa-plus" /> Buat API Key</button>}
         </div>
         <div className="set-card-body">
-          <div style={{ fontSize: ".84rem", color: "var(--n-600)", marginBottom: "1rem", lineHeight: 1.65 }}>Gunakan API Key untuk mengakses bannana.id API secara programatik. Jaga kerahasiaan API key kamu!</div>
-          {showCreate && (
-            <div style={{ display: "flex", gap: ".5rem", marginBottom: "1rem" }}>
-              <input className="form-inp" type="text" placeholder="Nama API key..." value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} style={{ marginBottom: 0 }} />
-              <button className="btn btn-primary btn-sm" onClick={createKey} disabled={creating}>{creating ? "Membuat…" : "Buat"}</button>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowCreate(false)}>Batal</button>
+          {!isPro ? (
+            <div style={{ background: "#F5F3FF", border: "1.5px solid #DDD6FE", borderRadius: 12, padding: "1.25rem", textAlign: "center" }}>
+              <i className="fa-solid fa-lock" style={{ fontSize: "1.5rem", color: "#7C3AED", marginBottom: ".75rem", display: "block" }} />
+              <div style={{ fontWeight: 700, color: "#5B21B6", marginBottom: ".4rem" }}>REST API Access — Fitur Pro</div>
+              <div style={{ fontSize: ".84rem", color: "#6D28D9", marginBottom: "1rem" }}>Buat dan kelola API key untuk mengakses bannana.id API secara programatik.</div>
+              <a href="/langganan" className="btn btn-primary btn-sm"><i className="fa-solid fa-crown" /> Upgrade ke Pro</a>
             </div>
+          ) : (
+            <div style={{ fontSize: ".84rem", color: "var(--n-600)", marginBottom: "1rem", lineHeight: 1.65 }}>Gunakan API Key untuk mengakses bannana.id API secara programatik. Jaga kerahasiaan API key kamu!</div>
           )}
-          {newKeyRaw && (
-            <div style={{ background: "#D1FAE5", border: "1.5px solid #6EE7B7", borderRadius: 10, padding: ".875rem", marginBottom: "1rem", fontSize: ".82rem" }}>
-              <div style={{ fontWeight: 700, color: "#065F46", marginBottom: .4 + "rem" }}><i className="fa-solid fa-triangle-exclamation" /> Simpan key ini sekarang — tidak akan ditampilkan lagi!</div>
-              <div style={{ fontFamily: "var(--fm)", wordBreak: "break-all", color: "#065F46" }}>{newKeyRaw}</div>
-              <button className="btn btn-ghost btn-sm" style={{ marginTop: ".5rem" }} onClick={() => { navigator.clipboard.writeText(newKeyRaw); }}><i className="fa-solid fa-copy" /> Salin</button>
-            </div>
+          {isPro && (
+            <>
+              {showCreate && (
+                <div style={{ display: "flex", gap: ".5rem", marginBottom: "1rem" }}>
+                  <input className="form-inp" type="text" placeholder="Nama API key..." value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} style={{ marginBottom: 0 }} />
+                  <button className="btn btn-primary btn-sm" onClick={createKey} disabled={creating}>{creating ? "Membuat…" : "Buat"}</button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setShowCreate(false)}>Batal</button>
+                </div>
+              )}
+              {newKeyRaw && (
+                <div style={{ background: "#D1FAE5", border: "1.5px solid #6EE7B7", borderRadius: 10, padding: ".875rem", marginBottom: "1rem", fontSize: ".82rem" }}>
+                  <div style={{ fontWeight: 700, color: "#065F46", marginBottom: .4 + "rem" }}><i className="fa-solid fa-triangle-exclamation" /> Simpan key ini sekarang — tidak akan ditampilkan lagi!</div>
+                  <div style={{ fontFamily: "var(--fm)", wordBreak: "break-all", color: "#065F46" }}>{newKeyRaw}</div>
+                  <button className="btn btn-ghost btn-sm" style={{ marginTop: ".5rem" }} onClick={() => { navigator.clipboard.writeText(newKeyRaw); }}><i className="fa-solid fa-copy" /> Salin</button>
+                </div>
+              )}
+              {keys.filter((k) => !k.revokedAt).length === 0 && !newKeyRaw && (
+                <div style={{ fontSize: ".84rem", color: "var(--n-400)" }}>Belum ada API key aktif.</div>
+              )}
+              {keys.filter((k) => !k.revokedAt).map((k) => (
+                <div key={k.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--n-50)", border: "1.5px solid var(--n-200)", borderRadius: 12, padding: ".875rem", marginBottom: ".5rem" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: ".84rem", fontWeight: 600, color: "var(--n-800)" }}>{k.name}</div>
+                    <div style={{ fontFamily: "var(--fm)", fontSize: ".75rem", color: "var(--n-500)", marginTop: 2 }}>{(k.scopes ?? []).join(", ")} · Dibuat {new Date(k.createdAt).toLocaleDateString("id-ID")}</div>
+                  </div>
+                  <button className="btn btn-danger btn-sm" onClick={() => revokeKey(k.id)}><i className="fa-solid fa-trash" /></button>
+                </div>
+              ))}
+            </>
           )}
-          {keys.filter((k) => !k.revokedAt).length === 0 && !newKeyRaw && (
-            <div style={{ fontSize: ".84rem", color: "var(--n-400)" }}>Belum ada API key aktif.</div>
-          )}
-          {keys.filter((k) => !k.revokedAt).map((k) => (
-            <div key={k.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--n-50)", border: "1.5px solid var(--n-200)", borderRadius: 12, padding: ".875rem", marginBottom: ".5rem" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: ".84rem", fontWeight: 600, color: "var(--n-800)" }}>{k.name}</div>
-                <div style={{ fontFamily: "var(--fm)", fontSize: ".75rem", color: "var(--n-500)", marginTop: 2 }}>{(k.scopes ?? []).join(", ")} · Dibuat {new Date(k.createdAt).toLocaleDateString("id-ID")}</div>
-              </div>
-              <button className="btn btn-danger btn-sm" onClick={() => revokeKey(k.id)}><i className="fa-solid fa-trash" /></button>
-            </div>
-          ))}
         </div>
       </div>
     </>

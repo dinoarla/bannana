@@ -1,6 +1,7 @@
 import { assertSessionUser } from "@/lib/auth/session";
 import { verifyCsrf } from "@/lib/csrf/token";
 import { handleApiError } from "@/lib/errors/errorHandler";
+import { errors } from "@/lib/errors/AppError";
 import { ok } from "@/lib/utils/response";
 import { db } from "@/lib/db/client";
 import { sha256, randomToken } from "@/lib/utils/hash";
@@ -33,6 +34,18 @@ export async function POST(request: Request) {
   try {
     await verifyCsrf();
     const user = await assertSessionUser();
+
+    let isPro = false;
+    try {
+      const [subRows] = await db.query(
+        "SELECT plan, status FROM Subscription WHERE userId = ? AND status = 'active' LIMIT 1",
+        [user.id]
+      );
+      const sub = (subRows as Record<string, unknown>[])[0];
+      isPro = sub?.plan === "pro";
+    } catch { /* Subscription table may not exist yet */ }
+    if (!isPro) throw errors.forbidden("REST API access hanya tersedia untuk pengguna Pro.");
+
     const { name } = createSchema.parse(await request.json());
 
     const rawKey = `bna_${randomToken(32)}`;
