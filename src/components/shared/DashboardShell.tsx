@@ -6,6 +6,58 @@ import { usePathname } from "next/navigation";
 import type { UserWithProfile } from "@/types/db.types";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 
+function EmailVerifyBanner({ email }: { email: string }) {
+  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const [msg, setMsg] = useState("");
+
+  async function resend() {
+    setStatus("loading");
+    try {
+      const csrfToken = decodeURIComponent(
+        document.cookie.split("; ").find((r) => r.startsWith("bid_csrf="))?.split("=")[1] ?? ""
+      );
+      const res = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "X-CSRF-Token": csrfToken },
+      });
+      const json = await res.json();
+      if (!json.success) { setStatus("error"); setMsg(json.error?.message ?? "Gagal kirim email."); return; }
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+      setMsg("Koneksi gagal. Coba lagi.");
+    }
+  }
+
+  return (
+    <div style={{
+      background: "linear-gradient(90deg, #FEF3C7, #FFFBEB)",
+      borderBottom: "1.5px solid #FDE68A",
+      padding: ".6rem 1.5rem",
+      display: "flex", alignItems: "center", gap: ".75rem",
+      fontSize: ".8rem", flexWrap: "wrap",
+    }}>
+      <i className="fa-solid fa-envelope-circle-check" style={{ color: "#D97706", fontSize: "1rem", flexShrink: 0 }} />
+      <span style={{ color: "#92400E", flex: 1 }}>
+        <strong>Verifikasi emailmu</strong> — kami kirim link ke <strong>{email}</strong>. Cek inbox atau folder spam.
+      </span>
+      {status === "sent" ? (
+        <span style={{ color: "#065F46", fontWeight: 600 }}><i className="fa-solid fa-check" /> Email terkirim!</span>
+      ) : status === "error" ? (
+        <span style={{ color: "#991B1B" }}>{msg}</span>
+      ) : (
+        <button
+          onClick={resend}
+          disabled={status === "loading"}
+          style={{ background: "#F59E0B", border: "none", borderRadius: 8, padding: "4px 12px", fontWeight: 700, color: "#1C1409", cursor: "pointer", fontSize: ".78rem", flexShrink: 0 }}
+        >
+          {status === "loading" ? <><i className="fa-solid fa-spinner fa-spin" /> Mengirim…</> : "Kirim ulang"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function DashboardShell({ user, children }: { user: UserWithProfile; children: React.ReactNode }) {
   const pathname = usePathname();
   const displayName = user.profile?.displayName ?? user.username;
@@ -103,6 +155,7 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
             <i className={`fa-solid ${sidebarOpen ? "fa-xmark" : "fa-bars"}`} />
           </button>
         </div>
+        {!user.emailVerified && <EmailVerifyBanner email={user.email} />}
         {children}
       </div>
 

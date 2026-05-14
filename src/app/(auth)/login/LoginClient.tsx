@@ -10,6 +10,7 @@ export function LoginClient() {
   const [slugPreview, setSlugPreview] = useState("kreator_kamu");
   const [pwStrength, setPwStrength] = useState<{ bars: number; label: string; cls: string } | null>(null);
   const [showPw, setShowPw] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -61,12 +62,55 @@ export function LoginClient() {
       });
       const json = await res.json();
       if (!json.success) { setError(json.error?.message ?? "Terjadi kesalahan."); return; }
+      if (mode === "register") {
+        setRegisteredEmail(body.email);
+        return;
+      }
       location.href = json.data?.user?.role === "ADMIN" ? "/admin" : "/dashboard";
     } catch {
       setError("Koneksi gagal. Coba lagi.");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (registeredEmail) {
+    return (
+      <main className="auth-page-bg">
+        <div className="auth-wrap">
+          <Link href="/" className="auth-logo">
+            <span className="bana">🍌</span> bannana
+          </Link>
+          <div className="auth-glass">
+            <div className="success-state">
+              <div className="success-icon" style={{ background: "#FEF3C7", color: "#D97706" }}>
+                <i className="fa-solid fa-envelope-open-text" />
+              </div>
+              <div className="card-title">Cek email kamu! 📬</div>
+              <div className="card-sub">
+                Kami sudah mengirim link verifikasi ke<br />
+                <strong style={{ color: "var(--b-800)" }}>{registeredEmail}</strong>
+              </div>
+              <div style={{ background: "var(--n-50)", border: "1.5px solid var(--n-200)", borderRadius: 12, padding: "1rem", fontSize: ".82rem", color: "var(--n-600)", textAlign: "left", width: "100%", marginTop: ".5rem" }}>
+                <div style={{ fontWeight: 700, color: "var(--b-900)", marginBottom: ".4rem" }}>
+                  <i className="fa-solid fa-circle-info" style={{ color: "var(--b-500)", marginRight: 5 }} /> Tidak menemukan emailnya?
+                </div>
+                Coba cek folder <strong>Spam</strong> atau <strong>Promosi</strong>. Link berlaku selama 24 jam.
+              </div>
+              <Link href="/dashboard" className="btn-submit" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, textDecoration: "none", marginTop: ".5rem" }}>
+                <i className="fa-solid fa-arrow-right" /> Lanjut ke Dashboard
+              </Link>
+              <button
+                onClick={() => setRegisteredEmail(null)}
+                style={{ background: "none", border: "none", color: "var(--n-500)", fontSize: ".8rem", cursor: "pointer", marginTop: ".25rem" }}
+              >
+                Kembali ke halaman login
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   return (
