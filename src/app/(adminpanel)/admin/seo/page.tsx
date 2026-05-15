@@ -93,7 +93,7 @@ export default async function AdminSeoPage() {
         </div>
 
         {/* SEO Health stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
+        <div className="dash-stat-grid">
           {[
             { label: "Total Halaman", value: String(totalPages), icon: "fa-table-columns", color: "#3B82F6", bg: "#EFF6FF" },
             { label: "Published", value: `${publishedPct}%`, icon: "fa-circle-check", color: "#10B981", bg: "#ECFDF5" },

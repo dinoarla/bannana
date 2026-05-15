@@ -19,7 +19,7 @@ export function AnalyticsPageSelector({ pages, activePageId }: { pages: Page[]; 
     <select
       defaultValue={activePageId}
       onChange={onChange}
-      style={{ height: 36, border: "1.5px solid var(--n-200)", borderRadius: 9, padding: "0 10px", fontSize: ".84rem", fontFamily: "var(--fb)", color: "var(--n-700)", cursor: "pointer", outline: "none", background: "var(--n-0)" }}
+      className="anl-page-select"
     >
       {pages.map((p) => (
         <option key={p.id} value={p.id}>{p.title}</option>

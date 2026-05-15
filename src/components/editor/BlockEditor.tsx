@@ -5,7 +5,9 @@ import Link from "next/link";
 import {
   DndContext,
   closestCenter,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -17,7 +19,6 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
-import { KeyboardSensor } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import type { PublicBlock } from "@/types";
 
@@ -77,11 +78,13 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
   const [activeTab, setActiveTab] = useState<"blok" | "hal" | "tema">("blok");
   const [pvMode, setPvMode] = useState<"mob" | "desk">("mob");
   const [search, setSearch] = useState("");
+  const [mobilePanel, setMobilePanel] = useState<"blocks" | "canvas" | "settings">("canvas");
 
   const selected = useMemo(() => page.blocks.find((b) => b.id === selectedId), [page.blocks, selectedId]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
@@ -114,6 +117,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
       setPage((p) => ({ ...p, blocks: [...p.blocks, block] }));
       setSelectedId(block.id);
       setActiveTab("blok");
+      setMobilePanel("canvas");
       showSave("Blok ditambahkan ✓");
     } finally {
       setSaving(false);
@@ -288,8 +292,13 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
 
       {/* BODY */}
       <div className="editor-body">
+        {/* Backdrop for mobile slide-up panels */}
+        {mobilePanel !== "canvas" && (
+          <div className="mob-panel-overlay" onClick={() => setMobilePanel("canvas")} />
+        )}
+
         {/* LEFT PANEL */}
-        <div className="panel-left">
+        <div className={`panel-left${mobilePanel === "blocks" ? " mob-open" : ""}`}>
           <div className="pl-head">
             <div className="pl-title" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
               <span><i className="fa-solid fa-plus-circle" /> Tambah Blok</span>
@@ -398,6 +407,9 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                         onSelect={() => {
                           setSelectedId(block.id);
                           setActiveTab("blok");
+                          if (typeof window !== "undefined" && window.innerWidth <= 768) {
+                            setMobilePanel("settings");
+                          }
                         }}
                         onDelete={() => deleteBlock(block.id)}
                         onToggle={(v) => toggleBlock(block.id, v)}
@@ -417,7 +429,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
         </div>
 
         {/* RIGHT PANEL */}
-        <div className="panel-right">
+        <div className={`panel-right${mobilePanel === "settings" ? " mob-open" : ""}`}>
           <div className="pr-head">
             <div className="pr-tabs">
               <button
@@ -830,6 +842,31 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
             </button>
           )}
         </div>
+      </div>
+
+      {/* MOBILE BOTTOM TAB BAR — switches between Add / Canvas / Settings panels */}
+      <div className="mob-editor-tabs">
+        <button
+          className={`mob-editor-tab${mobilePanel === "blocks" ? " act" : ""}`}
+          onClick={() => setMobilePanel(mobilePanel === "blocks" ? "canvas" : "blocks")}
+        >
+          <i className="fa-solid fa-plus-circle" />
+          <span>Tambah</span>
+        </button>
+        <button
+          className={`mob-editor-tab${mobilePanel === "canvas" ? " act" : ""}`}
+          onClick={() => setMobilePanel("canvas")}
+        >
+          <i className="fa-solid fa-table-columns" />
+          <span>Canvas</span>
+        </button>
+        <button
+          className={`mob-editor-tab${mobilePanel === "settings" ? " act" : ""}`}
+          onClick={() => setMobilePanel(mobilePanel === "settings" ? "canvas" : "settings")}
+        >
+          <i className="fa-solid fa-sliders" />
+          <span>Pengaturan</span>
+        </button>
       </div>
     </>
   );

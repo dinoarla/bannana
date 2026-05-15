@@ -51,15 +51,15 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
 
   return (
     <>
-      <div className="topbar">
+      <div className="topbar topbar-wrap">
         <div style={{ fontFamily: "var(--fd)", fontSize: "1.3rem", fontWeight: 700, color: "var(--b-900)" }}>
           <i className="fa-solid fa-chart-line" style={{ color: "var(--b-500)", marginRight: 8 }} /> Analytics
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: ".75rem", alignItems: "center" }}>
           <AnalyticsPageSelector pages={pages.map((p) => ({ id: p.id, title: p.title }))} activePageId={activePageId} />
           {isPro
-            ? <a href={`/api/analytics/export?pageId=${activePageId}&range=${range}`} className="export-btn" download><i className="fa-solid fa-file-csv" /> Export CSV</a>
-            : <span className="export-btn" style={{ opacity: .5, cursor: "not-allowed" }} title="Export CSV hanya untuk Pro"><i className="fa-solid fa-lock" /> Export CSV</span>
+            ? <a href={`/api/analytics/export?pageId=${activePageId}&range=${range}`} className="export-btn" download><i className="fa-solid fa-file-csv" /><span className="hide-mobile"> Export CSV</span></a>
+            : <span className="export-btn" style={{ opacity: .5, cursor: "not-allowed" }} title="Export CSV hanya untuk Pro"><i className="fa-solid fa-lock" /><span className="hide-mobile"> Export CSV</span></span>
           }
         </div>
       </div>

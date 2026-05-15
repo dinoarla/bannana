@@ -29,11 +29,11 @@ export default async function PagesPage() {
         <div style={{ marginLeft: "auto" }}>
           {canCreatePage ? (
             <Link href="/pages/new" className="btn btn-primary btn-sm">
-              <i className="fa-solid fa-plus" /> Halaman Baru
+              <i className="fa-solid fa-plus" /><span className="hide-mobile"> Halaman Baru</span>
             </Link>
           ) : (
             <Link href="/langganan" className="btn btn-primary btn-sm" title="Upgrade ke Pro untuk halaman tak terbatas">
-              <i className="fa-solid fa-crown" /> Upgrade Pro
+              <i className="fa-solid fa-crown" /><span className="hide-mobile"> Upgrade Pro</span>
             </Link>
           )}
         </div>

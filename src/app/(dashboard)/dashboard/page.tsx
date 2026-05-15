@@ -61,7 +61,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         </div>
 
         {/* STATS GRID */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1rem", marginBottom: "2rem" }}>
+        <div className="dash-stat-grid">
           <StatCard
             icon="fa-eye" iconBg="var(--b-100)" iconColor="var(--b-600)"
             value={totalViews > 1000 ? `${(totalViews / 1000).toFixed(1)}K` : String(totalViews)}
@@ -130,7 +130,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         </div>
 
         {/* BOTTOM 2-COL */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "1.5rem" }}>
+        <div className="dash-bottom-grid">
           <div>
             <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 18, padding: "1.5rem", marginBottom: "1rem" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>

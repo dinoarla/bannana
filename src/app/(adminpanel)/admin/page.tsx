@@ -93,7 +93,7 @@ export default async function AdminOverviewPage() {
 
       <div className="page-content">
         {/* Stat grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
+        <div className="three-col" style={{ marginBottom: "2rem" }}>
           {statCards.map((s) => (
             <div key={s.label} style={{
               background: "#fff", border: "2px solid var(--b-100)", borderRadius: "var(--r-xl)",

@@ -31,7 +31,7 @@ export default async function ThemesPage() {
           <i className="fa-solid fa-palette" style={{ color: "var(--b-500)", marginRight: 8 }} /> Pilih Tema
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: ".75rem", alignItems: "center" }}>
-          <Link href={`/${user.username}`} target="_blank" className="btn btn-ghost btn-sm"><i className="fa-solid fa-eye" /> Preview Halaman</Link>
+          <Link href={`/${user.username}`} target="_blank" className="btn btn-ghost btn-sm"><i className="fa-solid fa-eye" /><span className="hide-mobile"> Preview Halaman</span></Link>
         </div>
       </div>
       <div className="page-content">

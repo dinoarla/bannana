@@ -171,8 +171,8 @@ export function DashboardTopbar({ pages, username, avatarUrl, csrfToken, canCrea
             </div>
 
             {notifOpen && (
-              <div style={{
-                position: "absolute", right: 0, top: "calc(100% + 10px)", width: 340, zIndex: 200,
+              <div className="notif-dropdown" style={{
+                position: "absolute", right: 0, top: "calc(100% + 10px)", width: 340, maxWidth: "calc(100vw - 1rem)", zIndex: 200,
                 background: "var(--n-0)", border: "1.5px solid var(--n-200)", borderRadius: 16,
                 boxShadow: "0 8px 32px rgba(0,0,0,.12)", overflow: "hidden",
               }}>
@@ -226,11 +226,11 @@ export function DashboardTopbar({ pages, username, avatarUrl, csrfToken, canCrea
           {/* Create page / Upgrade button */}
           {canCreatePage ? (
             <Link href="/pages/new" className="btn btn-primary btn-sm">
-              <i className="fa-solid fa-plus" /> Halaman Baru
+              <i className="fa-solid fa-plus" /><span className="hide-mobile"> Halaman Baru</span>
             </Link>
           ) : (
             <Link href="/langganan" className="btn btn-primary btn-sm" title="Upgrade ke Pro untuk halaman tak terbatas">
-              <i className="fa-solid fa-crown" /> Upgrade Pro
+              <i className="fa-solid fa-crown" /><span className="hide-mobile"> Upgrade Pro</span>
             </Link>
           )}
 
