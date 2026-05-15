@@ -180,24 +180,14 @@ export default async function LandingPage() {
           </div>
           <div className="feat-grid">
             {[
-              { icon: "fa-pen-to-square", title: "Editor Drag & Drop", desc: "Susun link & blok semudah main puzzle. Live preview desktop/mobile langsung keliatan. Undo/redo sampai 50 langkah!", pills: [["fa-eye", "Live Preview"], ["fa-rotate-left", "Undo 50x"]] },
-              { icon: "fa-palette", title: "12+ Tema Keren", desc: "12 tema preset cantik atau kustomisasi penuh — font, warna, bahkan custom CSS sampai 5KB!", pills: [["fa-swatchbook", "12 Preset"], ["fa-code", "Custom CSS"]] },
-              { icon: "fa-chart-line", title: "Analytics Detail", desc: "Lihat siapa yang klik, dari mana asalnya, pakai HP atau laptop. Export ke CSV kapan aja!", pills: [["fa-arrow-pointer", "Click Tracking"], ["fa-file-csv", "Export CSV"]] },
-              { icon: "fa-shield-halved", title: "Auth yang Aman", desc: "Login email/password atau SSO Google & GitHub. Dilindungi CSRF, rate limiting, dan bcrypt.", pills: [["fa-brands fa-google", "Google SSO"], ["fa-lock", "CSRF Guard"]] },
-              { icon: "fa-key", title: "REST API Lengkap", desc: "API Key dengan scope read/write/analytics. Dokumentasi lengkap tersedia untuk developer!", pills: [["fa-plug", "API Key"], ["fa-sliders", "Scoped"]] },
-              { icon: "fa-server", title: "Self-Hosted Ready", desc: "Deploy di server sendiri pakai PM2 + Nginx. Prisma + MySQL — pakai DB hosting yang udah ada!", pills: [["fa-database", "MySQL/Prisma"], ["fa-brands fa-node-js", "Next.js 15"]] },
+              { icon: "fa-pen-to-square", title: "Editor Drag & Drop", desc: "Susun link & blok sesuka hati. Live preview real-time, undo/redo 50 langkah." },
+              { icon: "fa-palette", title: "12+ Tema Keren", desc: "Pilih dari 12 tema preset cantik atau kustomisasi penuh dengan custom CSS." },
+              { icon: "fa-chart-line", title: "Analytics Detail", desc: "Lihat klik per link, negara asal, dan device pengunjung. Export CSV kapan aja." },
             ].map((f) => (
               <div className="feat-card" key={f.title}>
                 <div className="feat-icon"><i className={`fa-solid ${f.icon}`} /></div>
                 <div className="feat-title">{f.title}</div>
                 <div className="feat-desc">{f.desc}</div>
-                <div className="feat-pills">
-                  {f.pills.map(([ic, label]) => (
-                    <span className="pill" key={label}>
-                      <i className={ic.startsWith("fa-brands") ? ic : `fa-solid ${ic}`} /> {label}
-                    </span>
-                  ))}
-                </div>
               </div>
             ))}
           </div>

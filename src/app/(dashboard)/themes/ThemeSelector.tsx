@@ -25,11 +25,11 @@ const MINIMAL = ["cloud", "licorice", "vanilla"];
 
 export function ThemeSelector({ pageId, currentTheme, csrfToken, isPro }: { pageId: string; currentTheme: string; csrfToken: string; isPro: boolean }) {
   const [selected, setSelected] = useState(currentTheme);
+  const [applied, setApplied] = useState(currentTheme);
   const [filter, setFilter] = useState<Filter>("all");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [cssBytes, setCssBytes] = useState(0);
-  const [pendingName, setPendingName] = useState("");
 
   const visible = THEMES.filter((t) => {
     if (filter === "light") return !t.dark;
@@ -39,37 +39,35 @@ export function ThemeSelector({ pageId, currentTheme, csrfToken, isPro }: { page
     return true;
   });
 
-  async function applyTheme(id: string) {
+  function selectTheme(id: string) {
     if (!isPro && !FREE_THEMES.includes(id)) return;
     setSelected(id);
-    const name = THEMES.find((t) => t.id === id)?.name ?? id;
-    setPendingName(name);
   }
 
-  async function saveTheme() {
+  async function saveTheme(id: string) {
+    if (saving) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/pages/${pageId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
-        body: JSON.stringify({ theme: selected }),
+        body: JSON.stringify({ theme: id }),
       });
       const json = await res.json();
-      if (!json.success) { alert(json.error?.message ?? "Gagal menyimpan tema."); setSelected(currentTheme); return; }
-      setMsg(`Tema "${THEMES.find((t) => t.id === selected)?.name}" diterapkan!`);
+      if (!json.success) { alert(json.error?.message ?? "Gagal menyimpan tema."); setSelected(applied); return; }
+      setApplied(id);
+      setMsg(`Tema "${THEMES.find((t) => t.id === id)?.name}" diterapkan!`);
       setTimeout(() => setMsg(""), 3000);
     } finally { setSaving(false); }
   }
 
   return (
     <>
-      {/* Apply button — shown in topbar context via portal would be complex; render here */}
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1.25rem", gap: ".75rem", alignItems: "center" }}>
-        {msg && <span style={{ fontSize: ".84rem", color: "var(--success-600)", fontWeight: 600 }}><i className="fa-solid fa-check" /> {msg}</span>}
-        <button className="btn btn-primary btn-sm" onClick={saveTheme} disabled={saving}>
-          {saving ? <><i className="fa-solid fa-spinner fa-spin" /> Menyimpan…</> : <><i className="fa-solid fa-check" /> {pendingName ? `Terapkan "${pendingName}"` : "Terapkan Tema"}</>}
-        </button>
-      </div>
+      {msg && (
+        <div style={{ display: "flex", alignItems: "center", gap: ".5rem", background: "var(--success-100)", border: "1.5px solid var(--success-300)", borderRadius: 10, padding: ".625rem 1rem", marginBottom: "1rem", fontSize: ".84rem", color: "var(--success-700)", fontWeight: 600 }}>
+          <i className="fa-solid fa-check-circle" /> {msg}
+        </div>
+      )}
 
       {/* FILTER */}
       <div className="filter-bar">
@@ -90,18 +88,32 @@ export function ThemeSelector({ pageId, currentTheme, csrfToken, isPro }: { page
       <div className="themes-grid">
         {visible.map((t) => {
           const isLocked = !isPro && !FREE_THEMES.includes(t.id);
+          const isApplied = applied === t.id;
+          const isSelected = selected === t.id;
+          const showOverlay = isSelected && !isApplied && !isLocked;
           return (
             <button
               key={t.id}
-              className={`theme-card tc-${t.id}${selected === t.id ? " active" : ""}${isLocked ? " locked" : ""}`}
-              onClick={() => applyTheme(t.id)}
+              className={`theme-card tc-${t.id}${isSelected ? " active" : ""}${isLocked ? " locked" : ""}`}
+              onClick={() => selectTheme(t.id)}
               title={isLocked ? "Tema Pro — upgrade untuk akses semua tema" : undefined}
               style={isLocked ? { opacity: .65, cursor: "pointer" } : undefined}
             >
-              {selected === t.id && <div className="active-badge"><i className="fa-solid fa-check" /> Aktif</div>}
+              {isApplied && <div className="active-badge"><i className="fa-solid fa-check" /> Aktif</div>}
               {isLocked && (
                 <div className="active-badge" style={{ background: "#7C3AED", color: "#fff" }}>
                   <i className="fa-solid fa-lock" /> PRO
+                </div>
+              )}
+              {/* Apply overlay — shown when card is selected but not yet applied */}
+              {showOverlay && (
+                <div
+                  className="tc-apply-overlay"
+                  onClick={(e) => { e.stopPropagation(); saveTheme(t.id); }}
+                >
+                  <button className="btn btn-primary btn-sm" style={{ pointerEvents: "none" }}>
+                    {saving ? <><i className="fa-solid fa-spinner fa-spin" /> Menyimpan…</> : <><i className="fa-solid fa-check" /> Terapkan</>}
+                  </button>
                 </div>
               )}
               <div className={`theme-preview ${t.bg}`}>

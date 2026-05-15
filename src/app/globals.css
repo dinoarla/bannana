@@ -538,6 +538,7 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
   /* Topbar simplification on mobile */
   .topbar { padding:0 .875rem; height:52px; }
   .tb-search { display:none; }
+  .tb-search-btn { display:flex; }
 
   /* Content */
   .page-content { padding:.875rem; }
@@ -669,6 +670,11 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
   .sb-mob-bar { height:48px; }
   .dash-stat-grid { grid-template-columns:1fr 1fr; }
   .anl-page-select { max-width:100px; }
+  .billing-cycle-selector { flex-direction:column; }
+  .three-col { grid-template-columns:1fr 1fr; }
+  .anl-card { padding:.75rem; min-width:0; }
+  .link-bar,.geo-pct { display:none; }
+  .link-row-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80px; }
 }
 
 /* ─── BANA WIGGLE ─── */
@@ -742,6 +748,7 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 /* ─── TOPBAR (dashboard) ─── */
 .tb-search { display:flex; align-items:center; gap:.5rem; height:36px; padding:0 12px; border:1.5px solid var(--n-200); border-radius:10px; background:var(--n-50); color:var(--n-500); font-size:.84rem; min-width:220px; }
 .tb-search input { border:none; background:transparent; outline:none; color:var(--n-700); font-family:var(--fb); font-size:.84rem; width:100%; }
+.tb-search-btn { display:none; }
 .tb-icon-btn { width:36px; height:36px; border-radius:10px; border:1.5px solid var(--n-200); background:var(--n-0); display:flex; align-items:center; justify-content:center; color:var(--n-600); cursor:pointer; position:relative; transition:all 150ms; text-decoration:none; }
 .tb-icon-btn:hover { border-color:var(--b-300); color:var(--b-700); }
 .notif-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:#EF4444; border:2px solid white; }
@@ -811,7 +818,7 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 .feat-pills { display:flex; flex-wrap:wrap; gap:6px; margin-top:1rem; }
 .pill { font-size:.68rem; font-weight:700; background:var(--b-100); color:var(--b-700); border-radius:var(--r-full); padding:3px 10px; display:inline-flex; align-items:center; gap:4px; }
 /* Blocks section */
-.blk-sec { padding:6rem 2.5rem; background:var(--b-50); }
+.blk-sec { padding:6rem 2.5rem; background:var(--b-50); overflow:hidden; }
 .blk-layout { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; max-width:1100px; margin:0 auto; }
 .blk-list { display:flex; flex-direction:column; gap:.75rem; }
 .blk-item { display:flex; align-items:center; gap:1rem; background:var(--n-0); border:2px solid var(--b-100); border-radius:14px; padding:1rem 1.25rem; cursor:pointer; transition:all var(--dur-normal) var(--ease-spring); }
@@ -839,7 +846,9 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 .t-night .pub-footer,.t-blueberry .pub-footer,.t-licorice .pub-footer,.t-glitter .pub-footer{color:#6B7280}
 .t-night .pub-footer a,.t-blueberry .pub-footer a,.t-licorice .pub-footer a,.t-glitter .pub-footer a{color:#9CA3AF}
 /* Analytics landing section */
-.anl-sec { padding:6rem 2.5rem; background:var(--b-50); }
+.anl-sec { padding:6rem 2.5rem; background:var(--b-50); overflow:hidden; }
+/* Billing cycle selector */
+.billing-cycle-selector { display:flex; gap:.75rem; }
 .anl-layout { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; max-width:1100px; margin:0 auto; }
 .anl-card { background:var(--n-0); border:2px solid var(--b-200); border-radius:20px; padding:1.75rem; box-shadow:var(--sh-xl); }
 .anl-card-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; }
@@ -1051,6 +1060,7 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 .theme-card:hover { transform:translateY(-5px) scale(1.02); border-color:var(--b-400); box-shadow:var(--sh-brand-md); }
 .theme-card.active { border-color:var(--b-500); box-shadow:0 0 0 3px rgba(245,158,11,.2),var(--sh-brand-md); }
 .active-badge { position:absolute; top:8px; right:8px; background:var(--b-500); color:var(--b-950); border-radius:var(--r-full); padding:2px 9px; font-size:.62rem; font-weight:800; z-index:5; }
+.tc-apply-overlay { position:absolute; inset:0; background:rgba(0,0,0,.5); border-radius:18px; display:flex; align-items:center; justify-content:center; z-index:10; cursor:pointer; }
 .theme-preview { height:128px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:14px; position:relative; overflow:hidden; }
 .tp-phone { width:52px; height:88px; border-radius:10px; background:rgba(255,255,255,.85); padding:5px; display:flex; flex-direction:column; gap:3px; box-shadow:0 4px 12px rgba(0,0,0,.12); }
 .tp-av { width:20px; height:20px; border-radius:50%; margin:0 auto 3px; }

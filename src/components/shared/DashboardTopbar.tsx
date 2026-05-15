@@ -143,7 +143,7 @@ export function DashboardTopbar({ pages, username, avatarUrl, csrfToken, canCrea
   return (
     <>
       <div className="topbar">
-        {/* Search bar */}
+        {/* Search bar — desktop only */}
         <div
           className="tb-search"
           onClick={() => setSearchOpen(true)}
@@ -157,6 +157,10 @@ export function DashboardTopbar({ pages, username, avatarUrl, csrfToken, canCrea
             style={{ cursor: "pointer" }}
           />
         </div>
+        {/* Search icon — mobile only */}
+        <button className="tb-icon-btn tb-search-btn" onClick={() => setSearchOpen(true)} aria-label="Cari">
+          <i className="fa-solid fa-search" />
+        </button>
 
         <div style={{ marginLeft: "auto", display: "flex", gap: ".75rem", alignItems: "center" }}>
           {/* Notification bell */}

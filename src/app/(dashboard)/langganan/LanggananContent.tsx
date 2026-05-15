@@ -207,24 +207,25 @@ export function LanggananContent({ csrfToken }: Props) {
           </table>
 
           {/* Cycle selector */}
-          <div style={{ display: "flex", gap: ".75rem", marginTop: "1.5rem", marginBottom: "1rem" }}>
+          <div className="billing-cycle-selector" style={{ marginTop: "1.5rem", marginBottom: "1rem" }}>
             {(["monthly", "yearly"] as const).map((c) => (
               <button
                 key={c}
                 onClick={() => setCycle(c)}
                 style={{
-                  flex: 1, height: 48, borderRadius: 12,
+                  flex: 1, minHeight: 48, borderRadius: 12,
                   border: `2px solid ${cycle === c ? "var(--b-500)" : "var(--n-200)"}`,
                   background: cycle === c ? "var(--b-500)" : "var(--n-0)",
                   color: cycle === c ? "var(--b-950)" : "var(--n-700)",
                   fontWeight: 700, fontSize: ".875rem", cursor: "pointer",
                   transition: "all .15s",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  padding: ".625rem 1rem", whiteSpace: "nowrap",
                 }}
               >
-                {c === "monthly" ? "Bulanan · Rp 15.000" : "Tahunan · Rp 150.000"}
+                {c === "monthly" ? "Bulanan · Rp 15K" : "Tahunan · Rp 150K"}
                 {c === "yearly" && (
-                  <span style={{ fontSize: ".7rem", background: "#D1FAE5", color: "#065F46", borderRadius: 5, padding: "2px 6px", fontWeight: 700 }}>
+                  <span style={{ fontSize: ".7rem", background: "#D1FAE5", color: "#065F46", borderRadius: 5, padding: "2px 6px", fontWeight: 700, flexShrink: 0 }}>
                     HEMAT 17%
                   </span>
                 )}
