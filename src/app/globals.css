@@ -1220,6 +1220,11 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
   .set-nav { position:static; display:flex; flex-direction:row; flex-wrap:wrap; gap:.3rem; padding:.5rem; }
   .set-nav-item { padding:.4rem .65rem; font-size:.76rem; flex:none; }
   .field-row,.form-row { grid-template-columns:1fr; }
+  /* Topbar: hide text search, show icon button */
+  .tb-search { display:none !important; }
+  .tb-search-btn { display:flex !important; }
+  /* Chart header: stack title + controls vertically */
+  .chart-head { flex-direction:column; align-items:flex-start; gap:.625rem; }
 }
 @media (max-width:480px) {
   .stats-grid { grid-template-columns:1fr 1fr; }
