@@ -1199,3 +1199,30 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 .foot-logo { font-family:var(--fd); font-size:1.2rem; font-weight:700; color:var(--b-500); display:flex; align-items:center; gap:5px; }
 @media(max-width:640px) { .pricing-hero,.pricing-sec,.cmp-sec,.faq-sec,.cta-strip { padding-left:1.25rem; padding-right:1.25rem; } }
 .link-card:active { transform:scale(.98); }
+
+/* ─── FINAL RESPONSIVE OVERRIDES ─── */
+/* Must be last — desktop component definitions above override earlier media queries */
+@media (max-width:1200px) {
+  .feat-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:1024px) {
+  .feat-grid { grid-template-columns:repeat(2,1fr); }
+  .blk-layout,.anl-layout { grid-template-columns:1fr; gap:2.5rem; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  .three-col { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:768px) {
+  .feat-grid { grid-template-columns:1fr; }
+  .blk-layout,.anl-layout { grid-template-columns:1fr; gap:2rem; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  .three-col,.two-col { grid-template-columns:1fr; }
+  .settings-layout { grid-template-columns:1fr; }
+  .set-nav { position:static; display:flex; flex-direction:row; flex-wrap:wrap; gap:.3rem; padding:.5rem; }
+  .set-nav-item { padding:.4rem .65rem; font-size:.76rem; flex:none; }
+  .field-row,.form-row { grid-template-columns:1fr; }
+}
+@media (max-width:480px) {
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .three-col { grid-template-columns:1fr 1fr; }
+  .feat-grid { grid-template-columns:1fr; }
+}
