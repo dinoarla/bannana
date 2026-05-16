@@ -1228,6 +1228,6 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 }
 @media (max-width:480px) {
   .stats-grid { grid-template-columns:1fr 1fr; }
-  .three-col { grid-template-columns:1fr 1fr; }
+  .three-col { grid-template-columns:1fr; }
   .feat-grid { grid-template-columns:1fr; }
 }
