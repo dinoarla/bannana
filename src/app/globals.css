@@ -414,7 +414,7 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 
 /* ─── DASHBOARD CONTENT GRIDS ─── */
 .dash-stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem; }
-.dash-bottom-grid { display:grid; grid-template-columns:1fr 320px; gap:1.5rem; }
+.dash-bottom-grid { display:grid; grid-template-columns:1fr 320px; gap:1.5rem; align-items:stretch; }
 
 /* ─── MOBILE EDITOR TABS ─── */
 .mob-editor-tabs { display:none; gap:.375rem; padding:.375rem .625rem .5rem; background:var(--n-0); border-top:1.5px solid var(--n-200); flex-shrink:0; }
@@ -748,7 +748,7 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 /* ─── TOPBAR (dashboard) ─── */
 .tb-search { display:flex; align-items:center; gap:.5rem; height:36px; padding:0 12px; border:1.5px solid var(--n-200); border-radius:10px; background:var(--n-50); color:var(--n-500); font-size:.84rem; min-width:220px; }
 .tb-search input { border:none; background:transparent; outline:none; color:var(--n-700); font-family:var(--fb); font-size:.84rem; width:100%; }
-.tb-search-btn { display:none; }
+.tb-search-btn { display:none !important; }
 .tb-icon-btn { width:36px; height:36px; border-radius:10px; border:1.5px solid var(--n-200); background:var(--n-0); display:flex; align-items:center; justify-content:center; color:var(--n-600); cursor:pointer; position:relative; transition:all 150ms; text-decoration:none; }
 .tb-icon-btn:hover { border-color:var(--b-300); color:var(--b-700); }
 .notif-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:#EF4444; border:2px solid white; }

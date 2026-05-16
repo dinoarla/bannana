@@ -131,8 +131,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
         {/* BOTTOM 2-COL */}
         <div className="dash-bottom-grid">
-          <div>
-            <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 18, padding: "1.5rem", marginBottom: "1rem" }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 18, padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
                 <div style={{ fontFamily: "var(--fd)", fontSize: "1rem", fontWeight: 700, color: "var(--b-900)", display: "flex", alignItems: "center", gap: 7 }}>
                   <i className="fa-solid fa-chart-area" style={{ color: "var(--b-500)" }} /> Tren Kunjungan
@@ -149,7 +149,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                   ))}
                 </div>
               </div>
-              <div style={{ height: 86, display: "flex", alignItems: "flex-end", gap: 4, marginBottom: ".875rem" }}>
+              <div style={{ flex: 1, minHeight: 120, display: "flex", alignItems: "flex-end", gap: 4, marginBottom: ".875rem" }}>
                 {(report?.trend && report.trend.length > 0
                   ? report.trend.map((d) => d.views)
                   : [35, 48, 42, 65, 55, 88, 74, 60, 78, 88, 72, 100, 91, 85]
