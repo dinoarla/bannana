@@ -60,10 +60,10 @@ export function Footer() {
             <div className="footer-col">
               <h4>Bantuan</h4>
               <ul>
-                <li><a href="#"><i className="fa-solid fa-book" /> Dokumentasi</a></li>
-                <li><a href="#"><i className="fa-solid fa-bug" /> Laporin Bug</a></li>
-                <li><a href="#"><i className="fa-solid fa-lightbulb" /> Request Fitur</a></li>
-                <li><a href="#"><i className="fa-solid fa-envelope" /> Kontak</a></li>
+                <li><Link href="/dokumentasi"><i className="fa-solid fa-book" /> Dokumentasi</Link></li>
+                <li><Link href="/laporin-bug"><i className="fa-solid fa-bug" /> Laporin Bug</Link></li>
+                <li><Link href="/request-fitur"><i className="fa-solid fa-lightbulb" /> Request Fitur</Link></li>
+                <li><Link href="/kontak"><i className="fa-solid fa-envelope" /> Kontak</Link></li>
               </ul>
             </div>
           </div>

@@ -1200,6 +1200,35 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 @media(max-width:640px) { .pricing-hero,.pricing-sec,.cmp-sec,.faq-sec,.cta-strip { padding-left:1.25rem; padding-right:1.25rem; } }
 .link-card:active { transform:scale(.98); }
 
+/* ─── DOCS PAGE ─── */
+.docs-layout { display:grid; grid-template-columns:220px 1fr; gap:4rem; align-items:start; }
+.docs-sidebar { position:sticky; top:5.5rem; }
+.docs-nav-link { display:block; padding:.4rem .75rem; border-radius:8px; font-size:.875rem; color:var(--n-600); text-decoration:none; transition:all 120ms; }
+.docs-nav-link:hover { background:var(--b-100); color:var(--b-800); }
+
+/* ─── HELP / CONTACT PAGES ─── */
+.help-hero { max-width:780px; margin:0 auto; padding:5rem 2rem 4rem; }
+.help-content { max-width:680px; margin:0 auto; padding:0 2rem 6rem; }
+.contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:2rem 0; }
+.contact-card { display:flex; align-items:flex-start; gap:1rem; padding:1.25rem; background:var(--n-0); border:1.5px solid var(--n-200); border-radius:16px; text-decoration:none; transition:all 160ms; }
+.contact-card:hover { border-color:var(--b-300); transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,.06); }
+.contact-icon { width:44px; height:44px; background:var(--b-100); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--b-600); font-size:1rem; }
+.contact-info-title { font-weight:700; font-size:.9rem; color:var(--b-900); margin-bottom:.2rem; }
+.contact-info-sub { font-size:.8rem; color:var(--n-500); line-height:1.5; }
+.blok-item { display:flex; gap:.875rem; padding:1rem; background:var(--n-50); border-radius:12px; border:1.5px solid var(--n-200); margin-bottom:.625rem; }
+.blok-icon { width:36px; height:36px; background:var(--b-100); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--b-600); font-size:.875rem; }
+.faq-simple { display:flex; flex-direction:column; gap:.875rem; }
+.faq-simple-item { padding:1rem 1.25rem; background:var(--n-50); border-radius:12px; border:1.5px solid var(--n-200); }
+.faq-simple-q { font-weight:700; font-size:.9rem; color:var(--b-900); margin-bottom:.4rem; }
+.faq-simple-a { font-size:.875rem; color:var(--n-600); line-height:1.7; margin:0; }
+.form-card { background:var(--n-0); border:1.5px solid var(--n-200); border-radius:20px; padding:2rem; margin-bottom:1.5rem; }
+.form-alt { display:flex; align-items:center; gap:.75rem; padding:1rem 1.25rem; background:var(--n-50); border-radius:12px; border:1.5px solid var(--n-200); text-decoration:none; transition:all 150ms; }
+.form-alt:hover { border-color:var(--b-300); background:var(--b-50); }
+.docs-tip { padding:1rem 1.25rem; background:var(--b-50); border-radius:12px; border:1.5px solid var(--b-200); margin:1.25rem 0; }
+.social-row { display:flex; gap:.75rem; flex-wrap:wrap; }
+.social-pill { display:inline-flex; align-items:center; gap:.5rem; padding:.5rem 1rem; background:var(--n-50); border:1.5px solid var(--n-200); border-radius:var(--r-full); font-size:.85rem; color:var(--n-700); text-decoration:none; font-weight:600; transition:all 150ms; }
+.social-pill:hover { border-color:var(--b-300); background:var(--b-50); color:var(--b-800); }
+
 /* ─── FINAL RESPONSIVE OVERRIDES ─── */
 /* Must be last — desktop component definitions above override earlier media queries */
 @media (max-width:1200px) {
@@ -1225,6 +1254,13 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
   .tb-search-btn { display:flex !important; }
   /* Chart header: stack title + controls vertically */
   .chart-head { flex-direction:column; align-items:flex-start; gap:.625rem; }
+  /* Docs layout */
+  .docs-layout { grid-template-columns:1fr; gap:2rem; }
+  .docs-sidebar { position:static; border:1.5px solid var(--n-200); border-radius:14px; padding:1.25rem; }
+  /* Contact/Help pages */
+  .contact-grid { grid-template-columns:1fr; }
+  .help-hero { padding:4rem 1.25rem 2.5rem; }
+  .help-content { padding:0 1.25rem 4rem; }
 }
 @media (max-width:480px) {
   .stats-grid { grid-template-columns:1fr 1fr; }
