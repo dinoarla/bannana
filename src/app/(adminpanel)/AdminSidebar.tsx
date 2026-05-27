@@ -33,6 +33,7 @@ export function AdminSidebar({ displayName, email }: AdminSidebarProps) {
     { href: "/admin/transactions", label: "Transaksi", icon: "fa-credit-card" },
     { href: "/admin/sessions", label: "Sesi", icon: "fa-mobile-screen" },
     { href: "/admin/seo", label: "SEO", icon: "fa-magnifying-glass-chart" },
+    { href: "/admin/email-blast", label: "Email Blast", icon: "fa-bullhorn" },
   ];
 
   return (

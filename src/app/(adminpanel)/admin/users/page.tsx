@@ -23,11 +23,14 @@ export default async function AdminUsersPage() {
         COALESCE(p.displayName, u.username) as displayName,
         p.avatarUrl,
         COUNT(DISTINCT pg.id) AS pageCount,
-        MAX(CASE WHEN sub.status = 'active' THEN sub.plan ELSE NULL END) as plan
+        MAX(CASE WHEN sub.status = 'active' THEN sub.plan ELSE NULL END) as plan,
+        MAX(CASE WHEN sub.status = 'active' THEN sub.id ELSE NULL END) as subscriptionId,
+        MAX(CASE WHEN sub.status = 'active' THEN sub.currentPeriodEnd ELSE NULL END) as currentPeriodEnd,
+        MAX(CASE WHEN sub.status = 'active' THEN sub.billingCycle ELSE NULL END) as billingCycle
       FROM User u
       LEFT JOIN Profile p ON p.userId = u.id
       LEFT JOIN Page pg ON pg.userId = u.id
-      LEFT JOIN Subscription sub ON sub.userId = u.id AND sub.status = 'active'
+      LEFT JOIN Subscription sub ON sub.userId = u.id
       GROUP BY u.id, p.displayName, p.avatarUrl
       ORDER BY u.createdAt DESC
     `);
@@ -42,6 +45,9 @@ export default async function AdminUsersPage() {
       avatarUrl: r.avatarUrl as string | null,
       pageCount: Number(r.pageCount ?? 0),
       plan: r.plan as string | null,
+      subscriptionId: r.subscriptionId as string | null,
+      currentPeriodEnd: r.currentPeriodEnd ? new Date(r.currentPeriodEnd as string | Date).toISOString() : null,
+      billingCycle: r.billingCycle as string | null,
     }));
   } catch {
     // Subscription table may not exist — try without it
@@ -70,6 +76,9 @@ export default async function AdminUsersPage() {
         avatarUrl: r.avatarUrl as string | null,
         pageCount: Number(r.pageCount ?? 0),
         plan: null,
+        subscriptionId: null,
+        currentPeriodEnd: null,
+        billingCycle: null,
       }));
     } catch {
       users = [];
