@@ -14,13 +14,21 @@ function getTransport() {
   });
 }
 
+function getSenderName() {
+  return process.env.SMTP_FROM_NAME ?? "bannana.id";
+}
+
+function getFromAddress() {
+  const addr = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
+  return `${getSenderName()} <${addr}>`;
+}
+
 export async function sendVerificationEmail(to: string, verifyUrl: string): Promise<boolean> {
   const transport = getTransport();
   if (!transport) return false;
 
-  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
   await transport.sendMail({
-    from: `bannana.id <${from}>`,
+    from: getFromAddress(),
     to,
     subject: "Verifikasi Email bannana.id",
     html: `
@@ -51,13 +59,12 @@ export async function sendPaymentReminderEmail(
   const transport = getTransport();
   if (!transport) return false;
 
-  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
   const isYearly = opts.billingCycle === "yearly";
   const price = isYearly ? "Rp 150.000 / tahun" : "Rp 15.000 / bulan";
   const cycleLabel = isYearly ? "Tahunan" : "Bulanan";
 
   await transport.sendMail({
-    from: `bannana.id <${from}>`,
+    from: getFromAddress(),
     to,
     subject: "Lanjutkan pembayaran Pro bannana.id 🍌",
     html: `
@@ -92,14 +99,13 @@ export async function sendRenewalReminderEmail(
   const transport = getTransport();
   if (!transport) return false;
 
-  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
   const isYearly = opts.billingCycle === "yearly";
   const price = isYearly ? "Rp 150.000 / tahun" : "Rp 15.000 / bulan";
   const cycleLabel = isYearly ? "Tahunan" : "Bulanan";
   const endDate = new Date(opts.periodEnd).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 
   await transport.sendMail({
-    from: `bannana.id <${from}>`,
+    from: getFromAddress(),
     to,
     subject: "Langganan Pro bannana.id kamu hampir habis 🍌",
     html: `
@@ -136,10 +142,9 @@ export async function sendBlastEmail(
   const transport = getTransport();
   if (!transport) return false;
 
-  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
 
   await transport.sendMail({
-    from: `bannana.id <${from}>`,
+    from: getFromAddress(),
     to,
     subject: opts.subject,
     html: `
@@ -160,9 +165,8 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
   const transport = getTransport();
   if (!transport) return false;
 
-  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
   await transport.sendMail({
-    from: `bannana.id <${from}>`,
+    from: getFromAddress(),
     to,
     subject: "Reset Password bannana.id",
     html: `
