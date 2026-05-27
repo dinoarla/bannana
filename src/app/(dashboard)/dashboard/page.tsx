@@ -13,7 +13,6 @@ type SearchParams = Promise<{ range?: string }>;
 
 export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
-  const range = (sp.range as "7d" | "30d" | "90d") ?? "30d";
 
   const user = await assertSessionUser();
   if (user.role === "ADMIN") redirect("/admin");
@@ -29,6 +28,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
     isPro = subRow?.plan === "pro" && subRow?.status === "active";
   } catch { /* Subscription table may not exist yet */ }
   const canCreatePage = isPro || pages.length === 0;
+
+  const rawRange = sp.range as "7d" | "30d" | "90d" | undefined;
+  const range = (!isPro && (rawRange === "30d" || rawRange === "90d")) ? "7d" : (rawRange ?? "30d");
 
   const report = pages[0]
     ? await new AnalyticsService().report(pages[0].id, range).catch(() => null)
@@ -138,15 +140,31 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                   <i className="fa-solid fa-chart-area" style={{ color: "var(--b-500)" }} /> Tren Kunjungan
                 </div>
                 <div style={{ display: "flex", gap: ".4rem" }}>
-                  {(["7d", "30d", "90d"] as const).map((r) => (
-                    <Link
-                      key={r}
-                      href={`/dashboard?range=${r}`}
-                      style={{ height: 27, padding: "0 11px", borderRadius: "9999px", fontSize: ".72rem", fontWeight: 700, border: `1.5px solid ${range === r ? "var(--b-300)" : "var(--n-200)"}`, background: range === r ? "var(--b-100)" : "none", color: range === r ? "var(--b-800)" : "var(--n-500)", textDecoration: "none", display: "inline-flex", alignItems: "center" }}
-                    >
-                      {r === "7d" ? "7h" : r === "30d" ? "30h" : "90h"}
-                    </Link>
-                  ))}
+                  {(["7d", "30d", "90d"] as const).map((r) => {
+                    const locked = !isPro && r !== "7d";
+                    const label = r === "7d" ? "7h" : r === "30d" ? "30h" : "90h";
+                    if (locked) {
+                      return (
+                        <Link
+                          key={r}
+                          href="/langganan"
+                          title="Fitur Pro — upgrade untuk akses"
+                          style={{ height: 27, padding: "0 11px", borderRadius: "9999px", fontSize: ".72rem", fontWeight: 700, border: "1.5px solid var(--n-200)", background: "none", color: "var(--n-300)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4, cursor: "pointer" }}
+                        >
+                          <i className="fa-solid fa-lock" style={{ fontSize: ".6rem" }} />{label}
+                        </Link>
+                      );
+                    }
+                    return (
+                      <Link
+                        key={r}
+                        href={`/dashboard?range=${r}`}
+                        style={{ height: 27, padding: "0 11px", borderRadius: "9999px", fontSize: ".72rem", fontWeight: 700, border: `1.5px solid ${range === r ? "var(--b-300)" : "var(--n-200)"}`, background: range === r ? "var(--b-100)" : "none", color: range === r ? "var(--b-800)" : "var(--n-500)", textDecoration: "none", display: "inline-flex", alignItems: "center" }}
+                      >
+                        {label}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
               <div style={{ flex: 1, minHeight: 120, display: "flex", alignItems: "flex-end", gap: 4, marginBottom: ".875rem" }}>

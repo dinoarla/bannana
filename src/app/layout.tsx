@@ -34,6 +34,52 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://bannana.id/#organization",
+      "name": "bannana.id",
+      "url": "https://bannana.id",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://bannana.id/favicon.svg",
+        "width": 512,
+        "height": 512,
+      },
+      "description": "Platform link-in-bio gratis untuk kreator konten, UMKM, freelancer, dan affiliator Indonesia.",
+      "foundingLocation": { "@type": "Country", "name": "Indonesia" },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://bannana.id/#website",
+      "url": "https://bannana.id",
+      "name": "bannana.id",
+      "inLanguage": "id-ID",
+      "publisher": { "@id": "https://bannana.id/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://bannana.id/{search_term_string}" },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://bannana.id/#app",
+      "name": "bannana.id",
+      "url": "https://bannana.id",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": [
+        { "@type": "Offer", "name": "Gratis", "price": "0", "priceCurrency": "IDR" },
+        { "@type": "Offer", "name": "Pro Bulanan", "price": "15000", "priceCurrency": "IDR" },
+        { "@type": "Offer", "name": "Pro Tahunan", "price": "150000", "priceCurrency": "IDR" },
+      ],
+    },
+  ],
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
@@ -42,6 +88,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
           crossOrigin="anonymous"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>{children}</body>

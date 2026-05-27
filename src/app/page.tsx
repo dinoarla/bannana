@@ -8,15 +8,33 @@ import { getSessionUser } from "@/lib/auth/session";
 export const metadata: Metadata = {
   title: "bannana.id — Mobile Marketing & Link Page Gratis 🍌",
   description: "Ganti biaya hosting & domain yang mahal dengan bannana.id. Buat halaman mobile marketing profesional dalam 2 menit — gratis selamanya. Cocok untuk UMKM, kreator, freelancer, affiliator.",
-  keywords: ["link in bio", "bannana", "link page", "mobile marketing", "UMKM", "kreator", "influencer", "halaman bisnis", "bio link indonesia"],
+  keywords: ["link in bio", "bannana", "bannana.id", "link page", "mobile marketing", "UMKM", "kreator konten", "influencer", "halaman bisnis", "bio link indonesia", "linktree alternatif indonesia", "link bio gratis"],
   openGraph: {
     title: "bannana.id — Mobile Marketing & Link Page Gratis",
     description: "Lebih murah dari domain & hosting. Tampil profesional di semua HP dalam 2 menit. Gratis selamanya!",
+    url: "https://bannana.id",
+    siteName: "bannana.id",
     type: "website",
     locale: "id_ID",
+    images: [{ url: "/og-default.svg", width: 1200, height: 630, alt: "bannana.id — Satu Link, Semua Tempat" }],
   },
-  twitter: { card: "summary_large_image", title: "bannana.id", description: "Mobile marketing terjangkau untuk semua orang." },
-  alternates: { canonical: "/" },
+  twitter: { card: "summary_large_image", title: "bannana.id — Link Page Gratis untuk Kreator Indonesia", description: "Mobile marketing terjangkau untuk semua orang. Gratis selamanya!" },
+  alternates: { canonical: "https://bannana.id" },
+};
+
+const homepageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://bannana.id/#webpage",
+  "url": "https://bannana.id",
+  "name": "bannana.id — Mobile Marketing & Link Page Gratis",
+  "isPartOf": { "@id": "https://bannana.id/#website" },
+  "about": { "@id": "https://bannana.id/#organization" },
+  "description": "Platform link-in-bio gratis untuk kreator, UMKM, dan freelancer Indonesia. Buat halaman profesional dalam 2 menit.",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Beranda", "item": "https://bannana.id" }],
+  },
 };
 
 export const dynamic = "force-dynamic";
@@ -26,6 +44,10 @@ export default async function LandingPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
+      />
       {/* NAVBAR */}
       <nav className="navbar">
         <Link href="/" className="navbar-logo">
