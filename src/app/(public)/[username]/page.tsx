@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const page = await new PublicPageService().getByUsername(username);
     const name = page.user.profile?.displayName ?? page.user.username;
     const description = page.user.profile?.bio ?? `Lihat semua link ${name} di bannana.id`;
-    const ogImage = page.user.profile?.avatarUrl ?? `${baseUrl}/og-default.png`;
+    const ogImage = `${baseUrl}/api/og/${username}`;
     return {
       title: `${name} — bannana.id`,
       description,
