@@ -32,10 +32,15 @@ export class AuthService {
     return this.users.findByEmail(email.toLowerCase().trim());
   }
 
-  async loginOrCreateGoogle(googleUser: { email: string; name: string }) {
+  async loginOrCreateGoogle(googleUser: { email: string; name: string; googleId: string }) {
     const email = googleUser.email.toLowerCase().trim();
     const existing = await this.users.findByEmail(email);
-    if (existing) return existing;
+    if (existing) {
+      if (!existing.googleId) {
+        await this.users.setGoogleId(existing.id, googleUser.googleId);
+      }
+      return existing;
+    }
 
     let base = slugify(googleUser.name.replace(/\s+/g, "_")).slice(0, 28);
     if (base.length < 3) base = email.split("@")[0].replace(/[^a-z0-9_]/gi, "").slice(0, 28);
@@ -46,11 +51,14 @@ export class AuthService {
       n++;
     }
 
-    return this.users.create({
+    const user = await this.users.create({
       email,
       username,
       passwordHash: await hashPassword(crypto.randomUUID()),
       displayName: googleUser.name,
     });
+
+    await this.users.setGoogleId(user.id, googleUser.googleId);
+    return user;
   }
 }

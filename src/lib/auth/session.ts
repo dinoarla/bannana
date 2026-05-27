@@ -21,6 +21,7 @@ function parseUserWithProfile(row: Record<string, unknown>): UserWithProfile {
   return {
     id: row.id as string, email: row.email as string, username: row.username as string,
     passwordHash: row.passwordHash as string, emailVerified: row.emailVerified as Date | null,
+    googleId: (row.googleId as string | null) ?? null,
     role: row.role as "USER" | "ADMIN", deletedAt: row.deletedAt as Date | null,
     createdAt: row.createdAt as Date, updatedAt: row.updatedAt as Date,
     profile,

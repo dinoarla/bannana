@@ -7,6 +7,7 @@ export type User = {
   username: string;
   passwordHash: string;
   emailVerified: Date | null;
+  googleId: string | null;
   role: Role;
   deletedAt: Date | null;
   createdAt: Date;

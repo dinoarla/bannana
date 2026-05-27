@@ -89,6 +89,7 @@ export class PageRepository {
     const user: UserWithProfile = {
       id: ur.id as string, email: ur.email as string, username: ur.username as string,
       passwordHash: ur.passwordHash as string, emailVerified: ur.emailVerified as Date | null,
+      googleId: (ur.googleId as string | null) ?? null,
       role: ur.role as "USER" | "ADMIN", deletedAt: ur.deletedAt as Date | null,
       createdAt: ur.createdAt as Date, updatedAt: ur.updatedAt as Date,
       profile,
@@ -134,6 +135,7 @@ export class PageRepository {
     const user: UserWithProfile = {
       id: ur.id as string, email: ur.email as string, username: ur.username as string,
       passwordHash: ur.passwordHash as string, emailVerified: ur.emailVerified as Date | null,
+      googleId: (ur.googleId as string | null) ?? null,
       role: ur.role as "USER" | "ADMIN", deletedAt: ur.deletedAt as Date | null,
       createdAt: ur.createdAt as Date, updatedAt: ur.updatedAt as Date,
       profile,

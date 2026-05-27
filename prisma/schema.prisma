@@ -14,6 +14,7 @@ model User {
   username      String    @unique
   passwordHash  String
   emailVerified DateTime?
+  googleId      String?   @unique
   role          Role      @default(USER)
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())

@@ -24,6 +24,7 @@ function toUser(row: Record<string, unknown>): User {
     username: row.username as string,
     passwordHash: row.passwordHash as string,
     emailVerified: row.emailVerified as Date | null,
+    googleId: (row.googleId as string | null) ?? null,
     role: row.role as "USER" | "ADMIN",
     deletedAt: row.deletedAt as Date | null,
     createdAt: row.createdAt as Date,
@@ -97,9 +98,17 @@ export class UserRepository {
 
     return {
       id, email: input.email, username: input.username, passwordHash: input.passwordHash,
-      emailVerified: null, role: "USER", deletedAt: null, createdAt: now, updatedAt: now,
+      emailVerified: null, googleId: null, role: "USER", deletedAt: null, createdAt: now, updatedAt: now,
       profile: { id: profileId, userId: id, displayName, bio: "Satu link, semua tempat.", avatarUrl: null, avatarIcon: "User", website: null, tags: ["Creator"], socialLinks: [], createdAt: now, updatedAt: now },
     };
+  }
+
+  async setGoogleId(userId: string, googleId: string): Promise<void> {
+    const now = new Date();
+    await db.query(
+      "UPDATE User SET googleId = ?, emailVerified = COALESCE(emailVerified, ?), updatedAt = ? WHERE id = ?",
+      [googleId, now, now, userId]
+    );
   }
 
   async updatePassword(id: string, passwordHash: string): Promise<void> {

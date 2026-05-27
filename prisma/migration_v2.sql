@@ -36,6 +36,14 @@ CREATE TABLE IF NOT EXISTS `Subscription` (
   UNIQUE KEY `uniq_userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Add googleId to User table (idempotent)
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'User' AND COLUMN_NAME = 'googleId');
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE `User` ADD COLUMN `googleId` VARCHAR(100) NULL UNIQUE AFTER `emailVerified`',
+  'SELECT "googleId already exists" AS msg');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
 -- Add lastReminderAt to existing Subscription tables (idempotent)
 SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
   WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Subscription' AND COLUMN_NAME = 'lastReminderAt');

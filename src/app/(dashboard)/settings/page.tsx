@@ -42,6 +42,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Sea
           socialLinks={user.profile?.socialLinks ?? []}
           initialTab={sp.tab}
           isPro={isPro}
+          isGoogleConnected={!!user.googleId}
         />
       </div>
     </>

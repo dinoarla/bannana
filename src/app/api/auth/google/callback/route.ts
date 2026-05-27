@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { AuthService } from "@/lib/services/AuthService";
 import { createSession } from "@/lib/auth/session";
-import { sendVerificationEmail } from "@/lib/utils/mailer";
-import { queueVerificationEmail } from "@/lib/utils/emailVerification";
 
 const BASE_URL = process.env.NEXTAUTH_URL ?? "https://bannana.id";
 
@@ -52,17 +50,13 @@ export async function GET(request: Request) {
     });
     const googleUser = await userRes.json() as { email?: string; name?: string; sub?: string };
 
-    if (!googleUser.email) return redirect("/login?error=google_no_email");
+    if (!googleUser.email || !googleUser.sub) return redirect("/login?error=google_no_email");
 
-    const isNewUser = !(await new AuthService().findByEmail(googleUser.email));
     const user = await new AuthService().loginOrCreateGoogle({
       email: googleUser.email,
       name: googleUser.name ?? googleUser.email.split("@")[0],
+      googleId: googleUser.sub,
     });
-
-    if (isNewUser && !user.emailVerified) {
-      queueVerificationEmail(user.id, user.email, sendVerificationEmail).catch(() => {});
-    }
 
     await createSession(user.id);
     return redirect("/dashboard");

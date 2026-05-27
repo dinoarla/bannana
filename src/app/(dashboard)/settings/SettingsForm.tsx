@@ -3,9 +3,9 @@
 import { useState, useRef, useEffect } from "react";
 
 type SocialLink = { label: string; url: string; icon: string; color?: string };
-type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[]; initialTab?: string; isPro?: boolean };
+type Props = { csrfToken: string; username: string; email: string; displayName: string; bio: string; avatarUrl: string; website: string; socialLinks: SocialLink[]; initialTab?: string; isPro?: boolean; isGoogleConnected?: boolean };
 
-export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website, socialLinks, initialTab, isPro = false }: Props) {
+export function SettingsForm({ csrfToken, username, email, displayName, bio, avatarUrl, website, socialLinks, initialTab, isPro = false, isGoogleConnected = false }: Props) {
   const VALID_TABS = ["profil", "akun", "notif", "integrasi", "bahaya"];
   const [section, setSection] = useState(initialTab && VALID_TABS.includes(initialTab) ? initialTab : "profil");
 
@@ -41,7 +41,7 @@ export function SettingsForm({ csrfToken, username, email, displayName, bio, ava
         {section === "profil" && <ProfilPanel csrfToken={csrfToken} username={username} displayName={displayName} bio={bio} avatarUrl={avatarUrl} website={website} socialLinks={socialLinks} />}
         {section === "akun" && <AkunPanel csrf={csrf()} email={email} />}
         {section === "notif" && <NotifPanel csrfToken={csrfToken} />}
-        {section === "integrasi" && <IntegrasiPanel csrfToken={csrfToken} isPro={isPro} />}
+        {section === "integrasi" && <IntegrasiPanel csrfToken={csrfToken} isPro={isPro} isGoogleConnected={isGoogleConnected} />}
         {section === "bahaya" && <BahayaPanel csrfToken={csrfToken} username={username} />}
       </div>
     </div>
@@ -460,7 +460,7 @@ function NotifPanel({ csrfToken }: { csrfToken: string }) {
   );
 }
 
-function IntegrasiPanel({ csrfToken, isPro }: { csrfToken: string; isPro: boolean }) {
+function IntegrasiPanel({ csrfToken, isPro, isGoogleConnected }: { csrfToken: string; isPro: boolean; isGoogleConnected: boolean }) {
   type ApiKeyRow = { id: string; name: string; scopes: string[]; lastUsedAt: string | null; createdAt: string; revokedAt: string | null };
   const [keys, setKeys] = useState<ApiKeyRow[]>([]);
   const [newKeyName, setNewKeyName] = useState("");
@@ -501,7 +501,13 @@ function IntegrasiPanel({ csrfToken, isPro }: { csrfToken: string; isPro: boolea
           <div className="connected-row">
             <div className="conn-ico"><i className="fa-brands fa-google" style={{ color: "#EA4335" }} /></div>
             <div><div className="conn-title">Google</div><div className="conn-sub">Login dengan akun Google</div></div>
-            <a href="/api/auth/google" className="btn btn-secondary btn-sm" style={{ marginLeft: "auto" }}><i className="fa-brands fa-google" /> Hubungkan</a>
+            {isGoogleConnected ? (
+              <span style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: ".4rem", background: "#D1FAE5", color: "#065F46", borderRadius: 9999, padding: "5px 14px", fontSize: ".8rem", fontWeight: 700 }}>
+                <i className="fa-solid fa-circle-check" /> Terhubung
+              </span>
+            ) : (
+              <a href="/api/auth/google" className="btn btn-secondary btn-sm" style={{ marginLeft: "auto" }}><i className="fa-brands fa-google" /> Hubungkan</a>
+            )}
           </div>
         </div>
       </div>
