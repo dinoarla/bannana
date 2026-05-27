@@ -16,7 +16,15 @@ export const metadata: Metadata = {
   keywords: ["link in bio", "bannana id", "link page", "bio link", "kreator konten", "influencer"],
   authors: [{ name: "bannana.id" }],
   creator: "bannana.id",
-  icons: { icon: "/favicon.svg", apple: "/favicon.svg" },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon-192.png", sizes: "192x192", type: "image/png" }],
+    shortcut: "/favicon-32.png",
+  },
   openGraph: {
     siteName: "bannana.id",
     title: "bannana.id — Satu Link, Semua Tempat",
