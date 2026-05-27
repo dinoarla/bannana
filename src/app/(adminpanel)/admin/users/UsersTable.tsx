@@ -256,7 +256,7 @@ export function UsersTable({ users: initialUsers, adminId }: UsersTableProps) {
 
                     {/* Joined */}
                     <td style={{ padding: ".875rem 1rem", fontSize: ".8rem", color: "var(--n-400)", whiteSpace: "nowrap" }}>
-                      {new Date(u.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                      {new Date(u.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" })}
                     </td>
 
                     {/* Actions */}

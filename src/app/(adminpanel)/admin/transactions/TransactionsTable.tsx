@@ -27,7 +27,7 @@ function getCsrf() {
 
 function formatDate(d: string | null) {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" });
 }
 
 function relativeTime(iso: string | null): string {

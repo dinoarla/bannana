@@ -33,7 +33,7 @@ export default async function AdminOverviewPage() {
 
   const newToday = await safeQuery(async () => {
     const [rows] = await db.query(
-      "SELECT COUNT(*) as c FROM User WHERE role = 'USER' AND createdAt >= DATE(CONVERT_TZ(NOW(), '+00:00', '+07:00'))"
+      "SELECT COUNT(*) as c FROM User WHERE role = 'USER' AND DATE(createdAt + INTERVAL 7 HOUR) = DATE(NOW() + INTERVAL 7 HOUR)"
     );
     return Number((rows as Record<string, unknown>[])[0]?.c ?? 0);
   }, 0);
@@ -180,7 +180,7 @@ export default async function AdminOverviewPage() {
                       </span>
                     </td>
                     <td style={{ padding: ".875rem 1rem", fontSize: ".8rem", color: "var(--n-400)" }}>
-                      {new Date(u.createdAt as string).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                      {new Date(u.createdAt as string).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" })}
                     </td>
                   </tr>
                 ))}
