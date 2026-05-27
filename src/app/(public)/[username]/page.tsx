@@ -11,13 +11,29 @@ type Props = { params: Promise<{ username: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://bannana.id";
   try {
     const page = await new PublicPageService().getByUsername(username);
     const name = page.user.profile?.displayName ?? page.user.username;
+    const description = page.user.profile?.bio ?? `Lihat semua link ${name} di bannana.id`;
+    const ogImage = page.user.profile?.avatarUrl ?? `${baseUrl}/og-default.png`;
     return {
       title: `${name} — bannana.id`,
-      description: page.user.profile?.bio ?? `Link-in-bio ${name} di bannana.id`,
-      openGraph: { title: `${name} — bannana.id`, description: page.user.profile?.bio ?? "" },
+      description,
+      openGraph: {
+        title: `${name} — bannana.id`,
+        description,
+        url: `${baseUrl}/${username}`,
+        siteName: "bannana.id",
+        type: "profile",
+        images: [{ url: ogImage, width: 1200, height: 630, alt: name }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${name} — bannana.id`,
+        description,
+        images: [ogImage],
+      },
     };
   } catch {
     return { title: "Halaman tidak ditemukan — bannana.id" };
