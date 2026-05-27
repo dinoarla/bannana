@@ -47,7 +47,12 @@ export function LanggananContent({ csrfToken }: Props) {
   useEffect(() => {
     fetch("/api/subscription/status")
       .then((r) => r.json())
-      .then((j) => { if (j.success) setSub(j.data); })
+      .then((j) => {
+        if (j.success) {
+          setSub(j.data);
+          if (j.data?.billingCycle) setCycle(j.data.billingCycle);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -107,9 +112,64 @@ export function LanggananContent({ csrfToken }: Props) {
   }
 
   const isPro = sub?.plan === "pro" && sub?.status === "active";
+  const isPending = sub?.plan === "pro" && sub?.status === "pending";
 
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+
+      {/* PENDING PAYMENT BANNER */}
+      {isPending && (
+        <div style={{
+          background: "#FFFBEB", border: "2px solid #F59E0B", borderRadius: 20, padding: "1.5rem 2rem",
+          display: "flex", flexDirection: "column", gap: "1rem"
+        }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: "#FDE68A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <i className="fa-solid fa-clock" style={{ color: "#D97706", fontSize: "1.1rem" }} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: "var(--fd)", fontWeight: 700, color: "#92400E", fontSize: "1.05rem", marginBottom: ".25rem" }}>
+                Pembayaran menunggu konfirmasi
+              </div>
+              <div style={{ fontSize: ".875rem", color: "#78350F", lineHeight: 1.6 }}>
+                Kamu sudah memilih paket <strong>Pro {sub?.billingCycle === "yearly" ? "Tahunan" : "Bulanan"}</strong>{" "}
+                ({sub?.billingCycle === "yearly" ? "Rp 150.000 / tahun" : "Rp 15.000 / bulan"}) tapi pembayarannya belum selesai.
+                Klik tombol di bawah untuk melanjutkan.
+              </div>
+            </div>
+          </div>
+
+          {msg && (
+            <div style={{ background: "#D1FAE5", borderRadius: 10, padding: ".75rem 1rem", fontSize: ".875rem", color: "#065F46", display: "flex", alignItems: "center", gap: ".5rem" }}>
+              <i className="fa-solid fa-check" /> {msg}
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={checkout}
+              disabled={paying}
+              style={{ flex: 1, minWidth: 180, height: 44, borderRadius: 12, fontSize: ".9rem", fontWeight: 700 }}
+            >
+              {paying
+                ? <><i className="fa-solid fa-spinner fa-spin" /> Memproses…</>
+                : <><i className="fa-solid fa-crown" /> Lanjutkan Pembayaran</>}
+            </button>
+            <button
+              onClick={cancel}
+              style={{
+                background: "none", border: "1.5px solid #D97706", color: "#D97706",
+                padding: "0 1.25rem", borderRadius: 12, fontSize: ".875rem", fontWeight: 700,
+                cursor: "pointer", height: 44, whiteSpace: "nowrap"
+              }}
+            >
+              <i className="fa-solid fa-xmark" style={{ marginRight: ".4rem" }} />
+              Batalkan
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* STATUS CARD */}
       {isPro ? (
