@@ -44,6 +44,47 @@ export async function sendVerificationEmail(to: string, verifyUrl: string): Prom
   return true;
 }
 
+export async function sendPaymentReminderEmail(
+  to: string,
+  opts: { displayName: string; billingCycle: "monthly" | "yearly" | string; checkoutUrl: string }
+): Promise<boolean> {
+  const transport = getTransport();
+  if (!transport) return false;
+
+  const from = process.env.SMTP_FROM ?? process.env.EMAIL_FROM ?? process.env.SMTP_USER ?? "noreply@bannana.id";
+  const isYearly = opts.billingCycle === "yearly";
+  const price = isYearly ? "Rp 150.000 / tahun" : "Rp 15.000 / bulan";
+  const cycleLabel = isYearly ? "Tahunan" : "Bulanan";
+
+  await transport.sendMail({
+    from: `bannana.id <${from}>`,
+    to,
+    subject: "Lanjutkan pembayaran Pro bannana.id 🍌",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFFBEB;border-radius:16px">
+        <div style="font-size:2rem;margin-bottom:8px">🍌</div>
+        <h2 style="margin:0 0 8px;color:#1C1409">Halo ${opts.displayName}!</h2>
+        <p style="color:#78716C;margin:0 0 20px;line-height:1.6">
+          Kami melihat kamu sudah memilih paket <strong style="color:#1C1409">bannana.id Pro ${cycleLabel}</strong>,
+          tapi pembayarannya belum diselesaikan. Yuk lanjutkan supaya bisa nikmati semua fitur Pro!
+        </p>
+        <div style="background:#fff;border:1.5px solid #FDE68A;border-radius:12px;padding:16px 20px;margin:0 0 24px">
+          <div style="font-size:12px;color:#A8A29E;text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:4px">Paket Kamu</div>
+          <div style="font-weight:700;color:#1C1409;font-size:1.1rem">Pro ${cycleLabel}</div>
+          <div style="color:#D97706;font-weight:700;margin-top:2px">${price}</div>
+        </div>
+        <a href="${opts.checkoutUrl}" style="display:inline-block;background:#F59E0B;color:#1C1409;font-weight:700;padding:14px 28px;border-radius:12px;text-decoration:none;font-size:15px">
+          Lanjutkan Pembayaran
+        </a>
+        <p style="margin:24px 0 0;font-size:12px;color:#A8A29E;line-height:1.6">
+          Kalau kamu sudah berhasil bayar, abaikan email ini. Pertanyaan? Balas email ini saja.
+        </p>
+      </div>
+    `,
+  });
+  return true;
+}
+
 export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<boolean> {
   const transport = getTransport();
   if (!transport) return false;

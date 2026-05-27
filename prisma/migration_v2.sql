@@ -29,8 +29,17 @@ CREATE TABLE IF NOT EXISTS `Subscription` (
   `currentPeriodStart` DATETIME NULL,
   `currentPeriodEnd` DATETIME NULL,
   `cancelledAt` DATETIME NULL,
+  `lastReminderAt` DATETIME NULL,
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Add lastReminderAt to existing Subscription tables (idempotent)
+SET @col_exists := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Subscription' AND COLUMN_NAME = 'lastReminderAt');
+SET @sql := IF(@col_exists = 0,
+  'ALTER TABLE `Subscription` ADD COLUMN `lastReminderAt` DATETIME NULL AFTER `cancelledAt`',
+  'SELECT "lastReminderAt already exists" AS msg');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
