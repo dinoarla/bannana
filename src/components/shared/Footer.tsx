@@ -74,7 +74,7 @@ export function Footer() {
           <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>
-            <a href="#">MIT License</a>
+            <Link href="/mit">MIT License</Link>
           </div>
         </div>
       </div>

@@ -808,6 +808,37 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 .fc-up  { color:#22C55E; font-weight:700; }
 /* Landing hero phones container */
 .hero-phones { position:relative; height:560px; animation:bannana-pop-up .9s var(--ease-spring) .2s both; }
+/* Drag-drop demo overlay on hero phone */
+.hero-drag-ghost {
+  position:absolute; left:11px; right:11px; height:38px;
+  background:rgba(251,191,36,.22); border:2px solid rgba(251,191,36,.55);
+  border-radius:10px; pointer-events:none;
+  animation:heroDragGhost 5.5s cubic-bezier(.4,0,.2,1) infinite;
+}
+.hero-drag-cursor {
+  position:absolute; width:18px; height:18px;
+  color:var(--b-900); filter:drop-shadow(0 1px 3px rgba(0,0,0,.35));
+  pointer-events:none;
+  animation:heroDragCursorAnim 5.5s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes heroDragGhost {
+  0%,18%  { top:258px; transform:scale(1);    box-shadow:none;                          opacity:0; }
+  23%     { top:258px; transform:scale(1);    box-shadow:none;                          opacity:1; }
+  32%     { top:258px; transform:scale(1.02); box-shadow:0 6px 18px rgba(0,0,0,.18);   opacity:1; }
+  58%     { top:174px; transform:scale(1.02); box-shadow:0 10px 24px rgba(0,0,0,.2);   opacity:1; }
+  70%     { top:174px; transform:scale(1.02); box-shadow:0 10px 24px rgba(0,0,0,.2);   opacity:1; }
+  78%     { top:174px; transform:scale(1);    box-shadow:none;                          opacity:1; }
+  90%,100%{ top:174px; transform:scale(1);    box-shadow:none;                          opacity:0; }
+}
+@keyframes heroDragCursorAnim {
+  0%,18%  { top:268px; left:140px; opacity:0; transform:rotate(0deg); }
+  23%     { top:268px; left:140px; opacity:1; transform:rotate(0deg); }
+  32%     { top:268px; left:140px; opacity:1; transform:rotate(-12deg); }
+  58%     { top:184px; left:140px; opacity:1; transform:rotate(-12deg); }
+  70%     { top:184px; left:140px; opacity:1; transform:rotate(-12deg); }
+  78%     { top:184px; left:140px; opacity:1; transform:rotate(0deg); }
+  90%,100%{ top:184px; left:140px; opacity:0; transform:rotate(0deg); }
+}
 /* Features section */
 .feat-sec { padding:6rem 2.5rem; background:var(--n-0); }
 .feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; max-width:1100px; margin:0 auto; }

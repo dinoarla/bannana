@@ -136,6 +136,11 @@ export default async function LandingPage() {
             </div>
 
             <div className="phone phone-back">
+              {/* drag-drop demo overlay */}
+              <div className="hero-drag-ghost" />
+              <div className="hero-drag-cursor">
+                <i className="fa-solid fa-up-down-left-right" style={{ fontSize: "1rem" }} />
+              </div>
               <div className="phone-inner">
                 <div className="psc1">
                   <div className="psc1-h">My Links</div>
