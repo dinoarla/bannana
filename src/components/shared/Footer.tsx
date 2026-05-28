@@ -48,12 +48,12 @@ export function Footer() {
               </ul>
             </div>
             <div className="footer-col">
-              <h4>Developer</h4>
+              <h4>Cerita Mereka</h4>
               <ul>
-                <li><a href="#"><i className="fa-solid fa-book-open" /> API Docs</a></li>
-                <li><a href="#"><i className="fa-brands fa-github" /> GitHub</a></li>
-                <li><a href="#"><i className="fa-solid fa-server" /> Self-Hosted</a></li>
-                <li><a href="#"><i className="fa-solid fa-clock-rotate-left" /> Changelog</a></li>
+                <li><a href="/#testimoni"><i className="fa-solid fa-store" /> Ibu Tini hemat Rp 1,2jt</a></li>
+                <li><a href="/#testimoni"><i className="fa-solid fa-palette" /> Aldo dapat klien pertama</a></li>
+                <li><a href="/#testimoni"><i className="fa-solid fa-mobile-screen" /> Rara satu link untuk semua</a></li>
+                <li><a href="/#testimoni"><i className="fa-solid fa-star" /> Baca semua cerita</a></li>
               </ul>
             </div>
             <div className="footer-col">
@@ -70,7 +70,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="footer-bot">
-          <span>&copy; 2026 bannana.id &mdash; dibuat dengan cinta, kuning, dan sedikit gila&nbsp;💛</span>
+          <span>&copy; 2026 bannana.id. All rights reserved.</span>
           <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>

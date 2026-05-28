@@ -226,14 +226,6 @@ export default async function LandingPage() {
                 story: "Tiap upload video, komentar penuh: \"link shopee-nya mana?\", \"channel YouTube lo apa?\", \"WA jualan dong!\". Rara jawab manual satu-satu setiap hari. Padahal dia cuma butuh satu link — yang isinya semuanya.",
                 pain: "50K followers, tapi link-nya berantakan",
               },
-              {
-                emoji: "💰",
-                name: "Budi",
-                role: "Affiliator marketplace, Surabaya",
-                color: "#FEE2E2",
-                story: "6 bulan jadi affiliator, sebarkan 10 link beda. Tapi nggak pernah tahu link mana yang paling laku. Feeling terus. Pernah promosi keras-kerasan, ternyata link yang viral bukan yang dia push. Data kosong, strategi buta.",
-                pain: "Nggak ada data, semua feeling",
-              },
             ].map((s) => (
               <div key={s.name} style={{ background: "var(--n-0)", border: "2px solid var(--n-150, #F0EBE0)", borderRadius: 20, padding: "1.75rem", position: "relative", overflow: "hidden" }}>
                 <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{s.emoji}</div>
@@ -395,35 +387,8 @@ export default async function LandingPage() {
       </section>
 
       {/* ANALYTICS */}
-      <section className="anl-sec" id="analytics">
+      <section className="anl-sec" id="analytics" style={{ background: "var(--n-0)" }}>
         <div className="anl-layout">
-          <div>
-            <div className="eyebrow" style={{ marginBottom: "1rem" }}>
-              <i className="fa-solid fa-chart-column" /> Analytics
-            </div>
-            <div className="sec-title" style={{ marginBottom: "1rem" }}>
-              Data yang bikin keputusan lebih smart
-            </div>
-            <p className="sec-sub">
-              Track klik, negara asal, dan device pengunjung &mdash; semua tersaji rapi dalam dashboard yang mudah dipahami.
-            </p>
-            <div className="info-list">
-              {[
-                { icon: "fa-arrow-pointer", title: "Klik per link — real-time", desc: "Lihat berapa kali setiap link diklik, langsung diperbarui setiap saat." },
-                { icon: "fa-earth-asia", title: "Asal negara & kota", desc: "Tahu pengunjungmu dari mana saja di seluruh dunia." },
-                { icon: "fa-mobile-screen", title: "Desktop vs Mobile vs Tablet", desc: "Breakdown device yang dipakai pengunjungmu secara detail." },
-                { icon: "fa-file-csv", title: "Export data ke CSV", desc: "Pilih range 7d / 30d / 90d dan export kapanpun kamu mau." },
-              ].map((item) => (
-                <div key={item.title} className="info-row">
-                  <div className="info-ico"><i className={`fa-solid ${item.icon}`} /></div>
-                  <div>
-                    <div className="info-tit">{item.title}</div>
-                    <div className="info-desc">{item.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
           <div className="anl-card">
             <div className="anl-card-hd">
               <div className="anl-card-title"><i className="fa-solid fa-chart-area" /> Performa Page</div>
@@ -450,6 +415,33 @@ export default async function LandingPage() {
                   <span className="tl-name">{l.name}</span>
                   <span className="tl-ct">{l.ct}</span>
                   <div className="tl-bar"><div className="tl-fill" style={{ width: l.pct }} /></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="eyebrow" style={{ marginBottom: "1rem" }}>
+              <i className="fa-solid fa-chart-column" /> Analytics
+            </div>
+            <div className="sec-title" style={{ marginBottom: "1rem" }}>
+              Data yang bikin keputusan lebih smart
+            </div>
+            <p className="sec-sub">
+              Track klik, negara asal, dan device pengunjung &mdash; semua tersaji rapi dalam dashboard yang mudah dipahami.
+            </p>
+            <div className="info-list">
+              {[
+                { icon: "fa-arrow-pointer", title: "Klik per link — real-time", desc: "Lihat berapa kali setiap link diklik, langsung diperbarui setiap saat." },
+                { icon: "fa-earth-asia", title: "Asal negara & kota", desc: "Tahu pengunjungmu dari mana saja di seluruh dunia." },
+                { icon: "fa-mobile-screen", title: "Desktop vs Mobile vs Tablet", desc: "Breakdown device yang dipakai pengunjungmu secara detail." },
+                { icon: "fa-file-csv", title: "Export data ke CSV", desc: "Pilih range 7d / 30d / 90d dan export kapanpun kamu mau." },
+              ].map((item) => (
+                <div key={item.title} className="info-row">
+                  <div className="info-ico"><i className={`fa-solid ${item.icon}`} /></div>
+                  <div>
+                    <div className="info-tit">{item.title}</div>
+                    <div className="info-desc">{item.desc}</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -531,7 +523,7 @@ export default async function LandingPage() {
             <div className="eyebrow" style={{ marginBottom: "1rem" }}>
               <i className="fa-solid fa-star" /> Kata Mereka
             </div>
-            <div className="sec-title">Sudah dipakai oleh ribuan orang</div>
+            <div className="sec-title">Sudah dipakai oleh ratusan orang</div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "1.25rem", marginTop: "2rem" }}>
             {[
