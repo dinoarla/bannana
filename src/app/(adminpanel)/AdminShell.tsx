@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { href: "/admin/seo", label: "SEO", icon: "fa-magnifying-glass-chart" },
   { href: "/admin/email-blast", label: "Email Blast", icon: "fa-bullhorn" },
   { href: "/admin/blog", label: "Blog & Cerita", icon: "fa-newspaper" },
+  { href: "/admin/blog/cluster", label: "Generator Topik", icon: "fa-wand-magic-sparkles" },
 ];
 
 export function AdminShell({ displayName, email, children }: AdminShellProps) {

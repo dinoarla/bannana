@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { assertSessionUser } from "@/lib/auth/session";
 import { EmailBlastForm } from "./EmailBlastForm";
+import { EmailTestButton } from "./EmailTestButton";
 
 export default async function AdminEmailBlastPage() {
   let admin;
@@ -63,6 +64,17 @@ export default async function AdminEmailBlastPage() {
               <p style={{ margin: 0, fontSize: ".875rem", color: "#78350F", lineHeight: 1.6 }}>
                 Email blast tidak bisa dibatalkan setelah dikirim. Pastikan konten sudah benar sebelum menekan kirim.
               </p>
+            </div>
+
+            <div className="card">
+              <div style={{ fontWeight: 700, color: "var(--n-700)", marginBottom: ".75rem", display: "flex", alignItems: "center", gap: ".5rem", fontSize: ".875rem" }}>
+                <i className="fa-solid fa-flask" style={{ color: "var(--n-400)" }} />
+                Test Email
+              </div>
+              <p style={{ margin: "0 0 .75rem", fontSize: ".8rem", color: "var(--n-500)", lineHeight: 1.5 }}>
+                Kirim test email ke alamat tertentu untuk memverifikasi SMTP berjalan.
+              </p>
+              <EmailTestButton />
             </div>
           </div>
         </div>

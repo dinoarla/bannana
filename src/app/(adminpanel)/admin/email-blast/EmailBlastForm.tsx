@@ -10,10 +10,165 @@ function getCsrf() {
   );
 }
 
+const TEMPLATES: Array<{
+  id: string;
+  label: string;
+  icon: string;
+  trigger: string;
+  tujuan: string;
+  segment: "all" | "free" | "pro";
+  subject: string;
+  body: string;
+}> = [
+  {
+    id: "welcome",
+    label: "Welcome",
+    icon: "fa-hand-wave",
+    trigger: "Setelah register",
+    tujuan: "Onboarding, arahkan buat halaman pertama",
+    segment: "all",
+    subject: "Selamat datang di bannana.id! 🍌",
+    body: `Halo!
+
+Selamat datang di bannana.id — platform link-in-bio terbaik untuk konten kreator Indonesia.
+
+Dengan bannana.id, kamu bisa:
+• Buat halaman link-in-bio profesional dalam hitungan menit
+• Lacak berapa klik dan pengunjung setiap harinya
+• Ganti tampilan dengan tema-tema kece
+
+Yuk mulai buat halaman pertamamu sekarang: https://bannana.id/pages
+
+Salam,
+Tim bannana.id`,
+  },
+  {
+    id: "aktivasi",
+    label: "Aktivasi halaman",
+    icon: "fa-flag-checkered",
+    trigger: "User buat halaman pertama",
+    tujuan: "Dorong publish",
+    segment: "all",
+    subject: "Halaman bannana.id kamu hampir siap — yuk publish! 🚀",
+    body: `Halo!
+
+Mantap banget, kamu sudah mulai membuat halamanmu di bannana.id!
+
+Satu langkah lagi: publish halamanmu agar bisa dibagikan ke semua orang.
+
+Setelah publish, kamu bisa:
+• Share link halaman ke Instagram, TikTok, atau YouTube bio
+• Pantau berapa banyak orang yang klik link-mu
+• Terus tambah dan atur linkmu kapan saja
+
+Selesaikan dan publish sekarang: https://bannana.id/pages
+
+Salam,
+Tim bannana.id`,
+  },
+  {
+    id: "tips",
+    label: "Tips mingguan",
+    icon: "fa-lightbulb",
+    trigger: "Setiap Senin, manual blast",
+    tujuan: "Engagement, edukasi fitur",
+    segment: "all",
+    subject: "Tips bannana.id minggu ini 💡",
+    body: `Halo!
+
+Ini tips minggu ini dari tim bannana.id:
+
+✅ [Tips 1: Contoh — Tambahkan foto profil yang jelas agar pengunjung lebih percaya]
+✅ [Tips 2: Contoh — Urutkan link paling penting di posisi paling atas]
+✅ [Tips 3: Contoh — Pantau analytics setiap minggu untuk tahu mana link yang paling banyak diklik]
+
+Punya pertanyaan? Balas email ini saja.
+
+Salam,
+Tim bannana.id`,
+  },
+  {
+    id: "upgrade",
+    label: "Upgrade nudge",
+    icon: "fa-crown",
+    trigger: "Free user > 7 hari, belum Pro",
+    tujuan: "Konversi",
+    segment: "free",
+    subject: "Unlock semua fitur Pro bannana.id 👑",
+    body: `Halo!
+
+Kamu sudah seminggu lebih pakai bannana.id — tapi masih di versi Gratis.
+
+Dengan bannana.id Pro, kamu bisa:
+• Tambah link tanpa batas
+• Analytics lebih detail (klik per link, asal pengunjung)
+• Tema premium eksklusif
+
+Harga mulai Rp 15.000/bulan — lebih murah dari secangkir kopi.
+
+Coba Pro sekarang: https://bannana.id/langganan
+
+Salam,
+Tim bannana.id`,
+  },
+  {
+    id: "fitur-baru",
+    label: "Fitur baru",
+    icon: "fa-rocket",
+    trigger: "Setiap ada update",
+    tujuan: "Retensi, eksitasi",
+    segment: "all",
+    subject: "Fitur baru bannana.id sudah hadir! 🚀",
+    body: `Halo!
+
+Kami baru saja meluncurkan fitur baru yang sudah kamu tunggu-tunggu:
+
+🆕 [Nama Fitur] — [Deskripsi singkat manfaatnya buat pengguna]
+
+Cara pakainya:
+1. Buka dashboard bannana.id
+2. [Langkah 2]
+3. [Langkah 3]
+
+Coba sekarang: https://bannana.id/dashboard
+
+Feedback atau pertanyaan? Balas email ini.
+
+Salam,
+Tim bannana.id`,
+  },
+  {
+    id: "reengagement",
+    label: "Re-engagement",
+    icon: "fa-heart",
+    trigger: "User tidak login > 30 hari",
+    tujuan: "Churn prevention",
+    segment: "all",
+    subject: "Kamu sudah lama tidak mampir ke bannana.id 👀",
+    body: `Halo!
+
+Kami kangen kamu di bannana.id!
+
+Sudah lama tidak update halaman linkmu? Ini saat yang tepat untuk:
+• Tambah link terbaru (konten, produk, atau promo)
+• Cek analytics — siapa yang mengunjungi halamanmu
+• Update foto dan bio profil
+
+Halaman aktif cenderung mendapat lebih banyak klik, lho!
+
+Buka halamanmu: https://bannana.id/dashboard
+
+Salam,
+Tim bannana.id`,
+  },
+];
+
 export function EmailBlastForm() {
   const [segment, setSegment] = useState<"all" | "free" | "pro">("all");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
   const [counts, setCounts] = useState<Counts | null>(null);
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ sent: number; failed: number; total: number } | null>(null);
@@ -100,6 +255,75 @@ export function EmailBlastForm() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Template library */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <button
+          type="button"
+          onClick={() => setTemplateOpen((v) => !v)}
+          style={{
+            display: "flex", alignItems: "center", gap: ".5rem",
+            background: "none", border: "1.5px solid var(--n-200)", borderRadius: "var(--r-xl)",
+            padding: "8px 16px", cursor: "pointer", fontSize: ".8rem", fontWeight: 700,
+            color: templateOpen ? "var(--b-700)" : "var(--n-600)",
+            borderColor: templateOpen ? "var(--b-300)" : "var(--n-200)",
+          }}
+        >
+          <i className="fa-solid fa-layer-group" />
+          Pakai Template
+          <i className={`fa-solid fa-chevron-${templateOpen ? "up" : "down"}`} style={{ fontSize: ".65rem", marginLeft: ".25rem" }} />
+        </button>
+
+        {templateOpen && (
+          <div style={{ marginTop: ".75rem", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: ".6rem" }}>
+            {TEMPLATES.map((t) => {
+              const active = activeTemplate === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    setSubject(t.subject);
+                    setBody(t.body);
+                    setSegment(t.segment);
+                    setActiveTemplate(t.id);
+                    setTemplateOpen(false);
+                  }}
+                  style={{
+                    textAlign: "left", padding: "12px 14px", cursor: "pointer",
+                    border: `2px solid ${active ? "var(--b-400)" : "var(--n-200)"}`,
+                    borderRadius: "var(--r-xl)",
+                    background: active ? "var(--b-50)" : "#fff",
+                    transition: "border-color .15s, background .15s",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: ".45rem", marginBottom: ".5rem" }}>
+                    <i className={`fa-solid ${t.icon}`} style={{ color: active ? "var(--b-500)" : "var(--n-400)", fontSize: ".8rem", width: 14 }} />
+                    <span style={{ fontWeight: 700, fontSize: ".83rem", color: active ? "var(--b-700)" : "var(--n-800)" }}>{t.label}</span>
+                    <span style={{
+                      marginLeft: "auto", fontSize: ".63rem", fontWeight: 700, padding: "2px 7px", borderRadius: 5, flexShrink: 0,
+                      background: t.segment === "pro" ? "var(--b-100)" : t.segment === "free" ? "var(--n-150)" : "var(--n-100)",
+                      color: t.segment === "pro" ? "var(--b-700)" : "var(--n-500)",
+                    }}>
+                      {t.segment === "all" ? "Semua" : t.segment === "pro" ? "Pro" : "Gratis"}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: ".2rem" }}>
+                    <div style={{ fontSize: ".7rem", color: "var(--n-500)", display: "flex", gap: ".35rem" }}>
+                      <span style={{ color: "var(--n-400)", fontWeight: 600, minWidth: 42, flexShrink: 0 }}>Trigger</span>
+                      <span>{t.trigger}</span>
+                    </div>
+                    <div style={{ fontSize: ".7rem", color: "var(--n-500)", display: "flex", gap: ".35rem" }}>
+                      <span style={{ color: "var(--n-400)", fontWeight: 600, minWidth: 42, flexShrink: 0 }}>Tujuan</span>
+                      <span>{t.tujuan}</span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Subject */}
