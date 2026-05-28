@@ -136,11 +136,6 @@ export default async function LandingPage() {
             </div>
 
             <div className="phone phone-back">
-              {/* drag-drop demo overlay */}
-              <div className="hero-drag-ghost" />
-              <div className="hero-drag-cursor">
-                <i className="fa-solid fa-up-down-left-right" style={{ fontSize: "1rem" }} />
-              </div>
               <div className="phone-inner">
                 <div className="psc1">
                   <div className="psc1-h">My Links</div>
@@ -373,47 +368,46 @@ export default async function LandingPage() {
             </Link>
           </div>
 
-          {/* Cloud block view */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", alignContent: "flex-start", alignItems: "flex-start" }}>
-            {[
-              { icon: "fa-link",            name: "Link",          hot: true,  size: "lg" },
-              { icon: "fa-heading",         name: "Header",                    size: "md" },
-              { icon: "fa-paragraph",       name: "Teks",                      size: "md" },
-              { icon: "fa-circle-play",     name: "Embed",         hot: true,  size: "lg" },
-              { icon: "fa-image",           name: "Gambar",                    size: "md" },
-              { icon: "fa-bag-shopping",    name: "Produk",        hot: true,  size: "lg" },
-              { icon: "fa-address-card",    name: "Kontak / WA",   hot: true,  size: "lg" },
-              { icon: "fa-rectangle-ad",    name: "Banner",                    size: "md" },
-              { icon: "fa-circle-question", name: "FAQ",                       size: "md" },
-              { icon: "fa-hourglass-half",  name: "Hitung Mundur",             size: "md" },
-              { icon: "fa-map-location-dot",name: "Peta",                      size: "sm" },
-              { icon: "fa-clipboard-list",  name: "Formulir",                  size: "sm" },
-              { icon: "fa-minus",           name: "Divider",                   size: "sm" },
-            ].map((b) => (
-              <div
-                key={b.name}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: b.size === "lg" ? ".6rem" : ".45rem",
-                  background: b.hot ? "var(--b-500)" : "var(--n-0)",
-                  color: b.hot ? "var(--b-950)" : "var(--n-700)",
-                  border: b.hot ? "none" : "2px solid var(--n-200)",
-                  borderRadius: 99,
-                  padding: b.size === "lg" ? ".6rem 1.1rem" : b.size === "sm" ? ".35rem .75rem" : ".45rem .9rem",
-                  fontWeight: 700,
-                  fontSize: b.size === "lg" ? ".9rem" : b.size === "sm" ? ".72rem" : ".8rem",
-                  boxShadow: b.hot ? "0 4px 14px rgba(245,158,11,.25)" : "0 1px 4px rgba(0,0,0,.06)",
-                }}
-              >
-                <i className={`fa-solid ${b.icon}`} style={{ fontSize: b.size === "sm" ? ".65rem" : ".75rem" }} />
-                {b.name}
-                {b.hot && <span style={{ background: "var(--b-800)", color: "var(--b-200)", fontSize: ".62rem", fontWeight: 800, borderRadius: 99, padding: "1px 7px", marginLeft: 2 }}>Populer</span>}
+          {/* Drag-drop demo */}
+          <div>
+            <div className="blk-demo-card">
+              {/* Editor titlebar */}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, paddingBottom: 10, marginBottom: 4, borderBottom: "1.5px solid var(--b-100)" }}>
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FC5C65" }} />
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#FED330" }} />
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#26DE81" }} />
+                <span style={{ marginLeft: "auto", fontSize: ".68rem", color: "var(--n-400)", fontFamily: "var(--fm, monospace)" }}>bannana editor</span>
               </div>
-            ))}
-            <div style={{ width: "100%", marginTop: ".75rem", padding: ".75rem 1rem", background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 14, fontSize: ".78rem", color: "var(--b-700)", fontWeight: 600 }}>
+
+              {/* Block rows */}
+              {[
+                { icon: "fa-link",            name: "Link ke Shopee",    bg: "var(--b-100)", ic: "var(--b-700)", on: true  },
+                { icon: "fa-circle-play",     name: "Embed YouTube",     bg: "#FEE2D5",      ic: "#C05621",       on: true  },
+                { icon: "fa-bag-shopping",    name: "Produk Unggulan",   bg: "#D1FAE5",      ic: "#065F46",       on: true  },
+                { icon: "fa-address-card",    name: "Kontak / WA",       bg: "#FEF3C7",      ic: "#D97706",       on: true  },
+                { icon: "fa-circle-question", name: "FAQ",                bg: "#EDE9FE",      ic: "#7C3AED",       on: false },
+              ].map((b, i) => (
+                <div key={b.name} className={`blk-demo-row blk-demo-r${i + 1}`}>
+                  <i className="fa-solid fa-grip-vertical" style={{ color: "var(--n-300)", fontSize: ".7rem", flexShrink: 0 }} />
+                  <div style={{ width: 30, height: 30, borderRadius: 8, background: b.bg, display: "flex", alignItems: "center", justifyContent: "center", color: b.ic, fontSize: ".72rem", flexShrink: 0 }}>
+                    <i className={`fa-solid ${b.icon}`} />
+                  </div>
+                  <span style={{ flex: 1, fontSize: ".8rem", fontWeight: 700, color: "var(--n-800)" }}>{b.name}</span>
+                  <div style={{ width: 30, height: 17, borderRadius: 99, background: b.on ? "var(--b-500)" : "var(--n-200)", flexShrink: 0, position: "relative" }}>
+                    {b.on && <div style={{ position: "absolute", right: 3, top: 3, width: 11, height: 11, borderRadius: "50%", background: "var(--n-0)" }} />}
+                  </div>
+                </div>
+              ))}
+
+              {/* Animated cursor */}
+              <div className="blk-demo-cursor">
+                <i className="fa-solid fa-up-down-left-right" />
+              </div>
+            </div>
+
+            <div style={{ marginTop: ".75rem", padding: ".65rem 1rem", background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 12, fontSize: ".78rem", color: "var(--b-700)", fontWeight: 600, textAlign: "center" }}>
               <i className="fa-solid fa-sparkles" style={{ marginRight: 6 }} />
-              Semua blok bisa di-drag, diurutkan, dan dinyala/matikan kapanpun
+              13+ jenis blok · drag, susun, nyala/matikan kapanpun
             </div>
           </div>
         </div>
