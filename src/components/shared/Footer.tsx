@@ -36,6 +36,7 @@ export function Footer() {
                 <li><Link href="/#blocks"><i className="fa-solid fa-chevron-right" /> Blok Konten</Link></li>
                 <li><Link href="/#analytics"><i className="fa-solid fa-chevron-right" /> Analytics</Link></li>
                 <li><Link href="/pricing"><i className="fa-solid fa-chevron-right" /> Pricing</Link></li>
+                <li><Link href="/blog"><i className="fa-solid fa-newspaper" /> Blog &amp; Cerita</Link></li>
               </ul>
             </div>
             <div className="footer-col">

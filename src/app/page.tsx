@@ -56,6 +56,7 @@ export default async function LandingPage() {
         <ul className="navbar-links">
           <li><a href="#features">Fitur</a></li>
           <li><a href="#blocks">Blok</a></li>
+          <li><Link href="/blog">Blog</Link></li>
           <li><Link href="/pricing">Pricing</Link></li>
         </ul>
         <div className="navbar-actions">
