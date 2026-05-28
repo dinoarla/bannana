@@ -58,7 +58,7 @@ function EmailVerifyBanner({ email }: { email: string }) {
   );
 }
 
-export function DashboardShell({ user, children }: { user: UserWithProfile; children: React.ReactNode }) {
+export function DashboardShell({ user, isPro = false, children }: { user: UserWithProfile; isPro?: boolean; children: React.ReactNode }) {
   const pathname = usePathname();
   const displayName = user.profile?.displayName ?? user.username;
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -100,7 +100,9 @@ export function DashboardShell({ user, children }: { user: UserWithProfile; chil
           </div>
           {user.role === "ADMIN"
             ? <span className="sb-badge" style={{ background: "#7C3AED", color: "#fff" }}>ADMIN</span>
-            : <span className="sb-badge" style={{ background: "var(--n-200)", color: "var(--n-600)" }}>Gratis</span>
+            : isPro
+              ? <span className="sb-badge" style={{ background: "var(--b-500)", color: "var(--b-950)" }}>Pro</span>
+              : <span className="sb-badge" style={{ background: "var(--n-200)", color: "var(--n-600)" }}>Gratis</span>
           }
         </div>
 

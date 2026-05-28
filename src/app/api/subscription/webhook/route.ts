@@ -1,5 +1,6 @@
 import { db } from "@/lib/db/client";
 import { createHash } from "crypto";
+import { sendPaymentSuccessEmail } from "@/lib/utils/mailer";
 
 function verifySignature(orderId: string, statusCode: string, grossAmount: string, serverKey: string, signature: string): boolean {
   const hash = createHash("sha512").update(`${orderId}${statusCode}${grossAmount}${serverKey}`).digest("hex");
@@ -37,9 +38,27 @@ export async function POST(request: Request) {
         periodEnd.setMonth(periodEnd.getMonth() + 1);
       }
       await db.query(
-        "UPDATE Subscription SET status='active', midtransPaymentType=?, currentPeriodStart=?, currentPeriodEnd=?, updatedAt=NOW() WHERE id=?",
+        "UPDATE Subscription SET plan='pro', status='active', midtransPaymentType=?, currentPeriodStart=?, currentPeriodEnd=?, updatedAt=NOW() WHERE id=?",
         [payment_type ?? null, now, periodEnd, sub.id as string]
       );
+
+      // Send payment confirmation email
+      try {
+        const [uRows] = await db.query(
+          `SELECT u.email, COALESCE(p.displayName, u.username) AS displayName
+           FROM User u LEFT JOIN Profile p ON p.userId = u.id
+           WHERE u.id = ? LIMIT 1`,
+          [sub.userId as string]
+        );
+        const u = (uRows as Record<string, unknown>[])[0];
+        if (u?.email) {
+          await sendPaymentSuccessEmail(u.email as string, {
+            displayName: (u.displayName as string) ?? (u.email as string),
+            billingCycle,
+            periodEnd: periodEnd.toISOString(),
+          });
+        }
+      } catch { /* email failure should not break webhook */ }
     } else if (["deny", "cancel", "expire", "failure"].includes(transaction_status)) {
       await db.query(
         "UPDATE Subscription SET status='expired', updatedAt=NOW() WHERE id=?",

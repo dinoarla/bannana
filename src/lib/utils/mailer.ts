@@ -135,6 +135,56 @@ export async function sendRenewalReminderEmail(
   return true;
 }
 
+export async function sendPaymentSuccessEmail(
+  to: string,
+  opts: { displayName: string; billingCycle: string; periodEnd: string }
+): Promise<boolean> {
+  const transport = getTransport();
+  if (!transport) return false;
+
+  const isYearly = opts.billingCycle === "yearly";
+  const price = isYearly ? "Rp 150.000 / tahun" : "Rp 15.000 / bulan";
+  const cycleLabel = isYearly ? "Tahunan" : "Bulanan";
+  const endDate = new Date(opts.periodEnd).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+
+  await transport.sendMail({
+    from: getFromAddress(),
+    to,
+    subject: "Selamat! Akun bannana.id Pro kamu sudah aktif 🍌",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFFBEB;border-radius:16px">
+        <div style="font-size:2rem;margin-bottom:8px">🍌</div>
+        <h2 style="margin:0 0 8px;color:#1C1409">Pembayaran berhasil, ${opts.displayName}!</h2>
+        <p style="color:#78716C;margin:0 0 20px;line-height:1.6">
+          Akun <strong style="color:#1C1409">bannana.id Pro</strong> kamu sudah aktif. Selamat menikmati semua fitur tanpa batas!
+        </p>
+        <div style="background:#fff;border:1.5px solid #FDE68A;border-radius:12px;padding:16px 20px;margin:0 0 24px">
+          <div style="font-size:12px;color:#A8A29E;text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:8px">Detail Langganan</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="color:#78716C">Paket</span>
+            <strong style="color:#1C1409">Pro ${cycleLabel}</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="color:#78716C">Harga</span>
+            <strong style="color:#D97706">${price}</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:#78716C">Aktif hingga</span>
+            <strong style="color:#1C1409">${endDate}</strong>
+          </div>
+        </div>
+        <a href="https://bannana.id/dashboard" style="display:inline-block;background:#F59E0B;color:#1C1409;font-weight:700;padding:14px 28px;border-radius:12px;text-decoration:none;font-size:15px">
+          Buka Dashboard
+        </a>
+        <p style="margin:24px 0 0;font-size:12px;color:#A8A29E;line-height:1.6">
+          Terima kasih sudah mendukung bannana.id! Ada pertanyaan? Balas email ini saja.
+        </p>
+      </div>
+    `,
+  });
+  return true;
+}
+
 export async function sendBlastEmail(
   to: string,
   opts: { subject: string; body: string }

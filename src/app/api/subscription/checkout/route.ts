@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     await db.query(
       `INSERT INTO Subscription (id, userId, plan, billingCycle, status, midtransOrderId, createdAt, updatedAt)
        VALUES (?, ?, 'pro', ?, 'pending', ?, NOW(), NOW())
-       ON DUPLICATE KEY UPDATE billingCycle=VALUES(billingCycle), status='pending', midtransOrderId=VALUES(midtransOrderId), updatedAt=NOW()`,
+       ON DUPLICATE KEY UPDATE plan='pro', billingCycle=VALUES(billingCycle), status='pending', midtransOrderId=VALUES(midtransOrderId), updatedAt=NOW()`,
       [crypto.randomUUID(), user.id, billingCycle, orderId]
     );
 
