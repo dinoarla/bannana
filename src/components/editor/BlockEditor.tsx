@@ -105,10 +105,12 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
   const [search, setSearch] = useState("");
   const [mobilePanel, setMobilePanel] = useState<"blocks" | "canvas" | "settings">("canvas");
   const [faqItems, setFaqItems] = useState<Array<{ q: string; a: string }>>([]);
+  const [uploadError, setUploadError] = useState<string>("");
 
   const selected = useMemo(() => page.blocks.find((b) => b.id === selectedId), [page.blocks, selectedId]);
 
   useEffect(() => {
+    setUploadError("");
     if (selected?.type === "FAQ") {
       setFaqItems((selected.config.items ?? []) as Array<{ q: string; a: string }>);
     }
@@ -241,7 +243,9 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
         config.icon = String(fd.get("icon") ?? "📢");
       }
       if (selected.type === "MAP") {
-        config.embedUrl = String(fd.get("embedUrl") ?? "");
+        const rawEmbed = String(fd.get("embedUrl") ?? "");
+        const srcMatch = rawEmbed.match(/src=["']([^"']+)["']/);
+        config.embedUrl = srcMatch ? srcMatch[1] : rawEmbed.trim();
         config.height = Number(fd.get("height") ?? 300);
       }
       if (selected.type === "FORM") config.buttonText = String(fd.get("buttonText") ?? "Isi Formulir");
@@ -251,7 +255,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
         method: "PUT",
         body: JSON.stringify({
           title,
-          url: ["LINK", "EMBED", "FORM"].includes(selected.type) ? url : selected.url,
+          url: ["LINK", "EMBED", "FORM", "PRODUCT"].includes(selected.type) ? url : selected.url,
           config,
         }),
       });
@@ -317,9 +321,9 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
           <i className="fa-solid fa-file-pen" style={{ color: "var(--b-500)", fontSize: ".82rem" }} />
           <span>{page.title}</span>
         </div>
-        <div className="et-saved">
-          <i className="fa-solid fa-circle" />
-          {saveMsg ?? "Tersimpan otomatis"}
+        <div className="et-saved" style={{ color: saveMsg ? "var(--b-600)" : "var(--n-400)", transition: "color .25s" }}>
+          <i className={`fa-solid ${saveMsg ? "fa-circle-check" : "fa-circle-dot"}`} style={{ fontSize: ".65rem" }} />
+          {" "}{saveMsg ?? "Siap"}
         </div>
         <div className="et-actions">
           <div className="pv-toggle">
@@ -594,40 +598,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                       )}
 
                       {selected.type === "BANNER" && (
-                        <>
-                          <div>
-                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Ikon (emoji)</div>
-                            <input key={`icon-${selected.id}`} name="icon" className="form-inp" type="text" defaultValue={String(selected.config.icon ?? "📢")} placeholder="📢" maxLength={4} />
-                          </div>
-                          <div>
-                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Warna Latar</div>
-                            <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap" }}>
-                              {[
-                                { bg: "#FEF3C7", color: "#92400E" },
-                                { bg: "#DCFCE7", color: "#166534" },
-                                { bg: "#DBEAFE", color: "#1e3a8a" },
-                                { bg: "#FCE7F3", color: "#9d174d" },
-                                { bg: "#FEE2E2", color: "#991b1b" },
-                                { bg: "#1C1409", color: "#FBBF24" },
-                              ].map((opt) => (
-                                <button
-                                  key={opt.bg}
-                                  type="button"
-                                  onClick={() => {
-                                    const form = document.getElementById("blok-form") as HTMLFormElement | null;
-                                    if (form) {
-                                      (form.elements.namedItem("bannerBg") as HTMLInputElement).value = opt.bg;
-                                      (form.elements.namedItem("bannerColor") as HTMLInputElement).value = opt.color;
-                                    }
-                                  }}
-                                  style={{ width: 28, height: 28, borderRadius: 6, background: opt.bg, border: `2px solid ${String(selected.config.bg ?? "#FEF3C7") === opt.bg ? "var(--b-500)" : "transparent"}`, cursor: "pointer" }}
-                                />
-                              ))}
-                            </div>
-                            <input type="hidden" name="bannerBg" defaultValue={String(selected.config.bg ?? "#FEF3C7")} />
-                            <input type="hidden" name="bannerColor" defaultValue={String(selected.config.color ?? "#92400E")} />
-                          </div>
-                        </>
+                        <BannerSettings key={selected.id} block={selected} />
                       )}
 
                       {selected.type === "IMAGE" && (() => {
@@ -654,12 +625,18 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (!file) return;
-                                if (file.size > 1_000_000) { showSave("⚠ Ukuran maks 1 MB"); return; }
+                                if (file.size > 1_000_000) { setUploadError("File terlalu besar. Maks 1 MB — coba kompres dulu."); return; }
+                                setUploadError("");
                                 const reader = new FileReader();
                                 reader.onload = (ev) => { setImageData((p) => ({ ...p, [selected.id]: ev.target?.result as string })); };
                                 reader.readAsDataURL(file);
                               }}
                             />
+                            {uploadError && (
+                              <div style={{ marginTop: ".4rem", padding: ".45rem .75rem", background: "#FEE2E2", borderRadius: 8, fontSize: ".75rem", color: "#991b1b", display: "flex", alignItems: "center", gap: ".4rem" }}>
+                                <i className="fa-solid fa-triangle-exclamation" />{uploadError}
+                              </div>
+                            )}
                           </div>
                         );
                       })()}
@@ -700,12 +677,18 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                                 onChange={(e) => {
                                   const file = e.target.files?.[0];
                                   if (!file) return;
-                                  if (file.size > 1_000_000) { showSave("⚠ Ukuran maks 1 MB"); return; }
+                                  if (file.size > 1_000_000) { setUploadError("File terlalu besar. Maks 1 MB — coba kompres dulu."); return; }
+                                  setUploadError("");
                                   const reader = new FileReader();
                                   reader.onload = (ev) => { setImageData((p) => ({ ...p, [selected.id]: ev.target?.result as string })); };
                                   reader.readAsDataURL(file);
                                 }}
                               />
+                              {uploadError && (
+                                <div style={{ marginTop: ".4rem", padding: ".45rem .75rem", background: "#FEE2E2", borderRadius: 8, fontSize: ".75rem", color: "#991b1b", display: "flex", alignItems: "center", gap: ".4rem" }}>
+                                  <i className="fa-solid fa-triangle-exclamation" />{uploadError}
+                                </div>
+                              )}
                             </div>
                           </>
                         );
@@ -744,9 +727,9 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                         <>
                           <div>
                             <div className="form-lbl" style={{ marginBottom: ".3rem" }}>URL Embed Google Maps</div>
-                            <textarea key={`map-${selected.id}`} name="embedUrl" className="form-inp form-ta" defaultValue={String(selected.config.embedUrl ?? "")} placeholder="Buka Google Maps → Share → Embed a map → salin src dari iframe" style={{ fontSize: ".72rem", minHeight: 80 }} />
+                            <textarea key={`map-${selected.id}`} name="embedUrl" className="form-inp form-ta" defaultValue={String(selected.config.embedUrl ?? "")} placeholder={'Paste kode <iframe> dari Google Maps\natau langsung URL https://www.google.com/maps/embed?...'} style={{ fontSize: ".72rem", minHeight: 80 }} />
                             <div style={{ fontSize: ".68rem", color: "var(--n-400)", marginTop: 3 }}>
-                              <i className="fa-solid fa-circle-info" style={{ color: "var(--b-400)" }} /> Salin hanya bagian URL dari atribut src="..." di kode embed Google Maps
+                              <i className="fa-solid fa-circle-info" style={{ color: "var(--b-400)" }} /> Google Maps → Share → Embed a map → salin seluruh kode iframe atau hanya URL dari src=""
                             </div>
                           </div>
                           <div>
@@ -1218,6 +1201,13 @@ function BlockPreview({ block }: { block: PublicBlock }) {
     );
   }
   if (block.type === "IMAGE") {
+    const imgSrc = block.config.imageUrl as string | undefined;
+    if (imgSrc) {
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={imgSrc} alt="" style={{ width: "100%", maxHeight: 90, objectFit: "cover", borderRadius: 8, display: "block" }} />
+      );
+    }
     return (
       <div className="img-prev">
         <i className="fa-solid fa-cloud-arrow-up" />
@@ -1379,6 +1369,43 @@ function FaqEditor({ items, onChange }: { items: Array<{ q: string; a: string }>
         </div>
       ))}
     </div>
+  );
+}
+
+const BANNER_PRESETS = [
+  { bg: "#FEF3C7", color: "#92400E" },
+  { bg: "#DCFCE7", color: "#166534" },
+  { bg: "#DBEAFE", color: "#1e3a8a" },
+  { bg: "#FCE7F3", color: "#9d174d" },
+  { bg: "#FEE2E2", color: "#991b1b" },
+  { bg: "#1C1409", color: "#FBBF24" },
+];
+
+function BannerSettings({ block }: { block: PublicBlock }) {
+  const [bg, setBg] = useState(String(block.config.bg ?? "#FEF3C7"));
+  const [color, setColor] = useState(String(block.config.color ?? "#92400E"));
+  return (
+    <>
+      <div>
+        <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Ikon (emoji)</div>
+        <input name="icon" className="form-inp" type="text" defaultValue={String(block.config.icon ?? "📢")} placeholder="📢" maxLength={4} />
+      </div>
+      <div>
+        <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Warna Latar</div>
+        <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap", marginBottom: ".4rem" }}>
+          {BANNER_PRESETS.map((opt) => (
+            <button key={opt.bg} type="button"
+              onClick={() => { setBg(opt.bg); setColor(opt.color); }}
+              style={{ width: 32, height: 32, borderRadius: 8, background: opt.bg,
+                border: `2.5px solid ${bg === opt.bg ? "var(--b-500)" : "transparent"}`,
+                cursor: "pointer", flexShrink: 0 }}
+            />
+          ))}
+        </div>
+        <input type="hidden" name="bannerBg" value={bg} onChange={() => {}} />
+        <input type="hidden" name="bannerColor" value={color} onChange={() => {}} />
+      </div>
+    </>
   );
 }
 

@@ -321,7 +321,9 @@ export function CountdownBlock({ block, style }: Props) {
 }
 
 export function MapBlock({ block, style }: Props) {
-  const embedUrl = (block.config.embedUrl as string | undefined) ?? "";
+  const raw = (block.config.embedUrl as string | undefined) ?? "";
+  const srcMatch = raw.match(/src=["']([^"']+)["']/);
+  const embedUrl = srcMatch ? srcMatch[1] : raw.trim();
   const height = Number(block.config.height ?? 300);
   if (!embedUrl) return null;
   return (
