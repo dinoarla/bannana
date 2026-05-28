@@ -203,7 +203,7 @@ export default async function LandingPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "1.5rem", marginTop: "3rem" }}>
             {[
               {
-                emoji: "🏪",
+                avatar: "https://i.pravatar.cc/80?img=47",
                 name: "Ibu Tini",
                 role: "Pemilik usaha keripik, Malang",
                 color: "#FEF3C7",
@@ -211,7 +211,7 @@ export default async function LandingPage() {
                 pain: "Rp 1,2jt habis, website nggak jadi",
               },
               {
-                emoji: "🎨",
+                avatar: "https://i.pravatar.cc/80?img=11",
                 name: "Aldo",
                 role: "Fresh grad freelance designer, Bandung",
                 color: "#EDE9FE",
@@ -219,18 +219,46 @@ export default async function LandingPage() {
                 pain: "Portfolio bagus, tapi terkesan amatir",
               },
               {
-                emoji: "📱",
+                avatar: "https://i.pravatar.cc/80?img=20",
                 name: "Rara",
                 role: "Content creator 50K followers, Semarang",
                 color: "#DCFCE7",
                 story: "Tiap upload video, komentar penuh: \"link shopee-nya mana?\", \"channel YouTube lo apa?\", \"WA jualan dong!\". Rara jawab manual satu-satu setiap hari. Padahal dia cuma butuh satu link — yang isinya semuanya.",
                 pain: "50K followers, tapi link-nya berantakan",
               },
+              {
+                avatar: "https://i.pravatar.cc/80?img=33",
+                name: "Budi",
+                role: "Affiliator marketplace, Surabaya",
+                color: "#FEE2E2",
+                story: "6 bulan jadi affiliator, sebarkan 10 link beda. Tapi nggak pernah tahu link mana yang paling laku. Feeling terus. Pernah promosi keras-kerasan, ternyata link yang viral bukan yang dia push. Data kosong, strategi buta.",
+                pain: "Nggak ada data, semua feeling",
+              },
+              {
+                avatar: "https://i.pravatar.cc/80?img=52",
+                name: "Pak Hendra",
+                role: "Pemilik catering & kue, Bekasi",
+                color: "#FEE2D5",
+                story: "Orderan datang dari WA, dari mulut ke mulut, dari tetangga. Tapi pas mau promosi online, bingung — naruh foto menu di mana? Kirim katalog PDF-nya besar banget. Pernah bayar influencer lokal, nggak ada yang tahu harus klik apa.",
+                pain: "Promosi habis, tapi susah dihubungi",
+              },
+              {
+                avatar: "https://i.pravatar.cc/80?img=5",
+                name: "Dewi",
+                role: "Yoga & wellness coach, Bali",
+                color: "#E0F2FE",
+                story: "Klien luar kota tanya jadwal kelas, link Zoom, dan nomor WA-nya setiap hari. Dewi jawab satu per satu lewat DM. Padahal dia mau fokus ngajar, bukan balas pesan. Satu halaman aja cukup — tapi bikin web sendiri terasa ribet banget.",
+                pain: "Waktu habis buat balas DM",
+              },
             ].map((s) => (
               <div key={s.name} style={{ background: "var(--n-0)", border: "2px solid var(--n-150, #F0EBE0)", borderRadius: 20, padding: "1.75rem", position: "relative", overflow: "hidden" }}>
-                <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{s.emoji}</div>
-                <div style={{ fontFamily: "var(--fd)", fontWeight: 700, fontSize: "1rem", color: "var(--b-900)", marginBottom: ".15rem" }}>{s.name}</div>
-                <div style={{ fontSize: ".72rem", color: "var(--n-400)", marginBottom: "1rem" }}>{s.role}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: ".75rem", marginBottom: "1rem" }}>
+                  <img src={s.avatar} alt={s.name} width={48} height={48} style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "2px solid var(--b-100)" }} />
+                  <div>
+                    <div style={{ fontFamily: "var(--fd)", fontWeight: 700, fontSize: "1rem", color: "var(--b-900)", lineHeight: 1.2 }}>{s.name}</div>
+                    <div style={{ fontSize: ".72rem", color: "var(--n-400)" }}>{s.role}</div>
+                  </div>
+                </div>
                 <p style={{ fontSize: ".875rem", color: "var(--n-600)", lineHeight: 1.7, marginBottom: "1rem" }}>
                   &ldquo;{s.story}&rdquo;
                 </p>
