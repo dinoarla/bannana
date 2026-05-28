@@ -1,6 +1,7 @@
 "use client";
 import type { CSSProperties } from "react";
 import type { PublicBlock } from "@/types";
+import { getEmbedInfo } from "@/lib/utils/embed";
 
 type Props = { block: PublicBlock; style?: CSSProperties };
 
@@ -47,15 +48,68 @@ export function LinkBlock({ block, style }: Props) {
 }
 
 export function EmbedBlock({ block, style }: Props) {
+  const url = block.url ?? "";
+  const embed = getEmbedInfo(url);
+
+  if (embed.type === "youtube") {
+    return (
+      <div className="block-item" style={style}>
+        <div style={{ position: "relative", paddingBottom: embed.aspectRatio ?? "56.25%", borderRadius: 14, overflow: "hidden", background: "#000" }}>
+          <iframe
+            src={embed.embedUrl}
+            title={block.title ?? "YouTube"}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (embed.type === "spotify") {
+    return (
+      <div className="block-item" style={style}>
+        <iframe
+          src={embed.embedUrl}
+          title={block.title ?? "Spotify"}
+          height="152"
+          style={{ width: "100%", borderRadius: 14, border: "none" }}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        />
+      </div>
+    );
+  }
+
+  if (embed.type === "soundcloud") {
+    return (
+      <div className="block-item" style={style}>
+        <iframe
+          src={embed.embedUrl}
+          title={block.title ?? "SoundCloud"}
+          height="120"
+          style={{ width: "100%", borderRadius: 14, border: "none" }}
+          allow="autoplay"
+        />
+      </div>
+    );
+  }
+
   return <LinkBlock block={{ ...block, title: block.title ?? "Embed" }} style={style} />;
 }
 
 export function ImageBlock({ block, style }: Props) {
+  const src = block.config.imageUrl as string | undefined;
+  if (!src) return null;
   return (
     <div className="block-item" style={style}>
-      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+      <div style={{ borderRadius: 14, overflow: "hidden" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={block.config.imageUrl ?? "/og-default.svg"} alt={block.title ?? "Gambar"} style={{ width: "100%", aspectRatio: "16/9", objectFit: "cover" }} />
+        <img
+          src={src}
+          alt={block.title ?? "Gambar"}
+          style={{ width: "100%", display: "block", objectFit: "cover" }}
+        />
       </div>
     </div>
   );

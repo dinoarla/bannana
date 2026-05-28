@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { getEmbedInfo } from "@/lib/utils/embed";
 import Link from "next/link";
 import {
   DndContext,
@@ -46,8 +47,7 @@ const BLOCK_TYPES: { type: PublicBlock["type"]; label: string; icon: string; des
   { type: "HEADER", label: "Header", icon: "fa-solid fa-heading", desc: "Judul atau teks besar", section: "Dasar" },
   { type: "DIVIDER", label: "Divider", icon: "fa-solid fa-minus", desc: "Garis pemisah visual", section: "Dasar" },
   { type: "IMAGE", label: "Gambar", icon: "fa-solid fa-image", desc: "Upload foto / banner", section: "Media" },
-  { type: "EMBED", label: "Embed", icon: "fa-solid fa-circle-play", desc: "YouTube, Spotify, X", section: "Media", badge: "NEW" },
-  { type: "SOCIAL", label: "Sosial Media", icon: "fa-solid fa-share-nodes", desc: "IG, TikTok, YouTube...", section: "Sosial" },
+  { type: "EMBED", label: "Embed", icon: "fa-solid fa-circle-play", desc: "YouTube, Spotify, SoundCloud", section: "Media" },
 ];
 
 const BLOCK_ICONS: Record<PublicBlock["type"], string> = {
@@ -75,6 +75,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
   const [selectedId, setSelectedId] = useState<string | undefined>(initialPage.blocks[0]?.id);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [imageData, setImageData] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<"blok" | "hal" | "tema">("blok");
   const [pvMode, setPvMode] = useState<"mob" | "desk">("mob");
   const [search, setSearch] = useState("");
@@ -181,11 +182,12 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
       const url = String(fd.get("url") ?? "");
       const subtitle = String(fd.get("subtitle") ?? "");
       const align = String(fd.get("align") ?? "center");
-      const imageUrl = String(fd.get("imageUrl") ?? "");
-
       const config: Record<string, unknown> = { ...selected.config };
       if (subtitle) config.subtitle = subtitle;
-      if (selected.type === "IMAGE") config.imageUrl = imageUrl;
+      if (selected.type === "IMAGE") {
+        const pending = imageData[selected.id];
+        if (pending !== undefined) config.imageUrl = pending;
+      }
       if (selected.type === "HEADER") config.align = align;
 
       const updated = await mutate<PublicBlock>(`/api/pages/${page.id}/blocks/${selected.id}`, {
@@ -197,6 +199,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
         }),
       });
       setPage((p) => ({ ...p, blocks: p.blocks.map((b) => (b.id === updated.id ? updated : b)) }));
+      if (selected.type === "IMAGE") setImageData((prev) => { const n = { ...prev }; delete n[selected.id]; return n; });
       showSave();
     } finally {
       setSaving(false);
@@ -479,7 +482,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                         />
                       </div>
 
-                      {(selected.type === "LINK" || selected.type === "EMBED") && (
+                      {selected.type === "LINK" && (
                         <div>
                           <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
                             URL
@@ -493,6 +496,10 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                             placeholder="https://…"
                           />
                         </div>
+                      )}
+
+                      {selected.type === "EMBED" && (
+                        <EmbedSettings key={selected.id} block={selected} />
                       )}
 
                       {selected.type === "HEADER" && (
@@ -530,21 +537,54 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                         </>
                       )}
 
-                      {selected.type === "IMAGE" && (
-                        <div>
-                          <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
-                            URL Gambar
+                      {selected.type === "IMAGE" && (() => {
+                        const preview = imageData[selected.id] !== undefined
+                          ? imageData[selected.id]
+                          : String(selected.config.imageUrl ?? "");
+                        return (
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".5rem" }}>Gambar</div>
+                            {preview ? (
+                              <div style={{ position: "relative", marginBottom: ".75rem" }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={preview} alt="" style={{ width: "100%", borderRadius: 10, objectFit: "cover", maxHeight: 200 }} />
+                                <button
+                                  type="button"
+                                  onClick={() => setImageData((p) => ({ ...p, [selected.id]: "" }))}
+                                  style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,.55)", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: ".72rem", cursor: "pointer", fontWeight: 700 }}
+                                >
+                                  Ganti
+                                </button>
+                              </div>
+                            ) : (
+                              <label
+                                htmlFor={`img-file-${selected.id}`}
+                                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".4rem", padding: "1.5rem 1rem", border: "2px dashed var(--b-300)", borderRadius: 10, cursor: "pointer", background: "var(--b-50)", textAlign: "center", marginBottom: ".75rem" }}
+                              >
+                                <i className="fa-solid fa-cloud-arrow-up" style={{ fontSize: "1.5rem", color: "var(--b-400)" }} />
+                                <span style={{ fontSize: ".875rem", fontWeight: 600, color: "var(--b-700)" }}>Klik untuk upload gambar</span>
+                                <span style={{ fontSize: ".72rem", color: "var(--n-400)" }}>JPG, PNG, GIF, WebP · Maks 1 MB</span>
+                              </label>
+                            )}
+                            <input
+                              id={`img-file-${selected.id}`}
+                              type="file"
+                              accept="image/jpeg,image/png,image/gif,image/webp"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                if (file.size > 1_000_000) { showSave("⚠ Ukuran maks 1 MB"); return; }
+                                const reader = new FileReader();
+                                reader.onload = (ev) => {
+                                  setImageData((p) => ({ ...p, [selected.id]: ev.target?.result as string }));
+                                };
+                                reader.readAsDataURL(file);
+                              }}
+                            />
                           </div>
-                          <input
-                            key={`img-${selected.id}`}
-                            name="imageUrl"
-                            className="form-inp"
-                            type="text"
-                            defaultValue={String(selected.config.imageUrl ?? "")}
-                            placeholder="https://…"
-                          />
-                        </div>
-                      )}
+                        );
+                      })()}
 
                       {selected.type === "LINK" && (
                         <div>
@@ -988,10 +1028,17 @@ function BlockPreview({ block }: { block: PublicBlock }) {
     );
   }
   if (block.type === "EMBED") {
+    const embed = block.url ? getEmbedInfo(block.url) : null;
+    const platformIcons: Record<string, string> = {
+      youtube: "fa-brands fa-youtube",
+      spotify: "fa-brands fa-spotify",
+      soundcloud: "fa-brands fa-soundcloud",
+    };
+    const icon = embed && embed.type !== "unknown" ? (platformIcons[embed.type] ?? "fa-solid fa-circle-play") : "fa-solid fa-circle-play";
     return (
       <div className="embed-prev">
-        <i className="fa-brands fa-youtube" />
-        <span>{block.url || "Paste URL YouTube / Spotify"}</span>
+        <i className={icon} />
+        <span>{block.url || "Paste URL YouTube / Spotify / SoundCloud"}</span>
       </div>
     );
   }
@@ -1004,6 +1051,43 @@ function BlockPreview({ block }: { block: PublicBlock }) {
     );
   }
   return null;
+}
+
+const EMBED_PLATFORMS: Record<string, { icon: string; label: string; color: string }> = {
+  youtube: { icon: "fa-brands fa-youtube", label: "YouTube", color: "#FF0000" },
+  spotify: { icon: "fa-brands fa-spotify", label: "Spotify", color: "#1DB954" },
+  soundcloud: { icon: "fa-brands fa-soundcloud", label: "SoundCloud", color: "#FF7700" },
+};
+
+function EmbedSettings({ block }: { block: PublicBlock }) {
+  const [url, setUrl] = useState(block.url ?? "");
+  const embed = url.trim() ? getEmbedInfo(url.trim()) : null;
+  const platform = embed && embed.type !== "unknown" ? EMBED_PLATFORMS[embed.type] : null;
+
+  return (
+    <div>
+      <div className="form-lbl" style={{ marginBottom: ".3rem" }}>URL Embed</div>
+      <input
+        name="url"
+        className="form-inp"
+        type="text"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        placeholder="YouTube, Spotify, atau SoundCloud..."
+      />
+      {platform ? (
+        <div style={{ display: "flex", alignItems: "center", gap: ".4rem", marginTop: ".4rem", fontSize: ".75rem", color: platform.color }}>
+          <i className={platform.icon} />
+          <span>{platform.label} terdeteksi ✓</span>
+        </div>
+      ) : url.trim() ? (
+        <div style={{ display: "flex", alignItems: "center", gap: ".4rem", marginTop: ".4rem", fontSize: ".75rem", color: "var(--n-400)" }}>
+          <i className="fa-solid fa-circle-info" />
+          <span>Tempel URL YouTube, Spotify, atau SoundCloud</span>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function defaultConfig(type: PublicBlock["type"]): Record<string, unknown> {
