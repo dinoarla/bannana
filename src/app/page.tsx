@@ -56,7 +56,6 @@ export default async function LandingPage() {
         <ul className="navbar-links">
           <li><a href="#features">Fitur</a></li>
           <li><a href="#blocks">Blok</a></li>
-          <li><a href="#themes">Tema</a></li>
           <li><Link href="/pricing">Pricing</Link></li>
         </ul>
         <div className="navbar-actions">
@@ -188,6 +187,86 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* PAIN POINTS */}
+      <section style={{ padding: "6rem 2.5rem", background: "var(--b-50)" }} id="masalah">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div className="sec-header">
+            <div className="eyebrow" style={{ marginBottom: "1rem" }}>
+              <i className="fa-solid fa-heart-crack" /> Cerita yang Mungkin Kamu Kenal
+            </div>
+            <div className="sec-title">Tampil profesional itu harusnya<br />nggak perlu mahal</div>
+            <div className="sec-sub sec-sub-center" style={{ maxWidth: 560, margin: "1rem auto 0" }}>
+              Sebelum bannana.id ada, banyak yang harus pilih antara keliatan serius — atau hemat uang.
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "1.5rem", marginTop: "3rem" }}>
+            {[
+              {
+                emoji: "🏪",
+                name: "Ibu Tini",
+                role: "Pemilik usaha keripik, Malang",
+                color: "#FEF3C7",
+                story: "Pelanggan datang dari mana-mana — WA, Instagram, Shopee. Tiap hari harus jawab satu-satu. Pernah coba bikin website, keluar Rp 1,2 juta buat domain + hosting. Belum termasuk bayar orang buat bikinnya. Akhirnya dibiarkan.",
+                pain: "Rp 1,2jt habis, website nggak jadi",
+              },
+              {
+                emoji: "🎨",
+                name: "Aldo",
+                role: "Fresh grad freelance designer, Bandung",
+                color: "#EDE9FE",
+                story: "Klien pertama minta lihat portfolio. Aldo kirim file PDF lewat email. Klien sempat ragu — keliatannya kurang profesional. Padahal karyanya bagus. Cuma butuh satu halaman yang bisa dibuka dari HP, tapi bikin web sendiri perlu waktu & modal.",
+                pain: "Portfolio bagus, tapi terkesan amatir",
+              },
+              {
+                emoji: "📱",
+                name: "Rara",
+                role: "Content creator 50K followers, Semarang",
+                color: "#DCFCE7",
+                story: "Tiap upload video, komentar penuh: \"link shopee-nya mana?\", \"channel YouTube lo apa?\", \"WA jualan dong!\". Rara jawab manual satu-satu setiap hari. Padahal dia cuma butuh satu link — yang isinya semuanya.",
+                pain: "50K followers, tapi link-nya berantakan",
+              },
+              {
+                emoji: "💰",
+                name: "Budi",
+                role: "Affiliator marketplace, Surabaya",
+                color: "#FEE2E2",
+                story: "6 bulan jadi affiliator, sebarkan 10 link beda. Tapi nggak pernah tahu link mana yang paling laku. Feeling terus. Pernah promosi keras-kerasan, ternyata link yang viral bukan yang dia push. Data kosong, strategi buta.",
+                pain: "Nggak ada data, semua feeling",
+              },
+            ].map((s) => (
+              <div key={s.name} style={{ background: "var(--n-0)", border: "2px solid var(--n-150, #F0EBE0)", borderRadius: 20, padding: "1.75rem", position: "relative", overflow: "hidden" }}>
+                <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{s.emoji}</div>
+                <div style={{ fontFamily: "var(--fd)", fontWeight: 700, fontSize: "1rem", color: "var(--b-900)", marginBottom: ".15rem" }}>{s.name}</div>
+                <div style={{ fontSize: ".72rem", color: "var(--n-400)", marginBottom: "1rem" }}>{s.role}</div>
+                <p style={{ fontSize: ".875rem", color: "var(--n-600)", lineHeight: 1.7, marginBottom: "1rem" }}>
+                  &ldquo;{s.story}&rdquo;
+                </p>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: s.color, borderRadius: 9999, padding: "4px 12px", fontSize: ".72rem", fontWeight: 700, color: "var(--n-700)" }}>
+                  <i className="fa-solid fa-triangle-exclamation" style={{ fontSize: ".65rem" }} />
+                  {s.pain}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bridge to solution */}
+          <div style={{ textAlign: "center", marginTop: "4rem", padding: "3rem 2rem", background: "linear-gradient(135deg, var(--b-100), var(--b-50))", borderRadius: 24, border: "2px solid var(--b-200)" }}>
+            <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🍌</div>
+            <div style={{ fontFamily: "var(--fd)", fontWeight: 800, fontSize: "1.6rem", color: "var(--b-900)", marginBottom: ".75rem", lineHeight: 1.3 }}>
+              bannana hadir untuk menjawab semua ini.
+            </div>
+            <p style={{ fontSize: ".95rem", color: "var(--n-600)", maxWidth: 520, margin: "0 auto 1.75rem", lineHeight: 1.7 }}>
+              Satu halaman profesional, bisa dibuat dalam 2 menit, tanpa modal, tanpa coding —
+              yang benar-benar bekerja untuk orang Indonesia.
+            </p>
+            <a href="#features" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--b-500)", color: "#1C1409", fontWeight: 800, fontSize: ".9rem", padding: ".7rem 1.75rem", borderRadius: 99, textDecoration: "none" }}>
+              <i className="fa-solid fa-arrow-down" /> Lihat Solusinya
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* FEATURES */}
       <section className="feat-sec" id="features">
         <div className="container" style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -259,79 +338,58 @@ export default async function LandingPage() {
               <i className="fa-solid fa-puzzle-piece" /> Blok Konten
             </div>
             <h2 className="sec-title">
-              6 jenis blok,<br />infinite possibilities
+              13+ jenis blok,<br />infinite possibilities
             </h2>
             <p className="sec-sub" style={{ marginTop: "1rem", marginBottom: "2rem" }}>
-              Tambahkan konten sesukamu &mdash; dari link biasa sampai embed YouTube &amp; Spotify.
-              Semua bisa drag, diatur urutan, dihidupkan/matikan kapanpun!
+              Dari link biasa, embed YouTube &amp; Spotify, tombol WA langsung, katalog produk, hitung mundur, FAQ — semua tersedia. Drag, susun, nyala/matikan kapanpun.
             </p>
             <Link href="/register" className="btn btn-primary btn-lg">
               <i className="fa-solid fa-rocket" /> Coba Gratis Sekarang
             </Link>
           </div>
-          <div className="blk-list">
-            {[
-              { icon: "fa-link", name: "Link", desc: "Link ke URL manapun dengan ikon & deskripsi", hot: true },
-              { icon: "fa-heading", name: "Judul / Header", desc: "Teks heading untuk memisahkan konten" },
-              { icon: "fa-share-nodes", name: "Sosial Media", desc: "IG, TikTok, Twitter, YouTube, dan lainnya" },
-              { icon: "fa-circle-play", name: "Embed", desc: "YouTube, Spotify, Twitter/X langsung tampil" },
-              { icon: "fa-image", name: "Gambar", desc: "Upload foto atau banner promosi" },
-              { icon: "fa-minus", name: "Divider", desc: "Pemisah visual antar blok" },
-            ].map((b) => (
-              <div className="blk-item" key={b.name}>
-                <div className="blk-ico"><i className={`fa-solid ${b.icon}`} /></div>
-                <div>
-                  <div className="blk-name">{b.name}</div>
-                  <div className="blk-desc">{b.desc}</div>
-                </div>
-                {b.hot && <span className="blk-hot">Populer</span>}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* THEMES */}
-      <section className="thm-sec" id="themes">
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div className="sec-header" style={{ marginBottom: "3rem" }}>
-            <div className="eyebrow" style={{ marginBottom: "1rem" }}>
-              <i className="fa-solid fa-paintbrush" /> Tema Preset
-            </div>
-            <div className="sec-title">Ekspresi diri yang sesungguhnya</div>
-            <div className="sec-sub sec-sub-center">
-              12 tema cantik siap pakai &mdash; atau kustomisasi penuh sesuai kepribadianmu!
-            </div>
-          </div>
-          <div className="thm-grid">
+          {/* Cloud block view */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", alignContent: "flex-start", alignItems: "flex-start" }}>
             {[
-              { id: "classic",    name: "Bannana Classic", mood: "Light · Playful",  icon: "fa-sun",              bars: ["var(--b-500)","var(--b-300)","var(--b-200)"] },
-              { id: "night",      name: "Bannana Night",   mood: "Dark · Warm",      icon: "fa-moon",             bars: ["#FBBF24","#78350F","#92400E"] },
-              { id: "vanilla",    name: "Vanilla Cream",   mood: "Light · Soft",     icon: "fa-ice-cream",        bars: ["#FDE68A","#FEF9C3","#FEF3C7"] },
-              { id: "peach",      name: "Peach Blossom",   mood: "Light · Sweet",    icon: "fa-heart",            bars: ["#FB923C","#FDBA74","#FED7AA"] },
-              { id: "matcha",     name: "Matcha Latte",    mood: "Light · Natural",  icon: "fa-leaf",             bars: ["#4ADE80","#86EFAC","#BBF7D0"] },
-              { id: "blueberry",  name: "Blueberry",       mood: "Dark · Bold",      icon: "fa-circle",           bars: ["#FACC15","#6366F1","#4338CA"] },
-              { id: "strawberry", name: "Strawberry",      mood: "Light · Vibrant",  icon: "fa-fire",             bars: ["#E11D48","#FDA4AF","#FECDD3"] },
-              { id: "licorice",   name: "Licorice",        mood: "Dark · Minimal",   icon: "fa-star",             bars: ["#A3E635","#333333","#222222"] },
-              { id: "rainbow",    name: "Rainbow Sherbet", mood: "Light · Fun",      icon: "fa-wand-sparkles",    bars: ["white","rgba(255,255,255,.7)","rgba(255,255,255,.5)"] },
-              { id: "cloud",      name: "Cloud Nine",      mood: "Light · Clean",    icon: "fa-cloud",            bars: ["#CBD5E1","#E2E8F0","#F1F5F9"] },
-              { id: "pumpkin",    name: "Pumpkin Spice",   mood: "Light · Cozy",     icon: "fa-fire-flame-curved",bars: ["#EA580C","#FB923C","#FED7AA"] },
-              { id: "glitter",    name: "Glitter Honey",   mood: "Dark · Glamour",   icon: "fa-gem",              bars: ["var(--b-500)","#44381A","#2A2010"] },
-            ].map((t) => (
-              <div className="thm-card" key={t.id}>
-                <div className={`thm-prev t-${t.id}`}>
-                  {t.bars.map((bg, i) => (
-                    <div key={i} className="thm-bar" style={{ background: bg, width: `${80 - i * 15}%` }} />
-                  ))}
-                </div>
-                <div className="thm-foot">
-                  <div className="thm-name">
-                    <i className={`fa-solid ${t.icon}`} /> {t.name}
-                  </div>
-                  <div className="thm-mood">{t.mood}</div>
-                </div>
+              { icon: "fa-link",            name: "Link",          hot: true,  size: "lg" },
+              { icon: "fa-heading",         name: "Header",                    size: "md" },
+              { icon: "fa-paragraph",       name: "Teks",                      size: "md" },
+              { icon: "fa-circle-play",     name: "Embed",         hot: true,  size: "lg" },
+              { icon: "fa-image",           name: "Gambar",                    size: "md" },
+              { icon: "fa-bag-shopping",    name: "Produk",        hot: true,  size: "lg" },
+              { icon: "fa-address-card",    name: "Kontak / WA",   hot: true,  size: "lg" },
+              { icon: "fa-rectangle-ad",    name: "Banner",                    size: "md" },
+              { icon: "fa-circle-question", name: "FAQ",                       size: "md" },
+              { icon: "fa-hourglass-half",  name: "Hitung Mundur",             size: "md" },
+              { icon: "fa-map-location-dot",name: "Peta",                      size: "sm" },
+              { icon: "fa-clipboard-list",  name: "Formulir",                  size: "sm" },
+              { icon: "fa-minus",           name: "Divider",                   size: "sm" },
+            ].map((b) => (
+              <div
+                key={b.name}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: b.size === "lg" ? ".6rem" : ".45rem",
+                  background: b.hot ? "var(--b-500)" : "var(--n-0)",
+                  color: b.hot ? "var(--b-950)" : "var(--n-700)",
+                  border: b.hot ? "none" : "2px solid var(--n-200)",
+                  borderRadius: 99,
+                  padding: b.size === "lg" ? ".6rem 1.1rem" : b.size === "sm" ? ".35rem .75rem" : ".45rem .9rem",
+                  fontWeight: 700,
+                  fontSize: b.size === "lg" ? ".9rem" : b.size === "sm" ? ".72rem" : ".8rem",
+                  boxShadow: b.hot ? "0 4px 14px rgba(245,158,11,.25)" : "0 1px 4px rgba(0,0,0,.06)",
+                }}
+              >
+                <i className={`fa-solid ${b.icon}`} style={{ fontSize: b.size === "sm" ? ".65rem" : ".75rem" }} />
+                {b.name}
+                {b.hot && <span style={{ background: "var(--b-800)", color: "var(--b-200)", fontSize: ".62rem", fontWeight: 800, borderRadius: 99, padding: "1px 7px", marginLeft: 2 }}>Populer</span>}
               </div>
             ))}
+            <div style={{ width: "100%", marginTop: ".75rem", padding: ".75rem 1rem", background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 14, fontSize: ".78rem", color: "var(--b-700)", fontWeight: 600 }}>
+              <i className="fa-solid fa-sparkles" style={{ marginRight: 6 }} />
+              Semua blok bisa di-drag, diurutkan, dan dinyala/matikan kapanpun
+            </div>
           </div>
         </div>
       </section>
@@ -447,20 +505,20 @@ export default async function LandingPage() {
           {/* Mobile stats strip */}
           <div style={{ background: "linear-gradient(135deg,var(--b-900),var(--b-800))", borderRadius: 24, padding: "2.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "2rem", textAlign: "center" }}>
             <div>
-              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>97%</div>
-              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>pengguna internet Indonesia akses via HP</div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-200)", lineHeight: 1 }}>97%</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-300)", marginTop: ".4rem" }}>pengguna internet Indonesia akses via HP</div>
             </div>
             <div>
-              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>2 mnt</div>
-              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>waktu setup hingga halaman live</div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-200)", lineHeight: 1 }}>2 mnt</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-300)", marginTop: ".4rem" }}>waktu setup hingga halaman live</div>
             </div>
             <div>
-              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>Rp&nbsp;0</div>
-              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>biaya awal — daftar gratis, bayar kalau mau upgrade</div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-200)", lineHeight: 1 }}>Rp&nbsp;0</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-300)", marginTop: ".4rem" }}>biaya awal — daftar gratis, bayar kalau mau upgrade</div>
             </div>
             <div>
-              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-300)", lineHeight: 1 }}>10×</div>
-              <div style={{ fontSize: ".82rem", color: "var(--b-600)", marginTop: ".4rem" }}>lebih murah dari biaya domain + hosting per tahun</div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: "2.4rem", fontWeight: 700, color: "var(--b-200)", lineHeight: 1 }}>10×</div>
+              <div style={{ fontSize: ".82rem", color: "var(--b-300)", marginTop: ".4rem" }}>lebih murah dari biaya domain + hosting per tahun</div>
             </div>
           </div>
         </div>
@@ -520,7 +578,7 @@ export default async function LandingPage() {
               <i className="fa-solid fa-tag" /> Lihat Paket &amp; Harga
             </Link>
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1.5rem", fontSize: ".8rem", color: "var(--b-600)" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1.5rem", fontSize: ".8rem", color: "var(--b-300)" }}>
             {["✓ Tidak perlu coding", "✓ Tidak perlu domain", "✓ Tidak perlu hosting", "✓ Live dalam 2 menit"].map((s) => (
               <span key={s}>{s}</span>
             ))}

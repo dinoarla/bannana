@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div style={{ maxWidth: 240 }}>
             <div className="footer-brand-name"><span className="bana">🍌</span> bannana.id</div>
-            <div className="footer-tagline">Platform mobile marketing &amp; link page untuk semua — UMKM, kreator, freelancer, dan affiliator.</div>
+            <div className="footer-tagline" style={{ color: "var(--b-400)" }}>Platform mobile marketing &amp; link page untuk semua — UMKM, kreator, freelancer, dan affiliator.</div>
             {/* Social icons */}
             <div style={{ display: "flex", gap: ".75rem", marginTop: "1rem" }}>
               {[
@@ -20,7 +20,7 @@ export function Footer() {
                 { href: "#", icon: "fa-brands fa-github",    label: "GitHub" },
               ].map((s) => (
                 <a key={s.label} href={s.href} aria-label={s.label}
-                  style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(251,191,36,.12)", border: "1.5px solid rgba(251,191,36,.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-600)", fontSize: ".9rem", transition: "all 150ms", textDecoration: "none" }}>
+                  style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(251,191,36,.18)", border: "1.5px solid rgba(251,191,36,.35)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-300)", fontSize: ".9rem", transition: "all 150ms", textDecoration: "none" }}>
                   <i className={s.icon} />
                 </a>
               ))}
@@ -34,7 +34,6 @@ export function Footer() {
               <ul>
                 <li><Link href="/#features"><i className="fa-solid fa-chevron-right" /> Fitur</Link></li>
                 <li><Link href="/#blocks"><i className="fa-solid fa-chevron-right" /> Blok Konten</Link></li>
-                <li><Link href="/#themes"><i className="fa-solid fa-chevron-right" /> Tema</Link></li>
                 <li><Link href="/#analytics"><i className="fa-solid fa-chevron-right" /> Analytics</Link></li>
                 <li><Link href="/pricing"><i className="fa-solid fa-chevron-right" /> Pricing</Link></li>
               </ul>
