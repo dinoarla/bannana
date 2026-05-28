@@ -16,6 +16,8 @@ const NAV_ITEMS = [
   { href: "/admin/transactions", label: "Transaksi", icon: "fa-credit-card" },
   { href: "/admin/sessions", label: "Sesi", icon: "fa-mobile-screen" },
   { href: "/admin/seo", label: "SEO", icon: "fa-magnifying-glass-chart" },
+  { href: "/admin/email-blast", label: "Email Blast", icon: "fa-bullhorn" },
+  { href: "/admin/blog", label: "Blog & Cerita", icon: "fa-newspaper" },
 ];
 
 export function AdminShell({ displayName, email, children }: AdminShellProps) {
