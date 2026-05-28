@@ -1,4 +1,4 @@
-import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next/dist/lib/metadata/types/metadata-interface";
 import { db } from "@/lib/db/client";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -34,5 +34,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   } catch { /* DB unavailable at build time */ }
 
-  return [...staticPages, ...userPages];
+  let blogPages: MetadataRoute.Sitemap = [];
+  try {
+    const [rows] = await db.query(
+      `SELECT slug, updatedAt FROM Post WHERE status = 'published' ORDER BY publishedAt DESC LIMIT 1000`
+    );
+    blogPages = (rows as Array<{ slug: string; updatedAt: Date }>).map((row) => ({
+      url: `${baseUrl}/blog/${row.slug}`,
+      lastModified: row.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+  } catch { /* Post table may not exist yet */ }
+
+  return [...staticPages, ...blogPages, ...userPages];
 }
