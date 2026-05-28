@@ -1,5 +1,5 @@
 export type Role = "USER" | "ADMIN";
-export type DbBlockType = "LINK" | "HEADER" | "SOCIAL" | "EMBED" | "IMAGE" | "DIVIDER";
+export type DbBlockType = "LINK" | "HEADER" | "SOCIAL" | "EMBED" | "IMAGE" | "DIVIDER" | "TEXT" | "COUNTDOWN" | "FAQ" | "CONTACT" | "PRODUCT" | "BANNER" | "MAP" | "FORM";
 
 export type User = {
   id: string;

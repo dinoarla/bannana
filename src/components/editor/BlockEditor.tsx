@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getEmbedInfo } from "@/lib/utils/embed";
 import Link from "next/link";
 import {
@@ -43,32 +43,56 @@ type Props = {
 };
 
 const BLOCK_TYPES: { type: PublicBlock["type"]; label: string; icon: string; desc: string; section: string; badge?: string }[] = [
-  { type: "LINK", label: "Link", icon: "fa-solid fa-link", desc: "URL + ikon & deskripsi", section: "Dasar" },
-  { type: "HEADER", label: "Header", icon: "fa-solid fa-heading", desc: "Judul atau teks besar", section: "Dasar" },
-  { type: "DIVIDER", label: "Divider", icon: "fa-solid fa-minus", desc: "Garis pemisah visual", section: "Dasar" },
-  { type: "IMAGE", label: "Gambar", icon: "fa-solid fa-image", desc: "Upload foto / banner", section: "Media" },
-  { type: "EMBED", label: "Embed", icon: "fa-solid fa-circle-play", desc: "YouTube, Spotify, SoundCloud", section: "Media" },
+  { type: "LINK",      label: "Link",        icon: "fa-solid fa-link",            desc: "URL + ikon & deskripsi",           section: "Dasar" },
+  { type: "HEADER",    label: "Header",      icon: "fa-solid fa-heading",         desc: "Judul atau teks besar",            section: "Dasar" },
+  { type: "TEXT",      label: "Teks",        icon: "fa-solid fa-paragraph",       desc: "Paragraf teks bebas",              section: "Dasar" },
+  { type: "DIVIDER",   label: "Divider",     icon: "fa-solid fa-minus",           desc: "Garis pemisah visual",             section: "Dasar" },
+  { type: "BANNER",    label: "Banner",      icon: "fa-solid fa-rectangle-ad",    desc: "Strip pengumuman berwarna",        section: "Dasar" },
+  { type: "IMAGE",     label: "Gambar",      icon: "fa-solid fa-image",           desc: "Upload foto / banner",             section: "Media" },
+  { type: "EMBED",     label: "Embed",       icon: "fa-solid fa-circle-play",     desc: "YouTube, Spotify, SoundCloud",     section: "Media" },
+  { type: "MAP",       label: "Peta",        icon: "fa-solid fa-map-location-dot",desc: "Embed Google Maps",                section: "Media" },
+  { type: "CONTACT",   label: "Kontak",      icon: "fa-solid fa-address-card",    desc: "Tombol WA / Telegram / LINE",      section: "Interaksi" },
+  { type: "FORM",      label: "Formulir",    icon: "fa-solid fa-clipboard-list",  desc: "Link ke Google Form / Typeform",   section: "Interaksi" },
+  { type: "PRODUCT",   label: "Produk",      icon: "fa-solid fa-bag-shopping",    desc: "Gambar + harga + tombol beli",     section: "Interaksi" },
+  { type: "FAQ",       label: "FAQ",         icon: "fa-solid fa-circle-question", desc: "Pertanyaan yang sering ditanyakan",section: "Interaksi" },
+  { type: "COUNTDOWN", label: "Hitung Mundur",icon: "fa-solid fa-hourglass-half", desc: "Timer mundur ke tanggal tertentu", section: "Interaksi" },
 ];
 
 const BLOCK_ICONS: Record<PublicBlock["type"], string> = {
-  LINK: "fa-solid fa-link",
-  HEADER: "fa-solid fa-heading",
-  DIVIDER: "fa-solid fa-minus",
-  IMAGE: "fa-solid fa-image",
-  EMBED: "fa-solid fa-circle-play",
-  SOCIAL: "fa-solid fa-share-nodes",
+  LINK:      "fa-solid fa-link",
+  HEADER:    "fa-solid fa-heading",
+  DIVIDER:   "fa-solid fa-minus",
+  IMAGE:     "fa-solid fa-image",
+  EMBED:     "fa-solid fa-circle-play",
+  SOCIAL:    "fa-solid fa-share-nodes",
+  TEXT:      "fa-solid fa-paragraph",
+  BANNER:    "fa-solid fa-rectangle-ad",
+  CONTACT:   "fa-solid fa-address-card",
+  PRODUCT:   "fa-solid fa-bag-shopping",
+  FAQ:       "fa-solid fa-circle-question",
+  COUNTDOWN: "fa-solid fa-hourglass-half",
+  MAP:       "fa-solid fa-map-location-dot",
+  FORM:      "fa-solid fa-clipboard-list",
 };
 
 const BLOCK_LABELS: Record<PublicBlock["type"], string> = {
-  LINK: "Link",
-  HEADER: "Header",
-  DIVIDER: "Divider",
-  IMAGE: "Gambar",
-  EMBED: "Embed",
-  SOCIAL: "Sosial Media",
+  LINK:      "Link",
+  HEADER:    "Header",
+  DIVIDER:   "Divider",
+  IMAGE:     "Gambar",
+  EMBED:     "Embed",
+  SOCIAL:    "Sosial Media",
+  TEXT:      "Teks",
+  BANNER:    "Banner",
+  CONTACT:   "Kontak",
+  PRODUCT:   "Produk",
+  FAQ:       "FAQ",
+  COUNTDOWN: "Hitung Mundur",
+  MAP:       "Peta",
+  FORM:      "Formulir",
 };
 
-const SECTIONS = ["Dasar", "Media", "Sosial"] as const;
+const SECTIONS = ["Dasar", "Media", "Interaksi"] as const;
 
 export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Props) {
   const [page, setPage] = useState<PageState>(initialPage);
@@ -80,8 +104,15 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
   const [pvMode, setPvMode] = useState<"mob" | "desk">("mob");
   const [search, setSearch] = useState("");
   const [mobilePanel, setMobilePanel] = useState<"blocks" | "canvas" | "settings">("canvas");
+  const [faqItems, setFaqItems] = useState<Array<{ q: string; a: string }>>([]);
 
   const selected = useMemo(() => page.blocks.find((b) => b.id === selectedId), [page.blocks, selectedId]);
+
+  useEffect(() => {
+    if (selected?.type === "FAQ") {
+      setFaqItems((selected.config.items ?? []) as Array<{ q: string; a: string }>);
+    }
+  }, [selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -181,25 +212,53 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
       const title = String(fd.get("title") ?? "");
       const url = String(fd.get("url") ?? "");
       const subtitle = String(fd.get("subtitle") ?? "");
-      const align = String(fd.get("align") ?? "center");
       const config: Record<string, unknown> = { ...selected.config };
-      if (subtitle) config.subtitle = subtitle;
-      if (selected.type === "IMAGE") {
+
+      if (subtitle && ["LINK", "HEADER", "FORM"].includes(selected.type)) config.subtitle = subtitle;
+
+      if (selected.type === "IMAGE" || selected.type === "PRODUCT") {
         const pending = imageData[selected.id];
         if (pending !== undefined) config.imageUrl = pending;
       }
-      if (selected.type === "HEADER") config.align = align;
+      if (selected.type === "HEADER") config.align = String(fd.get("align") ?? "center");
+      if (selected.type === "TEXT") {
+        config.content = String(fd.get("content") ?? "");
+        config.align = String(fd.get("align") ?? "left");
+      }
+      if (selected.type === "COUNTDOWN") config.targetDate = String(fd.get("targetDate") ?? "");
+      if (selected.type === "CONTACT") {
+        config.platform = String(fd.get("platform") ?? "whatsapp");
+        config.handle = String(fd.get("handle") ?? "");
+        config.message = String(fd.get("message") ?? "");
+      }
+      if (selected.type === "PRODUCT") {
+        config.price = String(fd.get("price") ?? "");
+        config.buttonText = String(fd.get("buttonText") ?? "Beli Sekarang");
+      }
+      if (selected.type === "BANNER") {
+        config.bg = String(fd.get("bannerBg") ?? config.bg ?? "#FEF3C7");
+        config.color = String(fd.get("bannerColor") ?? config.color ?? "#92400E");
+        config.icon = String(fd.get("icon") ?? "📢");
+      }
+      if (selected.type === "MAP") {
+        config.embedUrl = String(fd.get("embedUrl") ?? "");
+        config.height = Number(fd.get("height") ?? 300);
+      }
+      if (selected.type === "FORM") config.buttonText = String(fd.get("buttonText") ?? "Isi Formulir");
+      if (selected.type === "FAQ") config.items = faqItems;
 
       const updated = await mutate<PublicBlock>(`/api/pages/${page.id}/blocks/${selected.id}`, {
         method: "PUT",
         body: JSON.stringify({
           title,
-          url: ["LINK", "EMBED"].includes(selected.type) ? url : selected.url,
+          url: ["LINK", "EMBED", "FORM"].includes(selected.type) ? url : selected.url,
           config,
         }),
       });
       setPage((p) => ({ ...p, blocks: p.blocks.map((b) => (b.id === updated.id ? updated : b)) }));
-      if (selected.type === "IMAGE") setImageData((prev) => { const n = { ...prev }; delete n[selected.id]; return n; });
+      if (selected.type === "IMAGE" || selected.type === "PRODUCT") {
+        setImageData((prev) => { const n = { ...prev }; delete n[selected.id]; return n; });
+      }
       showSave();
     } finally {
       setSaving(false);
@@ -484,17 +543,8 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
 
                       {selected.type === "LINK" && (
                         <div>
-                          <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
-                            URL
-                          </div>
-                          <input
-                            key={`url-${selected.id}`}
-                            name="url"
-                            className="form-inp"
-                            type="text"
-                            defaultValue={selected.url ?? ""}
-                            placeholder="https://…"
-                          />
+                          <div className="form-lbl" style={{ marginBottom: ".3rem" }}>URL</div>
+                          <input key={`url-${selected.id}`} name="url" className="form-inp" type="text" defaultValue={selected.url ?? ""} placeholder="https://…" />
                         </div>
                       )}
 
@@ -505,34 +555,74 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                       {selected.type === "HEADER" && (
                         <>
                           <div>
-                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
-                              Subjudul
-                            </div>
-                            <input
-                              key={`sub-${selected.id}`}
-                              name="subtitle"
-                              className="form-inp"
-                              type="text"
-                              defaultValue={String(selected.config.subtitle ?? "")}
-                            />
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Subjudul</div>
+                            <input key={`sub-${selected.id}`} name="subtitle" className="form-inp" type="text" defaultValue={String(selected.config.subtitle ?? "")} />
                           </div>
                           <div>
-                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
-                              Posisi Teks
-                            </div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Posisi Teks</div>
                             <div className="align-row">
                               {(["left", "center", "right"] as const).map((a) => (
-                                <button
-                                  key={a}
-                                  type="button"
-                                  className={`align-btn${
-                                    (selected.config.align ?? "center") === a ? " act" : ""
-                                  }`}
-                                >
+                                <button key={a} type="button" className={`align-btn${(selected.config.align ?? "center") === a ? " act" : ""}`}>
                                   <i className={`fa-solid fa-align-${a}`} />
                                 </button>
                               ))}
                             </div>
+                          </div>
+                        </>
+                      )}
+
+                      {selected.type === "TEXT" && (
+                        <>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Konten Teks</div>
+                            <textarea key={`content-${selected.id}`} name="content" className="form-inp form-ta" style={{ minHeight: 100 }} defaultValue={String(selected.config.content ?? "")} placeholder="Tulis teks di sini..." />
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Rata Teks</div>
+                            <div className="align-row">
+                              {(["left", "center", "right"] as const).map((a) => (
+                                <button key={a} type="button" className={`align-btn${(selected.config.align ?? "left") === a ? " act" : ""}`}>
+                                  <i className={`fa-solid fa-align-${a}`} />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {selected.type === "BANNER" && (
+                        <>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Ikon (emoji)</div>
+                            <input key={`icon-${selected.id}`} name="icon" className="form-inp" type="text" defaultValue={String(selected.config.icon ?? "📢")} placeholder="📢" maxLength={4} />
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Warna Latar</div>
+                            <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap" }}>
+                              {[
+                                { bg: "#FEF3C7", color: "#92400E" },
+                                { bg: "#DCFCE7", color: "#166534" },
+                                { bg: "#DBEAFE", color: "#1e3a8a" },
+                                { bg: "#FCE7F3", color: "#9d174d" },
+                                { bg: "#FEE2E2", color: "#991b1b" },
+                                { bg: "#1C1409", color: "#FBBF24" },
+                              ].map((opt) => (
+                                <button
+                                  key={opt.bg}
+                                  type="button"
+                                  onClick={() => {
+                                    const form = document.getElementById("blok-form") as HTMLFormElement | null;
+                                    if (form) {
+                                      (form.elements.namedItem("bannerBg") as HTMLInputElement).value = opt.bg;
+                                      (form.elements.namedItem("bannerColor") as HTMLInputElement).value = opt.color;
+                                    }
+                                  }}
+                                  style={{ width: 28, height: 28, borderRadius: 6, background: opt.bg, border: `2px solid ${String(selected.config.bg ?? "#FEF3C7") === opt.bg ? "var(--b-500)" : "transparent"}`, cursor: "pointer" }}
+                                />
+                              ))}
+                            </div>
+                            <input type="hidden" name="bannerBg" defaultValue={String(selected.config.bg ?? "#FEF3C7")} />
+                            <input type="hidden" name="bannerColor" defaultValue={String(selected.config.color ?? "#92400E")} />
                           </div>
                         </>
                       )}
@@ -548,37 +638,22 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                               <div style={{ position: "relative", marginBottom: ".75rem" }}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={preview} alt="" style={{ width: "100%", borderRadius: 10, objectFit: "cover", maxHeight: 200 }} />
-                                <button
-                                  type="button"
-                                  onClick={() => setImageData((p) => ({ ...p, [selected.id]: "" }))}
-                                  style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,.55)", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: ".72rem", cursor: "pointer", fontWeight: 700 }}
-                                >
-                                  Ganti
-                                </button>
+                                <button type="button" onClick={() => setImageData((p) => ({ ...p, [selected.id]: "" }))} style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,.55)", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: ".72rem", cursor: "pointer", fontWeight: 700 }}>Ganti</button>
                               </div>
                             ) : (
-                              <label
-                                htmlFor={`img-file-${selected.id}`}
-                                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".4rem", padding: "1.5rem 1rem", border: "2px dashed var(--b-300)", borderRadius: 10, cursor: "pointer", background: "var(--b-50)", textAlign: "center", marginBottom: ".75rem" }}
-                              >
+                              <label htmlFor={`img-file-${selected.id}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".4rem", padding: "1.5rem 1rem", border: "2px dashed var(--b-300)", borderRadius: 10, cursor: "pointer", background: "var(--b-50)", textAlign: "center", marginBottom: ".75rem" }}>
                                 <i className="fa-solid fa-cloud-arrow-up" style={{ fontSize: "1.5rem", color: "var(--b-400)" }} />
                                 <span style={{ fontSize: ".875rem", fontWeight: 600, color: "var(--b-700)" }}>Klik untuk upload gambar</span>
                                 <span style={{ fontSize: ".72rem", color: "var(--n-400)" }}>JPG, PNG, GIF, WebP · Maks 1 MB</span>
                               </label>
                             )}
-                            <input
-                              id={`img-file-${selected.id}`}
-                              type="file"
-                              accept="image/jpeg,image/png,image/gif,image/webp"
-                              style={{ display: "none" }}
+                            <input id={`img-file-${selected.id}`} type="file" accept="image/jpeg,image/png,image/gif,image/webp" style={{ display: "none" }}
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (!file) return;
                                 if (file.size > 1_000_000) { showSave("⚠ Ukuran maks 1 MB"); return; }
                                 const reader = new FileReader();
-                                reader.onload = (ev) => {
-                                  setImageData((p) => ({ ...p, [selected.id]: ev.target?.result as string }));
-                                };
+                                reader.onload = (ev) => { setImageData((p) => ({ ...p, [selected.id]: ev.target?.result as string })); };
                                 reader.readAsDataURL(file);
                               }}
                             />
@@ -586,26 +661,127 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                         );
                       })()}
 
-                      {selected.type === "LINK" && (
-                        <div>
-                          <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
-                            Deskripsi
+                      {selected.type === "PRODUCT" && (() => {
+                        const preview = imageData[selected.id] !== undefined
+                          ? imageData[selected.id]
+                          : String(selected.config.imageUrl ?? "");
+                        return (
+                          <>
+                            <div>
+                              <div className="form-lbl" style={{ marginBottom: ".3rem" }}>URL Produk (link beli)</div>
+                              <input key={`url-${selected.id}`} name="url" className="form-inp" type="text" defaultValue={selected.url ?? ""} placeholder="https://tokopedia.com/..." />
+                            </div>
+                            <div>
+                              <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Harga</div>
+                              <input key={`price-${selected.id}`} name="price" className="form-inp" type="text" defaultValue={String(selected.config.price ?? "")} placeholder="Rp 50.000" />
+                            </div>
+                            <div>
+                              <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Teks Tombol</div>
+                              <input key={`btn-${selected.id}`} name="buttonText" className="form-inp" type="text" defaultValue={String(selected.config.buttonText ?? "Beli Sekarang")} />
+                            </div>
+                            <div>
+                              <div className="form-lbl" style={{ marginBottom: ".5rem" }}>Foto Produk</div>
+                              {preview ? (
+                                <div style={{ position: "relative", marginBottom: ".75rem" }}>
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={preview} alt="" style={{ width: "100%", borderRadius: 10, objectFit: "cover", maxHeight: 160 }} />
+                                  <button type="button" onClick={() => setImageData((p) => ({ ...p, [selected.id]: "" }))} style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,.55)", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: ".72rem", cursor: "pointer", fontWeight: 700 }}>Ganti</button>
+                                </div>
+                              ) : (
+                                <label htmlFor={`prod-file-${selected.id}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".4rem", padding: "1rem", border: "2px dashed var(--b-300)", borderRadius: 10, cursor: "pointer", background: "var(--b-50)", textAlign: "center", marginBottom: ".5rem" }}>
+                                  <i className="fa-solid fa-cloud-arrow-up" style={{ fontSize: "1.3rem", color: "var(--b-400)" }} />
+                                  <span style={{ fontSize: ".82rem", fontWeight: 600, color: "var(--b-700)" }}>Upload foto produk</span>
+                                </label>
+                              )}
+                              <input id={`prod-file-${selected.id}`} type="file" accept="image/jpeg,image/png,image/gif,image/webp" style={{ display: "none" }}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  if (file.size > 1_000_000) { showSave("⚠ Ukuran maks 1 MB"); return; }
+                                  const reader = new FileReader();
+                                  reader.onload = (ev) => { setImageData((p) => ({ ...p, [selected.id]: ev.target?.result as string })); };
+                                  reader.readAsDataURL(file);
+                                }}
+                              />
+                            </div>
+                          </>
+                        );
+                      })()}
+
+                      {selected.type === "CONTACT" && (
+                        <>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Platform</div>
+                            <select key={`plat-${selected.id}`} name="platform" className="form-inp" defaultValue={String(selected.config.platform ?? "whatsapp")}>
+                              <option value="whatsapp">WhatsApp</option>
+                              <option value="telegram">Telegram</option>
+                              <option value="line">LINE</option>
+                              <option value="email">Email</option>
+                            </select>
                           </div>
-                          <textarea
-                            key={`desc-${selected.id}`}
-                            name="subtitle"
-                            className="form-inp form-ta"
-                            defaultValue={String(selected.config.subtitle ?? "")}
-                          />
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Nomor / Username / Email</div>
+                            <input key={`handle-${selected.id}`} name="handle" className="form-inp" type="text" defaultValue={String(selected.config.handle ?? "")} placeholder="628123456789 / @username / email@..." />
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Pesan Pre-filled (opsional)</div>
+                            <textarea key={`msg-${selected.id}`} name="message" className="form-inp form-ta" defaultValue={String(selected.config.message ?? "")} placeholder="Halo, saya tertarik dengan..." />
+                          </div>
+                        </>
+                      )}
+
+                      {selected.type === "COUNTDOWN" && (
+                        <div>
+                          <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Target Tanggal & Waktu</div>
+                          <input key={`cd-${selected.id}`} name="targetDate" className="form-inp" type="datetime-local" defaultValue={selected.config.targetDate ? new Date(String(selected.config.targetDate)).toISOString().slice(0,16) : ""} />
                         </div>
                       )}
 
-                      <button
-                        type="submit"
-                        className="save-bottom"
-                        disabled={saving}
-                        style={{ margin: 0 }}
-                      >
+                      {selected.type === "MAP" && (
+                        <>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>URL Embed Google Maps</div>
+                            <textarea key={`map-${selected.id}`} name="embedUrl" className="form-inp form-ta" defaultValue={String(selected.config.embedUrl ?? "")} placeholder="Buka Google Maps → Share → Embed a map → salin src dari iframe" style={{ fontSize: ".72rem", minHeight: 80 }} />
+                            <div style={{ fontSize: ".68rem", color: "var(--n-400)", marginTop: 3 }}>
+                              <i className="fa-solid fa-circle-info" style={{ color: "var(--b-400)" }} /> Salin hanya bagian URL dari atribut src="..." di kode embed Google Maps
+                            </div>
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Tinggi Peta (px)</div>
+                            <input key={`mh-${selected.id}`} name="height" className="form-inp" type="number" min={150} max={600} defaultValue={Number(selected.config.height ?? 300)} />
+                          </div>
+                        </>
+                      )}
+
+                      {selected.type === "FORM" && (
+                        <>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>URL Formulir</div>
+                            <input key={`furl-${selected.id}`} name="url" className="form-inp" type="text" defaultValue={selected.url ?? ""} placeholder="https://forms.google.com/..." />
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Deskripsi (opsional)</div>
+                            <input key={`fdesc-${selected.id}`} name="subtitle" className="form-inp" type="text" defaultValue={String(selected.config.subtitle ?? "")} placeholder="Isi formulir kami..." />
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Teks Tombol</div>
+                            <input key={`fbtn-${selected.id}`} name="buttonText" className="form-inp" type="text" defaultValue={String(selected.config.buttonText ?? "Isi Formulir")} />
+                          </div>
+                        </>
+                      )}
+
+                      {selected.type === "FAQ" && (
+                        <FaqEditor items={faqItems} onChange={setFaqItems} />
+                      )}
+
+                      {selected.type === "LINK" && (
+                        <div>
+                          <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Deskripsi</div>
+                          <textarea key={`desc-${selected.id}`} name="subtitle" className="form-inp form-ta" defaultValue={String(selected.config.subtitle ?? "")} />
+                        </div>
+                      )}
+
+                      <button type="submit" className="save-bottom" disabled={saving} style={{ margin: 0 }}>
                         <i className="fa-solid fa-check" /> Simpan Perubahan
                       </button>
                     </form>
@@ -1050,6 +1226,77 @@ function BlockPreview({ block }: { block: PublicBlock }) {
       </div>
     );
   }
+  if (block.type === "TEXT") {
+    return (
+      <div className="text-prev">
+        <span>{String(block.config.content ?? block.title ?? "Teks kosong").slice(0, 80)}</span>
+      </div>
+    );
+  }
+  if (block.type === "BANNER") {
+    return (
+      <div className="banner-prev" style={{ background: String(block.config.bg ?? "#FEF3C7"), color: String(block.config.color ?? "#92400E") }}>
+        <span>{String(block.config.icon ?? "📢")}</span>
+        <span>{block.title || "Teks banner"}</span>
+      </div>
+    );
+  }
+  if (block.type === "CONTACT") {
+    const platformIcons: Record<string, string> = { whatsapp: "fa-brands fa-whatsapp", telegram: "fa-brands fa-telegram", line: "fa-brands fa-line", email: "fa-solid fa-envelope" };
+    const icon = platformIcons[String(block.config.platform ?? "whatsapp")] ?? "fa-solid fa-phone";
+    return (
+      <div className="embed-prev">
+        <i className={icon} />
+        <span>{block.title || String(block.config.handle || "Kontak")}</span>
+      </div>
+    );
+  }
+  if (block.type === "PRODUCT") {
+    return (
+      <div className="link-prev">
+        <div className="lp-ico" style={{ background: "var(--b-100)", color: "var(--b-700)" }}>
+          <i className="fa-solid fa-bag-shopping" />
+        </div>
+        <div>
+          <div className="lp-title">{block.title || "Nama Produk"}</div>
+          <div className="lp-url">{String(block.config.price || "Harga belum diatur")}</div>
+        </div>
+      </div>
+    );
+  }
+  if (block.type === "FAQ") {
+    const count = (block.config.items as unknown[] | undefined)?.length ?? 0;
+    return (
+      <div className="embed-prev">
+        <i className="fa-solid fa-circle-question" />
+        <span>{block.title || "FAQ"} · {count} pertanyaan</span>
+      </div>
+    );
+  }
+  if (block.type === "COUNTDOWN") {
+    return (
+      <div className="embed-prev">
+        <i className="fa-solid fa-hourglass-half" />
+        <span>{block.config.targetDate ? new Date(String(block.config.targetDate)).toLocaleDateString("id-ID") : "Atur tanggal target"}</span>
+      </div>
+    );
+  }
+  if (block.type === "MAP") {
+    return (
+      <div className="embed-prev">
+        <i className="fa-solid fa-map-location-dot" />
+        <span>{block.title || (block.config.embedUrl ? "Peta terpasang" : "Tempel URL embed peta")}</span>
+      </div>
+    );
+  }
+  if (block.type === "FORM") {
+    return (
+      <div className="embed-prev">
+        <i className="fa-solid fa-clipboard-list" />
+        <span>{block.title || (block.url ? "Formulir terpasang" : "Tempel URL formulir")}</span>
+      </div>
+    );
+  }
   return null;
 }
 
@@ -1090,11 +1337,65 @@ function EmbedSettings({ block }: { block: PublicBlock }) {
   );
 }
 
+function FaqEditor({ items, onChange }: { items: Array<{ q: string; a: string }>; onChange: (items: Array<{ q: string; a: string }>) => void }) {
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: ".5rem" }}>
+        <div className="form-lbl">Pertanyaan & Jawaban</div>
+        <button
+          type="button"
+          onClick={() => onChange([...items, { q: "", a: "" }])}
+          style={{ fontSize: ".72rem", fontWeight: 700, color: "var(--b-600)", background: "var(--b-50)", border: "1px solid var(--b-200)", borderRadius: 6, padding: "3px 10px", cursor: "pointer" }}
+        >
+          <i className="fa-solid fa-plus" /> Tambah
+        </button>
+      </div>
+      {items.length === 0 && (
+        <div style={{ textAlign: "center", padding: ".75rem", color: "var(--n-400)", fontSize: ".8rem", border: "1.5px dashed var(--n-200)", borderRadius: 8 }}>
+          Belum ada pertanyaan. Klik Tambah.
+        </div>
+      )}
+      {items.map((item, i) => (
+        <div key={i} style={{ border: "1.5px solid var(--n-200)", borderRadius: 8, padding: ".6rem .75rem", marginBottom: ".4rem", display: "flex", flexDirection: "column", gap: ".35rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: ".68rem", fontWeight: 700, color: "var(--n-400)" }}>#{i + 1}</span>
+            <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} style={{ fontSize: ".68rem", color: "#DC2626", background: "none", border: "none", cursor: "pointer", padding: "2px 6px" }}>
+              <i className="fa-solid fa-trash" />
+            </button>
+          </div>
+          <input
+            className="form-inp"
+            style={{ fontSize: ".8rem" }}
+            value={item.q}
+            onChange={(e) => onChange(items.map((it, idx) => idx === i ? { ...it, q: e.target.value } : it))}
+            placeholder="Pertanyaan..."
+          />
+          <textarea
+            className="form-inp form-ta"
+            style={{ fontSize: ".8rem", minHeight: 56 }}
+            value={item.a}
+            onChange={(e) => onChange(items.map((it, idx) => idx === i ? { ...it, a: e.target.value } : it))}
+            placeholder="Jawaban..."
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function defaultConfig(type: PublicBlock["type"]): Record<string, unknown> {
-  if (type === "LINK") return { subtitle: "", icon: "↗", bg: "var(--b-100)", color: "var(--b-700)" };
-  if (type === "HEADER") return { subtitle: "", align: "center" };
-  if (type === "EMBED") return { subtitle: "" };
-  if (type === "IMAGE") return { imageUrl: "" };
-  if (type === "SOCIAL") return { socials: [] };
+  if (type === "LINK")      return { subtitle: "", icon: "↗", bg: "var(--b-100)", color: "var(--b-700)" };
+  if (type === "HEADER")    return { subtitle: "", align: "center" };
+  if (type === "EMBED")     return {};
+  if (type === "IMAGE")     return { imageUrl: "" };
+  if (type === "SOCIAL")    return { socials: [] };
+  if (type === "TEXT")      return { content: "", align: "left" };
+  if (type === "BANNER")    return { icon: "📢", bg: "#FEF3C7", color: "#92400E" };
+  if (type === "CONTACT")   return { platform: "whatsapp", handle: "", message: "" };
+  if (type === "PRODUCT")   return { imageUrl: "", price: "", buttonText: "Beli Sekarang" };
+  if (type === "FAQ")       return { items: [] };
+  if (type === "COUNTDOWN") return { targetDate: "" };
+  if (type === "MAP")       return { embedUrl: "", height: 300 };
+  if (type === "FORM")      return { buttonText: "Isi Formulir", subtitle: "" };
   return {};
 }

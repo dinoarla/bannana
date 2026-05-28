@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const blockCreateSchema = z.object({
-  type: z.enum(["LINK", "HEADER", "SOCIAL", "EMBED", "IMAGE", "DIVIDER"]),
+  type: z.enum(["LINK", "HEADER", "SOCIAL", "EMBED", "IMAGE", "DIVIDER", "TEXT", "COUNTDOWN", "FAQ", "CONTACT", "PRODUCT", "BANNER", "MAP", "FORM"]),
   title: z.string().max(140).nullable().optional(),
   url: z.string().max(2048).nullable().optional(),
   config: z.record(z.unknown()).default({})
