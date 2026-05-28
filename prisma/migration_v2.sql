@@ -51,3 +51,11 @@ SET @sql := IF(@col_exists = 0,
   'ALTER TABLE `Subscription` ADD COLUMN `lastReminderAt` DATETIME NULL AFTER `cancelledAt`',
   'SELECT "lastReminderAt already exists" AS msg');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- Expand Block.type from ENUM to VARCHAR so custom block types (TEXT, BANNER, etc.) are accepted
+SET @col_type := (SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Block' AND COLUMN_NAME = 'type');
+SET @sql := IF(@col_type LIKE 'enum%',
+  'ALTER TABLE `Block` MODIFY COLUMN `type` VARCHAR(50) NOT NULL',
+  'SELECT "Block.type already VARCHAR" AS msg');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;

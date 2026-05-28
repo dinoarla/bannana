@@ -482,7 +482,10 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
               )}
               <button
                 className="add-block"
-                onClick={() => document.querySelector<HTMLInputElement>(".pl-search")?.focus()}
+                onClick={() => {
+                  setMobilePanel("blocks");
+                  setTimeout(() => document.querySelector<HTMLInputElement>(".pl-search")?.focus(), 50);
+                }}
               >
                 <i className="fa-solid fa-plus" /> Tambah Blok Baru
               </button>
@@ -781,9 +784,6 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                         </div>
                       )}
 
-                      <button type="submit" className="save-bottom" disabled={saving} style={{ margin: 0 }}>
-                        <i className="fa-solid fa-check" /> Simpan Perubahan
-                      </button>
                     </form>
                   </div>
 
@@ -1129,7 +1129,6 @@ function SortableBlock({
           <div className="bactions">
             <div
               className={`toggle${block.isEnabled ? "" : " off"}`}
-              style={{ width: 32, height: 18 }}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggle(!block.isEnabled);

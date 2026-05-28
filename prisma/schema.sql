@@ -58,7 +58,7 @@ CREATE TABLE `Page` (
 CREATE TABLE `Block` (
   `id`         VARCHAR(191)                                          NOT NULL,
   `pageId`     VARCHAR(191)                                          NOT NULL,
-  `type`       ENUM('LINK','HEADER','SOCIAL','EMBED','IMAGE','DIVIDER') NOT NULL,
+  `type`       VARCHAR(50)                                               NOT NULL,
   `title`      VARCHAR(191)                                              NULL,
   `url`        TEXT                                                      NULL,
   `position`   INT                                                   NOT NULL,
