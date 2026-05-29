@@ -44,6 +44,8 @@ export default async function EditorPage({ params }: Props) {
     isPro = sub?.plan === "pro";
   } catch { /* Subscription table may not exist yet */ }
 
+  const allPages = (await new PageService().list(user.id)).map((p) => ({ id: p.id, title: p.title }));
+
   return (
     <div
       style={{
@@ -61,13 +63,17 @@ export default async function EditorPage({ params }: Props) {
           id: page.id,
           title: page.title,
           slug: page.slug,
+          theme: page.theme ?? "classic",
+          avatarUrl: page.avatarUrl ?? null,
           isPublished: page.isPublished,
           blocks: (page.blocks ?? []) as unknown as PublicBlock[],
         }}
         csrfToken={csrfToken}
         username={user.username}
         bio={user.profile?.bio ?? ""}
+        profileAvatarUrl={user.profile?.avatarUrl ?? null}
         isPro={isPro}
+        allPages={allPages}
       />
     </div>
   );

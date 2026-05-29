@@ -26,6 +26,7 @@ function parsePage(row: Record<string, unknown>): Page {
     theme: row.theme as string,
     isPublished: Boolean(row.isPublished),
     customCss: row.customCss as string | null,
+    avatarUrl: (row.avatarUrl as string | null) ?? null,
     viewCount: row.viewCount as number,
     uniqueVisitors: row.uniqueVisitors as number,
     createdAt: row.createdAt as Date,
@@ -179,16 +180,17 @@ export class PageRepository {
       position: 1, isEnabled: true, config: { subtitle: "Tulis sapaan singkat di sini" },
       clickCount: 0, createdAt: now, updatedAt: now,
     };
-    return { id, userId, title: input.title, slug: input.slug, theme: "classic", isPublished: false, customCss: null, viewCount: 0, uniqueVisitors: 0, createdAt: now, updatedAt: now, blocks: [block] };
+    return { id, userId, title: input.title, slug: input.slug, theme: "classic", isPublished: false, customCss: null, avatarUrl: null, viewCount: 0, uniqueVisitors: 0, createdAt: now, updatedAt: now, blocks: [block] };
   }
 
-  async update(id: string, data: { title?: string; slug?: string; theme?: string; customCss?: string; isPublished?: boolean }): Promise<PageWithBlocks | null> {
+  async update(id: string, data: { title?: string; slug?: string; theme?: string; customCss?: string; avatarUrl?: string | null; isPublished?: boolean }): Promise<PageWithBlocks | null> {
     const updates: string[] = [];
     const vals: unknown[] = [];
     if (data.title !== undefined) { updates.push("title = ?"); vals.push(data.title); }
     if (data.slug !== undefined) { updates.push("slug = ?"); vals.push(data.slug); }
     if (data.theme !== undefined) { updates.push("theme = ?"); vals.push(data.theme); }
     if (data.customCss !== undefined) { updates.push("customCss = ?"); vals.push(data.customCss); }
+    if (data.avatarUrl !== undefined) { updates.push("avatarUrl = ?"); vals.push(data.avatarUrl); }
     if (data.isPublished !== undefined) { updates.push("isPublished = ?"); vals.push(data.isPublished ? 1 : 0); }
     const now = new Date();
     updates.push("updatedAt = ?"); vals.push(now);

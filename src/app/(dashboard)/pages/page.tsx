@@ -9,7 +9,7 @@ import { db } from "@/lib/db/client";
 export default async function PagesPage() {
   const user = await assertSessionUser();
   if (user.role === "ADMIN") redirect("/admin");
-  const avatarUrl = user.profile?.avatarUrl ?? null;
+  const profileAvatarUrl = user.profile?.avatarUrl ?? null;
   const pages = await new PageService().list(user.id);
 
   let isPro = false;
@@ -63,11 +63,11 @@ export default async function PagesPage() {
                     {page.isPublished && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
                     {page.isPublished ? "Live" : "Draft"}
                   </div>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem", overflow: "hidden", padding: avatarUrl ? 0 : undefined }}>
-                    {avatarUrl
-                      ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <i className="fa-solid fa-user" />}
+                  {(() => { const av = page.avatarUrl ?? profileAvatarUrl; return (
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem", overflow: "hidden", padding: av ? 0 : undefined }}>
+                    {av ? <img src={av} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <i className="fa-solid fa-user" />}
                   </div>
+                  ); })()}
                   <div style={{ fontFamily: "var(--fd)", fontSize: ".78rem", fontWeight: 700, color: "var(--b-900)" }}>@{user.username}</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", padding: "0 14px" }}>
                     <div style={{ height: 7, background: "var(--b-300)", borderRadius: 4, width: "82%" }} />

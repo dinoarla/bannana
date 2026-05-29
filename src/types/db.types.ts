@@ -38,6 +38,7 @@ export type Page = {
   theme: string;
   isPublished: boolean;
   customCss: string | null;
+  avatarUrl: string | null;
   viewCount: number;
   uniqueVisitors: number;
   createdAt: Date;

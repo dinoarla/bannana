@@ -10,6 +10,7 @@ export const pageUpdateSchema = z.object({
   slug: z.string().min(3).max(80).optional(),
   theme: z.string().min(1).max(40).optional(),
   customCss: z.string().max(5120).optional(),
+  avatarUrl: z.string().max(400000).nullable().optional(),
   isPublished: z.boolean().optional()
 });
 

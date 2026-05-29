@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getEmbedInfo } from "@/lib/utils/embed";
 import Link from "next/link";
 import {
@@ -27,6 +28,8 @@ type PageState = {
   id: string;
   title: string;
   slug: string;
+  theme: string;
+  avatarUrl: string | null;
   isPublished: boolean;
   blocks: PublicBlock[];
 };
@@ -34,12 +37,29 @@ type PageState = {
 const FREE_BLOCK_LIMIT = 10;
 const FREE_THEMES = ["classic", "night", "vanilla"];
 
+const EDITOR_THEMES = [
+  { id: "classic",    label: "Classic",       bg: "linear-gradient(160deg,#FFFBEB,#FEF3C7)", bar1: "#F59E0B", bar2: "#FDE68A" },
+  { id: "night",      label: "Night",         bg: "linear-gradient(160deg,#1A1409,#2E2210)", bar1: "#FBBF24", bar2: "#78350F" },
+  { id: "vanilla",    label: "Vanilla",       bg: "linear-gradient(160deg,#FEFCE8,#FFF7ED)", bar1: "#FDE68A", bar2: "#FCD34D" },
+  { id: "peach",      label: "Peach",         bg: "linear-gradient(160deg,#FFF7ED,#FEE2D5)", bar1: "#FB923C", bar2: "#FDBA74" },
+  { id: "matcha",     label: "Matcha",        bg: "linear-gradient(160deg,#F0FDF4,#DCFCE7)", bar1: "#4ADE80", bar2: "#86EFAC" },
+  { id: "blueberry",  label: "Blueberry",     bg: "linear-gradient(160deg,#1E1B4B,#312E81)", bar1: "#FACC15", bar2: "#6366F1" },
+  { id: "strawberry", label: "Strawberry",    bg: "linear-gradient(160deg,#FFF1F2,#FFE4E6)", bar1: "#E11D48", bar2: "#FDA4AF" },
+  { id: "licorice",   label: "Licorice",      bg: "linear-gradient(160deg,#0A0A0A,#1C1917)", bar1: "#A3E635", bar2: "#4ADE80" },
+  { id: "rainbow",    label: "Rainbow",       bg: "linear-gradient(135deg,#FDE68A,#FCA5A5,#C4B5FD)", bar1: "#fff", bar2: "#FCA5A5" },
+  { id: "cloud",      label: "Cloud Nine",    bg: "linear-gradient(160deg,#F8FAFC,#F1F5F9)", bar1: "#CBD5E1", bar2: "#94A3B8" },
+  { id: "pumpkin",    label: "Pumpkin",       bg: "linear-gradient(160deg,#FFF7ED,#FFEDD5)", bar1: "#EA580C", bar2: "#FB923C" },
+  { id: "glitter",    label: "Glitter Honey", bg: "linear-gradient(160deg,#0F0A00,#1C1409)", bar1: "#F59E0B", bar2: "#FBBF24" },
+];
+
 type Props = {
   initialPage: PageState;
   csrfToken: string;
   username: string;
   bio: string;
+  profileAvatarUrl: string | null;
   isPro: boolean;
+  allPages: { id: string; title: string }[];
 };
 
 const BLOCK_TYPES: { type: PublicBlock["type"]; label: string; icon: string; desc: string; section: string; badge?: string }[] = [
@@ -94,7 +114,8 @@ const BLOCK_LABELS: Record<PublicBlock["type"], string> = {
 
 const SECTIONS = ["Dasar", "Media", "Interaksi"] as const;
 
-export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Props) {
+export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvatarUrl, isPro, allPages }: Props) {
+  const router = useRouter();
   const [page, setPage] = useState<PageState>(initialPage);
   const [selectedId, setSelectedId] = useState<string | undefined>(initialPage.blocks[0]?.id);
   const [saving, setSaving] = useState(false);
@@ -106,6 +127,16 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
   const [mobilePanel, setMobilePanel] = useState<"blocks" | "canvas" | "settings">("canvas");
   const [faqItems, setFaqItems] = useState<Array<{ q: string; a: string }>>([]);
   const [uploadError, setUploadError] = useState<string>("");
+  // Halaman tab state
+  const [slugVal, setSlugVal] = useState(initialPage.slug);
+  const [slugStatus, setSlugStatus] = useState<"idle" | "checking" | "ok" | "taken">("idle");
+  const slugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(initialPage.avatarUrl);
+  // Tema tab state
+  const [themeApplying, setThemeApplying] = useState(false);
+  // Page switcher
+  const [pageDropdownOpen, setPageDropdownOpen] = useState(false);
 
   const selected = useMemo(() => page.blocks.find((b) => b.id === selectedId), [page.blocks, selectedId]);
 
@@ -269,21 +300,60 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
     }
   }
 
+  useEffect(() => {
+    if (slugVal === page.slug) { setSlugStatus("idle"); return; }
+    if (slugVal.length < 3) { setSlugStatus("idle"); return; }
+    setSlugStatus("checking");
+    if (slugTimer.current) clearTimeout(slugTimer.current);
+    slugTimer.current = setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/pages/check-slug?slug=${encodeURIComponent(slugVal)}&pageId=${page.id}`);
+        const j = await r.json();
+        setSlugStatus(j.data?.available ? "ok" : "taken");
+      } catch { setSlugStatus("idle"); }
+    }, 500);
+  }, [slugVal]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleAvatarPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 300_000) { showSave("⚠ Foto maks 300KB"); return; }
+    const reader = new FileReader();
+    reader.onload = () => setAvatarPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
   async function savePage(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    if (slugStatus === "taken") { showSave("⚠ Slug sudah dipakai, pilih yang lain"); return; }
     setSaving(true);
     try {
       const title = String(fd.get("pageTitle") ?? "");
-      const slug = String(fd.get("pageSlug") ?? "");
       const updated = await mutate<PageState>(`/api/pages/${page.id}`, {
         method: "PUT",
-        body: JSON.stringify({ title, slug }),
+        body: JSON.stringify({ title, slug: slugVal, avatarUrl: avatarPreview }),
       });
-      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug }));
+      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, avatarUrl: updated.avatarUrl }));
+      setSlugStatus("idle");
       showSave("Halaman disimpan ✓");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function applyTheme(themeId: string) {
+    if (themeApplying) return;
+    setThemeApplying(true);
+    try {
+      await mutate<PageState>(`/api/pages/${page.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ theme: themeId }),
+      });
+      setPage((p) => ({ ...p, theme: themeId }));
+      showSave(`Tema "${EDITOR_THEMES.find(t => t.id === themeId)?.label}" diterapkan ✓`);
+    } finally {
+      setThemeApplying(false);
     }
   }
 
@@ -317,9 +387,33 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
           <i className="fa-solid fa-arrow-left" /> Dashboard
         </Link>
         <div className="et-divider" />
-        <div className="et-pagename">
-          <i className="fa-solid fa-file-pen" style={{ color: "var(--b-500)", fontSize: ".82rem" }} />
-          <span>{page.title}</span>
+        <div style={{ position: "relative" }}>
+          <button
+            type="button"
+            className="et-pagename"
+            style={{ background: "none", border: "none", cursor: allPages.length > 1 ? "pointer" : "default", display: "flex", alignItems: "center", gap: ".35rem" }}
+            onClick={() => allPages.length > 1 && setPageDropdownOpen((v) => !v)}
+          >
+            <i className="fa-solid fa-file-pen" style={{ color: "var(--b-500)", fontSize: ".82rem" }} />
+            <span>{page.title}</span>
+            {allPages.length > 1 && <i className={`fa-solid fa-chevron-${pageDropdownOpen ? "up" : "down"}`} style={{ fontSize: ".6rem", color: "var(--n-400)" }} />}
+          </button>
+          {pageDropdownOpen && allPages.length > 1 && (
+            <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, background: "#fff", border: "1.5px solid var(--n-200)", borderRadius: 12, boxShadow: "0 6px 20px rgba(0,0,0,.1)", zIndex: 300, minWidth: 180, overflow: "hidden" }}>
+              {allPages.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => { setPageDropdownOpen(false); if (p.id !== page.id) router.push(`/pages/${p.id}`); }}
+                  style={{ display: "flex", alignItems: "center", gap: ".5rem", width: "100%", padding: "9px 14px", background: p.id === page.id ? "var(--b-50)" : "#fff", border: "none", cursor: "pointer", fontSize: ".82rem", color: p.id === page.id ? "var(--b-700)" : "var(--n-700)", fontWeight: p.id === page.id ? 700 : 400, textAlign: "left" }}
+                >
+                  {p.id === page.id && <i className="fa-solid fa-check" style={{ fontSize: ".65rem", color: "var(--b-500)" }} />}
+                  {p.id !== page.id && <i className="fa-solid fa-file-pen" style={{ fontSize: ".65rem", color: "var(--n-400)" }} />}
+                  {p.title}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="et-saved" style={{ color: saveMsg ? "var(--b-600)" : "var(--n-400)", transition: "color .25s" }}>
           <i className={`fa-solid ${saveMsg ? "fa-circle-check" : "fa-circle-dot"}`} style={{ fontSize: ".65rem" }} />
@@ -814,57 +908,54 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                   style={{ display: "flex", flexDirection: "column", gap: ".75rem" }}
                 >
                   <div>
-                    <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
-                      Nama Tampilan
-                    </div>
-                    <input
-                      name="pageTitle"
-                      className="form-inp"
-                      type="text"
-                      defaultValue={page.title}
-                    />
+                    <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Nama Tampilan</div>
+                    <input name="pageTitle" className="form-inp" type="text" defaultValue={page.title} />
                   </div>
                   <div>
-                    <div className="form-lbl" style={{ marginBottom: ".3rem" }}>
-                      Slug URL
+                    <div className="form-lbl" style={{ marginBottom: ".3rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span>Slug URL</span>
+                      {slugStatus === "checking" && <span style={{ fontSize: ".65rem", color: "var(--n-400)" }}><i className="fa-solid fa-spinner fa-spin" /> memeriksa…</span>}
+                      {slugStatus === "ok" && <span style={{ fontSize: ".65rem", color: "#059669", fontWeight: 700 }}><i className="fa-solid fa-check" /> tersedia</span>}
+                      {slugStatus === "taken" && <span style={{ fontSize: ".65rem", color: "#DC2626", fontWeight: 700 }}><i className="fa-solid fa-xmark" /> sudah dipakai</span>}
                     </div>
                     <input
-                      name="pageSlug"
                       className="form-inp"
                       type="text"
-                      defaultValue={page.slug}
+                      value={slugVal}
+                      onChange={(e) => setSlugVal(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                      style={{ borderColor: slugStatus === "taken" ? "#DC2626" : slugStatus === "ok" ? "#059669" : undefined }}
                     />
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-                    <div
-                      className="sb-avatar"
-                      style={{ width: 36, height: 36, flexShrink: 0 }}
-                    >
-                      <i className="fa-solid fa-user" />
+                    <div style={{ fontSize: ".65rem", color: "var(--n-400)", marginTop: ".25rem" }}>
+                      bannana.id/{slugVal || username}
                     </div>
-                    <button
-                      type="button"
-                      style={{
-                        flex: 1,
-                        height: 32,
-                        borderRadius: 8,
-                        border: "1.5px solid var(--b-300)",
-                        background: "var(--b-50)",
-                        color: "var(--b-700)",
-                        fontSize: ".75rem",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <i className="fa-solid fa-upload" /> Upload Foto
-                    </button>
                   </div>
-                  <button
-                    type="submit"
-                    className="save-bottom"
-                    disabled={saving}
-                    style={{ margin: 0 }}
-                  >
+                  <div>
+                    <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Foto Profil Halaman</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+                      <div
+                        style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", flexShrink: 0, overflow: "hidden", padding: (avatarPreview ?? profileAvatarUrl) ? 0 : undefined }}
+                      >
+                        {(avatarPreview ?? profileAvatarUrl)
+                          ? <img src={avatarPreview ?? profileAvatarUrl!} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          : <i className="fa-solid fa-user" />}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        style={{ flex: 1, height: 32, borderRadius: 8, border: "1.5px solid var(--b-300)", background: "var(--b-50)", color: "var(--b-700)", fontSize: ".75rem", fontWeight: 700, cursor: "pointer" }}
+                      >
+                        <i className="fa-solid fa-upload" /> Upload Foto
+                      </button>
+                      {avatarPreview && avatarPreview !== profileAvatarUrl && (
+                        <button type="button" onClick={() => setAvatarPreview(null)} style={{ border: "none", background: "none", color: "var(--n-400)", cursor: "pointer", fontSize: ".8rem", flexShrink: 0 }} title="Hapus foto halaman">
+                          <i className="fa-solid fa-xmark" />
+                        </button>
+                      )}
+                    </div>
+                    <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatarPick} />
+                    <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".25rem" }}>Maks 300KB. Default dari foto profil di Pengaturan.</div>
+                  </div>
+                  <button type="submit" className="save-bottom" disabled={saving || slugStatus === "taken"} style={{ margin: 0 }}>
                     <i className="fa-solid fa-check" /> Simpan Halaman
                   </button>
                 </form>
@@ -874,28 +965,20 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
                 <div className="mini-phone">
                   <div className="mp-inner">
                     <div className="mp-screen">
-                      <div className="mp-av">
-                        <i className="fa-solid fa-user" />
+                      <div className="mp-av" style={{ overflow: "hidden", padding: (avatarPreview ?? profileAvatarUrl) ? 0 : undefined }}>
+                        {(avatarPreview ?? profileAvatarUrl)
+                          ? <img src={avatarPreview ?? profileAvatarUrl!} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+                          : <i className="fa-solid fa-user" />}
                       </div>
                       <div className="mp-name">@{username}</div>
                       <div className="mp-bio">{bio || "Bio kamu tampil di sini"}</div>
-                      {page.blocks
-                        .filter((b) => b.isEnabled && b.type === "LINK")
-                        .slice(0, 3)
-                        .map((b) => (
-                          <div key={b.id} className="mp-link">
-                            <div
-                              className="mp-link-ico"
-                              style={{ background: "var(--b-100)", color: "var(--b-700)" }}
-                            >
-                              <i className="fa-solid fa-link" />
-                            </div>
-                            <span className="mp-link-t">{b.title ?? "Link"}</span>
-                            <div className="mp-link-arr">
-                              <i className="fa-solid fa-chevron-right" />
-                            </div>
-                          </div>
-                        ))}
+                      {page.blocks.filter((b) => b.isEnabled && b.type === "LINK").slice(0, 3).map((b) => (
+                        <div key={b.id} className="mp-link">
+                          <div className="mp-link-ico" style={{ background: "var(--b-100)", color: "var(--b-700)" }}><i className="fa-solid fa-link" /></div>
+                          <span className="mp-link-t">{b.title ?? "Link"}</span>
+                          <div className="mp-link-arr"><i className="fa-solid fa-chevron-right" /></div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -906,82 +989,40 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, isPro }: Pr
           {activeTab === "tema" && (
             <div className="pr-body">
               <div>
-                <div className="pr-sec-title">Tema Aktif</div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: ".5rem",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  {[
-                    { id: "classic", label: "Classic", bg: "linear-gradient(160deg,#FFFBEB,#FEF3C7)", bar1: "var(--b-500)", bar2: "var(--b-300)", active: true },
-                    { id: "night", label: "Night", bg: "linear-gradient(160deg,#1A1409,#2E2210)", bar1: "#FBBF24", bar2: "#78350F", active: false },
-                    { id: "matcha", label: "Matcha", bg: "linear-gradient(160deg,#F0FDF4,#DCFCE7)", bar1: "#4ADE80", bar2: "#86EFAC", active: false },
-                    { id: "blueberry", label: "Blueberry", bg: "linear-gradient(160deg,#1E1B4B,#312E81)", bar1: "#FACC15", bar2: "#6366F1", active: false },
-                  ].map((t) => (
-                    <div
-                      key={t.id}
-                      style={{
-                        borderRadius: 11,
-                        overflow: "hidden",
-                        border: `2px solid ${t.active ? "var(--b-500)" : "var(--n-200)"}`,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: 48,
-                          background: t.bg,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: 3,
-                          padding: 7,
-                        }}
+                <div className="pr-sec-title">Pilih Tema</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".4rem", marginBottom: "1rem" }}>
+                  {EDITOR_THEMES.map((t) => {
+                    const isFree = FREE_THEMES.includes(t.id);
+                    const isActive = page.theme === t.id;
+                    const locked = !isPro && !isFree;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        disabled={themeApplying}
+                        onClick={() => !locked && applyTheme(t.id)}
+                        title={locked ? "Fitur Pro" : t.label}
+                        style={{ borderRadius: 10, overflow: "hidden", border: `2px solid ${isActive ? "var(--b-500)" : "var(--n-200)"}`, cursor: locked ? "not-allowed" : "pointer", background: "none", padding: 0, position: "relative", opacity: locked ? 0.55 : 1 }}
                       >
-                        <div
-                          style={{
-                            height: 7,
-                            background: t.bar1,
-                            borderRadius: 3,
-                            width: "75%",
-                          }}
-                        />
-                        <div
-                          style={{
-                            height: 7,
-                            background: t.bar2,
-                            borderRadius: 3,
-                            width: "60%",
-                          }}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          padding: "4px 7px",
-                          background: "white",
-                          fontSize: ".62rem",
-                          fontWeight: t.active ? 800 : 700,
-                          color: t.active ? "var(--b-900)" : "var(--n-600)",
-                        }}
-                      >
-                        {t.active && (
-                          <i
-                            className="fa-solid fa-check"
-                            style={{ color: "var(--b-500)", marginRight: 3 }}
-                          />
-                        )}
-                        {t.label}
-                      </div>
-                    </div>
-                  ))}
+                        <div style={{ height: 38, background: t.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, padding: 5 }}>
+                          <div style={{ height: 5, background: t.bar1, borderRadius: 3, width: "75%" }} />
+                          <div style={{ height: 5, background: t.bar2, borderRadius: 3, width: "60%" }} />
+                        </div>
+                        <div style={{ padding: "3px 5px", background: "white", fontSize: ".58rem", fontWeight: isActive ? 800 : 600, color: isActive ? "var(--b-900)" : "var(--n-600)", display: "flex", alignItems: "center", gap: 2, justifyContent: "center" }}>
+                          {isActive && <i className="fa-solid fa-check" style={{ color: "var(--b-500)" }} />}
+                          {locked && <i className="fa-solid fa-lock" style={{ color: "var(--n-400)", fontSize: ".5rem" }} />}
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 48 }}>{t.label}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-                <Link href="/themes" className="btn btn-ghost btn-sm btn-full">
-                  <i className="fa-solid fa-swatchbook" /> Semua 12 Tema
-                </Link>
+                {!isPro && (
+                  <div style={{ fontSize: ".7rem", color: "var(--n-400)", marginBottom: ".75rem", display: "flex", alignItems: "center", gap: ".3rem" }}>
+                    <i className="fa-solid fa-lock" style={{ color: "var(--b-400)", fontSize: ".65rem" }} />
+                    9 tema premium tersedia dengan <Link href="/langganan" style={{ color: "var(--b-600)", fontWeight: 700 }}>bannana.id Pro</Link>
+                  </div>
+                )}
               </div>
               <div>
                 <div className="pr-sec-title">Kustomisasi Warna</div>
