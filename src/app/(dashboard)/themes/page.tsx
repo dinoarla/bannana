@@ -41,7 +41,7 @@ export default async function ThemesPage({ searchParams }: { searchParams: Searc
       </div>
       <div className="page-content">
         {page ? (
-          <ThemeSelector pageId={page.id} currentTheme={page.theme} csrfToken={csrfToken} isPro={isPro} />
+          <ThemeSelector key={page.id} pageId={page.id} currentTheme={page.theme} csrfToken={csrfToken} isPro={isPro} />
         ) : (
           <div className="anl-card" style={{ textAlign: "center", padding: "3rem" }}>
             <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🎨</div>

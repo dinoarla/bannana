@@ -337,6 +337,8 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
       setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, avatarUrl: updated.avatarUrl }));
       setSlugStatus("idle");
       showSave("Halaman disimpan ✓");
+    } catch (err) {
+      showSave(`⚠ Gagal menyimpan: ${err instanceof Error ? err.message : "Error"}`);
     } finally {
       setSaving(false);
     }
@@ -436,7 +438,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
               <i className="fa-solid fa-desktop" />
             </button>
           </div>
-          <Link href={`/${username}`} target="_blank" className="et-btn et-ghost">
+          <Link href={`/${page.slug}`} target="_blank" className="et-btn et-ghost">
             <i className="fa-solid fa-eye" /> Preview
           </Link>
           <button
