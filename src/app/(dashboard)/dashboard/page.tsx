@@ -285,6 +285,7 @@ function StatCard({ icon, iconBg, iconColor, value, label, fillGradient }: {
 }
 
 function PageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarUrl: string | null; username: string }) {
+  const displayAvatar = page.avatarUrl ?? avatarUrl;
   return (
     <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 20, overflow: "hidden" }}>
       <div style={{ height: 112, background: "linear-gradient(160deg,var(--b-50),#fff)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5 }}>
@@ -292,9 +293,9 @@ function PageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarU
           {page.isPublished && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
           {page.isPublished ? "Live" : "Draft"}
         </div>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem", overflow: "hidden", padding: avatarUrl ? 0 : undefined }}>
-          {avatarUrl
-            ? <img src={avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem", overflow: "hidden", padding: displayAvatar ? 0 : undefined }}>
+          {displayAvatar
+            ? <img src={displayAvatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : <i className="fa-solid fa-user" />}
         </div>
         <div style={{ fontFamily: "var(--fd)", fontSize: ".78rem", fontWeight: 700, color: "var(--b-900)" }}>@{username}</div>
