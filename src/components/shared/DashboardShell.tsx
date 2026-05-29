@@ -94,7 +94,7 @@ export function DashboardShell({ user, isPro = false, children }: { user: UserWi
               ? <img src={user.profile.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
               : <i className="fa-solid fa-user" />}
           </div>
-          <div>
+          <div className="sb-user-info">
             <div className="sb-uname">{displayName}</div>
             <div className="sb-handle">@{user.username}</div>
           </div>
