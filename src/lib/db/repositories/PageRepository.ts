@@ -109,8 +109,8 @@ export class PageRepository {
     if (!ur) return null;
 
     const [pageRows] = await db.query(
-      "SELECT * FROM Page WHERE userId = ? AND isPublished = 1 LIMIT 1",
-      [ur.id]
+      "SELECT * FROM Page WHERE userId = ? AND isPublished = 1 ORDER BY CASE WHEN slug = ? THEN 0 ELSE 1 END, createdAt ASC LIMIT 1",
+      [ur.id, username]
     );
     const pageRow = (pageRows as Record<string, unknown>[])[0];
     if (!pageRow) return null;

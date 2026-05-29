@@ -22,8 +22,9 @@ export class PageService {
   }
 
   async update(id: string, input: { title?: string; slug?: string; theme?: string; customCss?: string; isPublished?: boolean }) {
-    if (input.slug && await this.pages.findBySlug(slugify(input.slug))) {
-      throw errors.conflict("Slug sudah dipakai.");
+    if (input.slug) {
+      const existing = await this.pages.findBySlug(slugify(input.slug));
+      if (existing && existing.id !== id) throw errors.conflict("Slug sudah dipakai.");
     }
     return this.pages.update(id, { ...input, slug: input.slug ? slugify(input.slug) : undefined });
   }
