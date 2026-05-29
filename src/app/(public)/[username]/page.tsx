@@ -53,12 +53,12 @@ export default async function PublicProfilePage({ params }: Props) {
           {/* Profile Header */}
           <div className="prof-header">
             <div className="prof-avatar">
-              {profile?.avatarUrl
-                ? <img src={profile.avatarUrl} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+              {(page.avatarUrl ?? profile?.avatarUrl)
+                ? <img src={page.avatarUrl ?? profile!.avatarUrl!} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
                 : <i className="fa-solid fa-user" />}
             </div>
             <div className="prof-name">{name}</div>
-            <div className="prof-handle">@{page.user.username} · bannana.id/{page.user.username}</div>
+            <div className="prof-handle">@{page.user.username} · bannana.id/{page.slug}</div>
             {profile?.bio && <div className="prof-bio">{profile.bio}</div>}
             {profile?.website && (
               <a href={profile.website} target="_blank" rel="noopener noreferrer" className="prof-website">

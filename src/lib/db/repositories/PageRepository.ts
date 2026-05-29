@@ -151,6 +151,52 @@ export class PageRepository {
     return row ? parsePage(row) : null;
   }
 
+  async findPublicBySlug(slug: string): Promise<PageWithUserAndBlocks | null> {
+    const [pageRows] = await db.query(
+      "SELECT * FROM Page WHERE slug = ? AND isPublished = 1 LIMIT 1",
+      [slug]
+    );
+    const pageRow = (pageRows as Record<string, unknown>[])[0];
+    if (!pageRow) return null;
+    const page = parsePage(pageRow);
+
+    const [blockRows] = await db.query(
+      "SELECT * FROM Block WHERE pageId = ? AND isEnabled = 1 ORDER BY position ASC",
+      [page.id]
+    );
+    const blocks = (blockRows as Record<string, unknown>[]).map(parseBlock);
+
+    const [userRows] = await db.query(
+      `SELECT u.*, p.id AS p_id, p.displayName, p.bio, p.avatarUrl, p.avatarIcon, p.website, p.tags, p.socialLinks, p.createdAt AS p_createdAt, p.updatedAt AS p_updatedAt
+       FROM User u LEFT JOIN Profile p ON p.userId = u.id WHERE u.id = ? LIMIT 1`,
+      [page.userId]
+    );
+    const ur = (userRows as Record<string, unknown>[])[0];
+    if (!ur) return null;
+
+    const profile: Profile | null = ur.p_id
+      ? {
+          id: ur.p_id as string, userId: ur.id as string, displayName: ur.displayName as string,
+          bio: ur.bio as string | null, avatarUrl: ur.avatarUrl as string | null, avatarIcon: ur.avatarIcon as string | null,
+          website: ur.website as string | null,
+          tags: typeof ur.tags === "string" ? JSON.parse(ur.tags as string) : (ur.tags ?? []),
+          socialLinks: typeof ur.socialLinks === "string" ? JSON.parse(ur.socialLinks as string) : (ur.socialLinks ?? []),
+          createdAt: ur.p_createdAt as Date, updatedAt: ur.p_updatedAt as Date,
+        }
+      : null;
+
+    const user: UserWithProfile = {
+      id: ur.id as string, email: ur.email as string, username: ur.username as string,
+      passwordHash: ur.passwordHash as string, emailVerified: ur.emailVerified as Date | null,
+      googleId: (ur.googleId as string | null) ?? null,
+      role: ur.role as "USER" | "ADMIN", deletedAt: ur.deletedAt as Date | null,
+      createdAt: ur.createdAt as Date, updatedAt: ur.updatedAt as Date,
+      profile,
+    };
+
+    return { ...page, blocks, user };
+  }
+
   async create(userId: string, input: { title: string; slug: string }): Promise<PageWithBlocks> {
     const id = crypto.randomUUID();
     const blockId = crypto.randomUUID();
