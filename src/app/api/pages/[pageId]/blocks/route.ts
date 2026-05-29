@@ -3,17 +3,21 @@ import { verifyCsrf } from "@/lib/csrf/token";
 import { handleApiError } from "@/lib/errors/errorHandler";
 import { errors } from "@/lib/errors/AppError";
 import { BlockService } from "@/lib/services/BlockService";
+import { PageService } from "@/lib/services/PageService";
 import { db } from "@/lib/db/client";
 import { created, ok } from "@/lib/utils/response";
 import { blockCreateSchema } from "@/lib/validations/block";
+
 type Context = { params: Promise<{ pageId: string }> };
 
 const FREE_BLOCK_LIMIT = 10;
 
 export async function GET(_request: Request, context: Context) {
   try {
-    await assertSessionUser();
+    const user = await assertSessionUser();
     const { pageId } = await context.params;
+    const page = await new PageService().get(pageId);
+    if (page.userId !== user.id) throw errors.forbidden();
     return ok(await new BlockService().list(pageId));
   } catch (error) {
     return handleApiError(error);
@@ -26,7 +30,9 @@ export async function POST(request: Request, context: Context) {
     const user = await assertSessionUser();
     const { pageId } = await context.params;
 
-    // Check plan and enforce block limit for free users
+    const page = await new PageService().get(pageId);
+    if (page.userId !== user.id) throw errors.forbidden();
+
     let isPro = false;
     try {
       const [subRows] = await db.query(

@@ -34,18 +34,34 @@ export class BlockRepository {
   }
 
   async create(pageId: string, input: { type: DbBlockType; title?: string | null; url?: string | null; config?: Record<string, unknown> }): Promise<Block> {
-    const [countRows] = await db.query("SELECT COUNT(*) AS cnt FROM Block WHERE pageId = ?", [pageId]);
-    const position = Number(((countRows as Record<string, unknown>[])[0] ?? {}).cnt ?? 0) + 1;
     const id = crypto.randomUUID();
     const now = new Date();
     const config = input.config ?? {};
+    const title = input.title ?? defaultTitle(input.type);
+    const url = input.url ?? null;
 
-    await db.query(
-      "INSERT INTO Block (id, pageId, type, title, url, position, isEnabled, config, clickCount, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, 1, ?, 0, ?, ?)",
-      [id, pageId, input.type, input.title ?? defaultTitle(input.type), input.url ?? null, position, JSON.stringify(config), now, now]
-    );
+    const conn = await db.getConnection();
+    let position: number;
+    try {
+      await conn.beginTransaction();
+      const [maxRows] = await conn.query(
+        "SELECT COALESCE(MAX(position), 0) AS maxPos FROM Block WHERE pageId = ? FOR UPDATE",
+        [pageId]
+      );
+      position = Number((maxRows as Record<string, unknown>[])[0]?.maxPos ?? 0) + 1;
+      await conn.query(
+        "INSERT INTO Block (id, pageId, type, title, url, position, isEnabled, config, clickCount, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, 1, ?, 0, ?, ?)",
+        [id, pageId, input.type, title, url, position, JSON.stringify(config), now, now]
+      );
+      await conn.commit();
+    } catch (e) {
+      await conn.rollback();
+      throw e;
+    } finally {
+      conn.release();
+    }
 
-    return { id, pageId, type: input.type, title: input.title ?? defaultTitle(input.type), url: input.url ?? null, position, isEnabled: true, config, clickCount: 0, createdAt: now, updatedAt: now };
+    return { id, pageId, type: input.type, title, url, position, isEnabled: true, config, clickCount: 0, createdAt: now, updatedAt: now };
   }
 
   async update(id: string, data: { title?: string | null; url?: string | null; isEnabled?: boolean; config?: Record<string, unknown> }): Promise<Block> {
