@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: "bannana.id",
     type: "website",
     locale: "id_ID",
-    images: [{ url: "/og-default.svg", width: 1200, height: 630, alt: "bannana.id — Satu Link, Semua Tempat" }],
+    images: [{ url: "https://bannana.id/og-default.png", width: 1200, height: 630, alt: "bannana.id — Satu Link, Semua Tempat" }],
   },
   twitter: { card: "summary_large_image", title: "bannana.id — Link Page Gratis untuk Kreator Indonesia", description: "Mobile marketing terjangkau untuk semua orang. Gratis selamanya!" },
   alternates: { canonical: "https://bannana.id" },
