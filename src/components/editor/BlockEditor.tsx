@@ -27,6 +27,7 @@ import type { PublicBlock } from "@/types";
 type PageState = {
   id: string;
   title: string;
+  bio: string | null;
   slug: string;
   theme: string;
   avatarUrl: string | null;
@@ -133,6 +134,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
   const slugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialPage.avatarUrl);
+  const [bioVal, setBioVal] = useState(initialPage.bio ?? "");
   // Tema tab state
   const [themeApplying, setThemeApplying] = useState(false);
   // Page switcher
@@ -330,11 +332,13 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
     setSaving(true);
     try {
       const title = String(fd.get("pageTitle") ?? "");
+      const bioRaw = bioVal.trim();
       const updated = await mutate<PageState>(`/api/pages/${page.id}`, {
         method: "PUT",
-        body: JSON.stringify({ title, slug: slugVal, avatarUrl: avatarPreview }),
+        body: JSON.stringify({ title, slug: slugVal, bio: bioRaw || null, avatarUrl: avatarPreview }),
       });
-      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, avatarUrl: updated.avatarUrl }));
+      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, bio: updated.bio, avatarUrl: updated.avatarUrl }));
+      setBioVal(updated.bio ?? "");
       setSlugStatus("idle");
       showSave("Halaman disimpan ✓");
     } catch (err) {
@@ -932,6 +936,22 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                     </div>
                   </div>
                   <div>
+                    <div className="form-lbl" style={{ marginBottom: ".3rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span>Bio Halaman</span>
+                      <span style={{ fontSize: ".6rem", color: "var(--n-400)" }}>{bioVal.length}/300</span>
+                    </div>
+                    <textarea
+                      className="form-inp form-ta"
+                      style={{ minHeight: 68, resize: "none" }}
+                      value={bioVal}
+                      onChange={(e) => setBioVal(e.target.value.slice(0, 300))}
+                      placeholder={bio || "Override bio dari Pengaturan (opsional)"}
+                    />
+                    <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".2rem" }}>
+                      Kosongkan untuk pakai bio dari Pengaturan.
+                    </div>
+                  </div>
+                  <div>
                     <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Foto Profil Halaman</div>
                     <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                       <div
@@ -970,7 +990,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                           : <i className="fa-solid fa-user" />}
                       </div>
                       <div className="mp-name">@{username}</div>
-                      <div className="mp-bio">{bio || "Bio kamu tampil di sini"}</div>
+                      <div className="mp-bio">{bioVal || bio || "Bio kamu tampil di sini"}</div>
                       {page.blocks.filter((b) => b.isEnabled && b.type === "LINK").slice(0, 3).map((b) => (
                         <div key={b.id} className="mp-link">
                           <div className="mp-link-ico" style={{ background: "var(--b-100)", color: "var(--b-700)" }}><i className="fa-solid fa-link" /></div>

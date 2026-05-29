@@ -34,6 +34,7 @@ export type Page = {
   id: string;
   userId: string;
   title: string;
+  bio: string | null;
   slug: string;
   theme: string;
   isPublished: boolean;

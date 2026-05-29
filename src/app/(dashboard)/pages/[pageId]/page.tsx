@@ -62,6 +62,7 @@ export default async function EditorPage({ params }: Props) {
         initialPage={{
           id: page.id,
           title: page.title,
+          bio: page.bio ?? null,
           slug: page.slug,
           theme: page.theme ?? "classic",
           avatarUrl: page.avatarUrl ?? null,

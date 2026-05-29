@@ -7,6 +7,7 @@ export const pageCreateSchema = z.object({
 
 export const pageUpdateSchema = z.object({
   title: z.string().min(1).max(80).optional(),
+  bio: z.string().max(300).nullable().optional(),
   slug: z.string().min(3).max(80).optional(),
   theme: z.string().min(1).max(40).optional(),
   customCss: z.string().max(5120).optional(),

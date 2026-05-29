@@ -59,7 +59,7 @@ export default async function PublicProfilePage({ params }: Props) {
             </div>
             <div className="prof-name">{name}</div>
             <div className="prof-handle">@{page.user.username} · bannana.id/{page.slug}</div>
-            {profile?.bio && <div className="prof-bio">{profile.bio}</div>}
+            {(page.bio ?? profile?.bio) && <div className="prof-bio">{page.bio ?? profile?.bio}</div>}
             {profile?.website && (
               <a href={profile.website} target="_blank" rel="noopener noreferrer" className="prof-website">
                 <i className="fa-solid fa-globe" /> {profile.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}

@@ -22,6 +22,7 @@ function parsePage(row: Record<string, unknown>): Page {
     id: row.id as string,
     userId: row.userId as string,
     title: row.title as string,
+    bio: (row.bio as string | null) ?? null,
     slug: row.slug as string,
     theme: row.theme as string,
     isPublished: Boolean(row.isPublished),
@@ -226,13 +227,14 @@ export class PageRepository {
       position: 1, isEnabled: true, config: { subtitle: "Tulis sapaan singkat di sini" },
       clickCount: 0, createdAt: now, updatedAt: now,
     };
-    return { id, userId, title: input.title, slug: input.slug, theme: "classic", isPublished: false, customCss: null, avatarUrl: null, viewCount: 0, uniqueVisitors: 0, createdAt: now, updatedAt: now, blocks: [block] };
+    return { id, userId, title: input.title, bio: null, slug: input.slug, theme: "classic", isPublished: false, customCss: null, avatarUrl: null, viewCount: 0, uniqueVisitors: 0, createdAt: now, updatedAt: now, blocks: [block] };
   }
 
-  async update(id: string, data: { title?: string; slug?: string; theme?: string; customCss?: string; avatarUrl?: string | null; isPublished?: boolean }): Promise<PageWithBlocks | null> {
+  async update(id: string, data: { title?: string; bio?: string | null; slug?: string; theme?: string; customCss?: string; avatarUrl?: string | null; isPublished?: boolean }): Promise<PageWithBlocks | null> {
     const updates: string[] = [];
     const vals: unknown[] = [];
     if (data.title !== undefined) { updates.push("title = ?"); vals.push(data.title); }
+    if (data.bio !== undefined) { updates.push("bio = ?"); vals.push(data.bio); }
     if (data.slug !== undefined) { updates.push("slug = ?"); vals.push(data.slug); }
     if (data.theme !== undefined) { updates.push("theme = ?"); vals.push(data.theme); }
     if (data.customCss !== undefined) { updates.push("customCss = ?"); vals.push(data.customCss); }
