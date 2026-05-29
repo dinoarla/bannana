@@ -5,12 +5,16 @@ import { assertSessionUser } from "@/lib/auth/session";
 import { CSRF_COOKIE } from "@/lib/auth/session";
 import { PageService } from "@/lib/services/PageService";
 import { ThemeSelector } from "./ThemeSelector";
+import { ThemePageSelector } from "./ThemePageSelector";
 import { db } from "@/lib/db/client";
 
-export default async function ThemesPage() {
+type SearchParams = Promise<{ pageId?: string }>;
+
+export default async function ThemesPage({ searchParams }: { searchParams: SearchParams }) {
+  const sp = await searchParams;
   const user = await assertSessionUser();
   const pages = await new PageService().list(user.id);
-  const page = pages[0];
+  const page = pages.find((p) => p.id === sp.pageId) ?? pages[0];
   const jar = await cookies();
   const csrfToken = jar.get(CSRF_COOKIE)?.value ?? "";
 
@@ -31,7 +35,8 @@ export default async function ThemesPage() {
           <i className="fa-solid fa-palette" style={{ color: "var(--b-500)", marginRight: 8 }} /> Pilih Tema
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: ".75rem", alignItems: "center" }}>
-          <Link href={`/${user.username}`} target="_blank" className="btn btn-ghost btn-sm"><i className="fa-solid fa-eye" /><span className="hide-mobile"> Preview Halaman</span></Link>
+          <ThemePageSelector pages={pages.map((p) => ({ id: p.id, title: p.title }))} activePageId={page?.id ?? ""} />
+          <Link href={`/${page?.slug ?? user.username}`} target="_blank" className="btn btn-ghost btn-sm"><i className="fa-solid fa-eye" /><span className="hide-mobile"> Preview Halaman</span></Link>
         </div>
       </div>
       <div className="page-content">

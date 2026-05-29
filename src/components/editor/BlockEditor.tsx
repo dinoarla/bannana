@@ -319,7 +319,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
     if (!file) return;
     if (file.size > 300_000) { showSave("⚠ Foto maks 300KB"); return; }
     const reader = new FileReader();
-    reader.onload = () => setAvatarPreview(reader.result as string);
+    reader.onload = () => { setAvatarPreview(reader.result as string); showSave("Foto dipilih ✓ — klik Simpan Halaman"); };
     reader.readAsDataURL(file);
   }
 
@@ -955,9 +955,6 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                     <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatarPick} />
                     <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".25rem" }}>Maks 300KB. Default dari foto profil di Pengaturan.</div>
                   </div>
-                  <button type="submit" className="save-bottom" disabled={saving || slugStatus === "taken"} style={{ margin: 0 }}>
-                    <i className="fa-solid fa-check" /> Simpan Halaman
-                  </button>
                 </form>
               </div>
               <div>

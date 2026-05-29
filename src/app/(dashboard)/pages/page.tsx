@@ -82,7 +82,7 @@ export default async function PagesPage() {
                     {page.title}
                   </div>
                   <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".5rem" }}>
-                    bannana.id/{user.username}
+                    bannana.id/{page.slug}
                   </div>
                   <div style={{ display: "flex", gap: ".875rem", fontSize: ".72rem", color: "var(--n-500)", marginBottom: ".875rem" }}>
                     <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
@@ -94,7 +94,7 @@ export default async function PagesPage() {
                     <Link href={`/pages/${page.id}`} style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--b-500)", color: "var(--b-950)", textDecoration: "none" }}>
                       <i className="fa-solid fa-pen-to-square" /> Edit
                     </Link>
-                    <Link href={`/${user.username}`} target="_blank" style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--n-100)", color: "var(--n-700)", border: "1.5px solid var(--n-200)", textDecoration: "none" }}>
+                    <Link href={`/${page.slug}`} target="_blank" style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--n-100)", color: "var(--n-700)", border: "1.5px solid var(--n-200)", textDecoration: "none" }}>
                       <i className="fa-solid fa-eye" /> Lihat
                     </Link>
                   </div>

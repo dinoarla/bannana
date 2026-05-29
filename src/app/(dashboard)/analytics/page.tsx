@@ -32,9 +32,45 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
   const range: "7d" | "30d" | "90d" = isPro ? rawRange : "7d";
 
   const pages = await new PageService().list(user.id);
-  const activePageId = sp.pageId ?? pages[0]?.id ?? "";
-  const page = pages.find((p) => p.id === activePageId) ?? pages[0];
-  const report = page ? await new AnalyticsService().report(page.id, range) : null;
+  const isAllPages = sp.pageId === "";
+  const activePageId = isAllPages ? "" : (sp.pageId ?? pages[0]?.id ?? "");
+  const page = pages.find((p) => p.id === activePageId) ?? (isAllPages ? undefined : pages[0]);
+
+  type Report = Awaited<ReturnType<InstanceType<typeof AnalyticsService>["report"]>>;
+  let report: Report | null = null;
+  if (isAllPages && pages.length > 0) {
+    const allReports = await Promise.all(
+      pages.map((p) => new AnalyticsService().report(p.id, range).catch(() => null))
+    );
+    const valid = allReports.filter((r): r is Report => r !== null);
+    if (valid.length > 0) {
+      const totalViews = valid.reduce((s, r) => s + r.totals.views, 0);
+      const totalClicks = valid.reduce((s, r) => s + r.totals.clicks, 0);
+      const totalUnique = valid.reduce((s, r) => s + r.totals.uniqueVisitors, 0);
+      const trend = (valid[0].trend).map((d, i) => ({
+        day: d.day, label: d.label,
+        views: valid.reduce((s, r) => s + (r.trend[i]?.views ?? 0), 0),
+        clicks: valid.reduce((s, r) => s + (r.trend[i]?.clicks ?? 0), 0),
+      }));
+      const topLinks = [...valid.flatMap((r) => r.topLinks)].sort((a, b) => b.clickCount - a.clickCount);
+      const devMap = new Map<string, number>();
+      for (const r of valid) for (const d of r.devices) devMap.set(d.label, (devMap.get(d.label) ?? 0) + d.count);
+      const devTotal = [...devMap.values()].reduce((s, v) => s + v, 0) || 1;
+      const devices = [...devMap.entries()].sort((a, b) => b[1] - a[1]).map(([label, count]) => ({ label, count, percent: Number(((count / devTotal) * 100).toFixed(1)) }));
+      const refMap = new Map<string, number>();
+      for (const r of valid) for (const rf of r.referrers) refMap.set(rf.source, (refMap.get(rf.source) ?? 0) + rf.count);
+      const refTotal = [...refMap.values()].reduce((s, v) => s + v, 0) || 1;
+      const referrers = [...refMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([source, count]) => ({ source, count, pct: Number(((count / refTotal) * 100).toFixed(1)) }));
+      const ctryMap = new Map<string, number>();
+      for (const r of valid) for (const c of r.countries) ctryMap.set(c.country, (ctryMap.get(c.country) ?? 0) + c.count);
+      const ctryTotal = [...ctryMap.values()].reduce((s, v) => s + v, 0) || 1;
+      const countries = [...ctryMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([country, count]) => ({ country, count, pct: Number(((count / ctryTotal) * 100).toFixed(1)) }));
+      const heatmap = new Array(24).fill(0).map((_, i) => valid.reduce((s, r) => s + (r.heatmap[i] ?? 0), 0)) as number[];
+      report = { pageId: "all", range, totals: { views: totalViews, clicks: totalClicks, ctr: totalViews > 0 ? Number(((totalClicks / totalViews) * 100).toFixed(1)) : 0, uniqueVisitors: totalUnique }, trend, topLinks, devices, referrers, countries, heatmap };
+    }
+  } else if (page) {
+    report = await new AnalyticsService().report(page.id, range);
+  }
 
   const trend = report?.trend ?? [];
   const trendMax = Math.max(...trend.map((d) => d.views), 1);
@@ -118,7 +154,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
                   const locked = !isPro && r !== "7d";
                   return locked
                     ? <span key={r} className="rng-btn" style={{ opacity: .45, cursor: "not-allowed" }} title="Upgrade ke Pro untuk data 30/90 hari"><i className="fa-solid fa-lock" style={{ fontSize: ".6rem", marginRight: 3 }} />{r === "30d" ? "30h" : "90h"}</span>
-                    : <Link key={r} href={`/analytics?range=${r}${activePageId ? `&pageId=${activePageId}` : ""}`} className={`rng-btn${range === r ? " act" : ""}`}>{r === "7d" ? "7h" : r === "30d" ? "30h" : "90h"}</Link>;
+                    : <Link key={r} href={`/analytics?range=${r}${isAllPages ? "&pageId=" : activePageId ? `&pageId=${activePageId}` : ""}`} className={`rng-btn${range === r ? " act" : ""}`}>{r === "7d" ? "7h" : r === "30d" ? "30h" : "90h"}</Link>;
                 })}
               </div>
             </div>
