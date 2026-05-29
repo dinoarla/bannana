@@ -6,19 +6,19 @@ import { HeroHeadline } from "@/components/landing/HeroHeadline";
 import { getSessionUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
-  title: "bannana.id — Mobile Marketing & Link Page Gratis 🍌",
-  description: "Ganti biaya hosting & domain yang mahal dengan bannana.id. Buat halaman mobile marketing profesional dalam 2 menit — gratis selamanya. Cocok untuk UMKM, kreator, freelancer, affiliator.",
-  keywords: ["link in bio", "bannana", "bannana.id", "link page", "mobile marketing", "UMKM", "kreator konten", "influencer", "halaman bisnis", "bio link indonesia", "linktree alternatif indonesia", "link bio gratis"],
+  title: "Link in Bio Gratis: Semua Kontenmu dalam Satu Link | bannana.id",
+  description: "Buat halaman link in bio profesional dalam 2 menit, gratis selamanya. Cocok untuk kreator konten, UMKM, freelancer, dan affiliator Indonesia. Tampil keren di semua perangkat.",
+  keywords: ["link in bio", "link in bio gratis", "bio link indonesia", "bannana.id", "link page gratis", "linktree alternatif indonesia", "halaman bisnis gratis", "kreator konten", "UMKM", "bio link", "satu link semua platform"],
   openGraph: {
-    title: "bannana.id — Mobile Marketing & Link Page Gratis",
-    description: "Lebih murah dari domain & hosting. Tampil profesional di semua HP dalam 2 menit. Gratis selamanya!",
+    title: "Link in Bio Gratis: Semua Kontenmu dalam Satu Link | bannana.id",
+    description: "Buat halaman link in bio profesional dalam 2 menit, gratis selamanya. Dipakai ratusan kreator & UMKM Indonesia.",
     url: "https://bannana.id",
     siteName: "bannana.id",
     type: "website",
     locale: "id_ID",
-    images: [{ url: "https://bannana.id/og-default.png", width: 1200, height: 630, alt: "bannana.id — Satu Link, Semua Tempat" }],
+    images: [{ url: "https://bannana.id/og-default.png", width: 1200, height: 630, alt: "bannana.id — Link in Bio Gratis untuk Indonesia" }],
   },
-  twitter: { card: "summary_large_image", title: "bannana.id — Link Page Gratis untuk Kreator Indonesia", description: "Mobile marketing terjangkau untuk semua orang. Gratis selamanya!" },
+  twitter: { card: "summary_large_image", title: "Link in Bio Gratis: Semua Kontenmu dalam Satu Link | bannana.id", description: "Buat halaman link in bio profesional dalam 2 menit, gratis selamanya. Dipakai ratusan kreator & UMKM Indonesia." },
   alternates: { canonical: "https://bannana.id" },
 };
 

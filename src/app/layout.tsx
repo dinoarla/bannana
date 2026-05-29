@@ -11,9 +11,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: { default: "bannana.id — Satu Link, Semua Tempat 🍌", template: "%s | bannana.id" },
-  description: "Platform link-in-bio yang simple, cepat, dan bisa dikostumasi sepuasnya. Cocok buat affiliator, kreator, influencer, freelancer — siapa aja!",
-  keywords: ["link in bio", "bannana id", "link page", "bio link", "kreator konten", "influencer"],
+  title: { default: "bannana.id — Link in Bio Gratis untuk Indonesia", template: "%s | bannana.id" },
+  description: "Buat halaman link in bio profesional dalam 2 menit, gratis selamanya. Cocok untuk kreator konten, UMKM, freelancer, dan affiliator Indonesia.",
+  keywords: ["link in bio", "link in bio gratis", "bio link indonesia", "bannana.id", "link page gratis", "linktree alternatif indonesia", "kreator konten", "UMKM"],
   authors: [{ name: "bannana.id" }],
   creator: "bannana.id",
   icons: {
