@@ -5,6 +5,7 @@ import { randomToken, sha256 } from "@/lib/utils/hash";
 import { sendPasswordResetEmail } from "@/lib/utils/mailer";
 import { handleApiError } from "@/lib/errors/errorHandler";
 import { ok } from "@/lib/utils/response";
+import { checkRateLimit, rateLimitedResponse } from "@/lib/utils/rateLimit";
 
 async function ensureTable() {
   await db.query(`
@@ -22,6 +23,11 @@ async function ensureTable() {
 }
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? request.headers.get("x-real-ip") ?? "unknown";
+  if (!checkRateLimit(`forgot:${ip}`, 3, 300_000)) {
+    return rateLimitedResponse("Terlalu banyak permintaan reset. Tunggu 5 menit.");
+  }
   try {
     const { email } = await request.json() as { email: string };
     if (!email) return NextResponse.json({ success: false, error: { message: "Email wajib diisi." } }, { status: 400 });

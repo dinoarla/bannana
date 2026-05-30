@@ -1,6 +1,11 @@
 import { db } from "@/lib/db/client";
 import type { Block, Page, PageWithBlocks, PageWithUserAndBlocks, Profile, UserWithProfile } from "@/types/db.types";
 
+function safeJson<T>(val: unknown, fallback: T): T {
+  if (typeof val !== "string") return (val as T) ?? fallback;
+  try { return JSON.parse(val) as T; } catch { return fallback; }
+}
+
 function parseBlock(row: Record<string, unknown>): Block {
   return {
     id: row.id as string,
@@ -10,7 +15,7 @@ function parseBlock(row: Record<string, unknown>): Block {
     url: row.url as string | null,
     position: row.position as number,
     isEnabled: Boolean(row.isEnabled),
-    config: typeof row.config === "string" ? JSON.parse(row.config) : (row.config ?? {}),
+    config: safeJson(row.config, {}),
     clickCount: row.clickCount as number,
     createdAt: row.createdAt as Date,
     updatedAt: row.updatedAt as Date,
@@ -82,8 +87,8 @@ export class PageRepository {
           id: ur.p_id as string, userId: ur.id as string, displayName: ur.displayName as string,
           bio: ur.bio as string | null, avatarUrl: ur.avatarUrl as string | null, avatarIcon: ur.avatarIcon as string | null,
           website: ur.website as string | null,
-          tags: typeof ur.tags === "string" ? JSON.parse(ur.tags as string) : (ur.tags ?? []),
-          socialLinks: typeof ur.socialLinks === "string" ? JSON.parse(ur.socialLinks as string) : (ur.socialLinks ?? []),
+          tags: safeJson(ur.tags, []),
+          socialLinks: safeJson(ur.socialLinks, []),
           createdAt: ur.p_createdAt as Date, updatedAt: ur.p_updatedAt as Date,
         }
       : null;
@@ -128,8 +133,8 @@ export class PageRepository {
           id: ur.p_id as string, userId: ur.id as string, displayName: ur.displayName as string,
           bio: ur.bio as string | null, avatarUrl: ur.avatarUrl as string | null, avatarIcon: ur.avatarIcon as string | null,
           website: ur.website as string | null,
-          tags: typeof ur.tags === "string" ? JSON.parse(ur.tags as string) : (ur.tags ?? []),
-          socialLinks: typeof ur.socialLinks === "string" ? JSON.parse(ur.socialLinks as string) : (ur.socialLinks ?? []),
+          tags: safeJson(ur.tags, []),
+          socialLinks: safeJson(ur.socialLinks, []),
           createdAt: ur.p_createdAt as Date, updatedAt: ur.p_updatedAt as Date,
         }
       : null;
@@ -180,8 +185,8 @@ export class PageRepository {
           id: ur.p_id as string, userId: ur.id as string, displayName: ur.displayName as string,
           bio: ur.bio as string | null, avatarUrl: ur.avatarUrl as string | null, avatarIcon: ur.avatarIcon as string | null,
           website: ur.website as string | null,
-          tags: typeof ur.tags === "string" ? JSON.parse(ur.tags as string) : (ur.tags ?? []),
-          socialLinks: typeof ur.socialLinks === "string" ? JSON.parse(ur.socialLinks as string) : (ur.socialLinks ?? []),
+          tags: safeJson(ur.tags, []),
+          socialLinks: safeJson(ur.socialLinks, []),
           createdAt: ur.p_createdAt as Date, updatedAt: ur.p_updatedAt as Date,
         }
       : null;

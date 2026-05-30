@@ -7,14 +7,19 @@ import type { UserWithProfile, Profile } from "@/types/db.types";
 export const SESSION_COOKIE = "bid_session";
 export const CSRF_COOKIE = "bid_csrf";
 
+function safeJson<T>(val: unknown, fallback: T): T {
+  if (typeof val !== "string") return (val as T) ?? fallback;
+  try { return JSON.parse(val) as T; } catch { return fallback; }
+}
+
 function parseUserWithProfile(row: Record<string, unknown>): UserWithProfile {
   const profile: Profile | null = row.p_id
     ? {
         id: row.p_id as string, userId: row.id as string, displayName: row.displayName as string,
         bio: row.bio as string | null, avatarUrl: row.avatarUrl as string | null, avatarIcon: row.avatarIcon as string | null,
         website: row.website as string | null,
-        tags: typeof row.tags === "string" ? JSON.parse(row.tags as string) : (row.tags ?? []),
-        socialLinks: typeof row.socialLinks === "string" ? JSON.parse(row.socialLinks as string) : (row.socialLinks ?? []),
+        tags: safeJson(row.tags, []),
+        socialLinks: safeJson(row.socialLinks, []),
         createdAt: row.p_createdAt as Date, updatedAt: row.p_updatedAt as Date,
       }
     : null;

@@ -936,6 +936,28 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                     </div>
                   </div>
                   <div>
+                    <div className="form-lbl" style={{ marginBottom: ".5rem" }}>QR Code Halaman</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: ".75rem" }}>
+                      <img
+                        src={`/api/qr/${page.id}`}
+                        alt="QR Code"
+                        width={72}
+                        height={72}
+                        style={{ borderRadius: 8, border: "1.5px solid var(--n-200)", flexShrink: 0 }}
+                      />
+                      <div style={{ display: "flex", flexDirection: "column", gap: ".4rem" }}>
+                        <a
+                          href={`/api/qr/${page.id}`}
+                          download={`qr-${page.slug}.png`}
+                          style={{ display: "inline-flex", alignItems: "center", gap: ".4rem", background: "var(--b-100)", color: "var(--b-800)", borderRadius: 8, padding: "6px 12px", fontSize: ".75rem", fontWeight: 700, textDecoration: "none" }}
+                        >
+                          <i className="fa-solid fa-download" /> Unduh QR
+                        </a>
+                        <div style={{ fontSize: ".62rem", color: "var(--n-400)" }}>bannana.id/{page.slug}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
                     <div className="form-lbl" style={{ marginBottom: ".3rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <span>Bio Halaman</span>
                       <span style={{ fontSize: ".6rem", color: "var(--n-400)" }}>{bioVal.length}/300</span>

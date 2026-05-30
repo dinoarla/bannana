@@ -9,11 +9,11 @@ async function getCountryFromIp(ip: string): Promise<string | null> {
     return null;
   }
   try {
-    const res = await fetch(`http://ip-api.com/json/${ip}?fields=countryCode`, {
+    const res = await fetch(`https://ipapi.co/${ip}/country/`, {
       signal: AbortSignal.timeout(2000),
     });
-    const data = await res.json() as { countryCode?: string };
-    return data.countryCode ?? null;
+    const code = (await res.text()).trim();
+    return code.length === 2 ? code : null;
   } catch {
     return null;
   }
@@ -26,13 +26,14 @@ export async function POST(request: Request) {
     const rawIp = headerBag.get("x-forwarded-for")?.split(",")[0]?.trim()
       ?? headerBag.get("x-real-ip")
       ?? "";
-    const country = await getCountryFromIp(rawIp);
-    await new AnalyticsService().track({
-      ...input,
-      referrer: headerBag.get("referer"),
-      userAgent: headerBag.get("user-agent"),
-      country,
-    });
+    const referrer = headerBag.get("referer");
+    const userAgent = headerBag.get("user-agent");
+
+    // Fire-and-forget: don't block the response on geolocation
+    getCountryFromIp(rawIp)
+      .then(country => new AnalyticsService().track({ ...input, referrer, userAgent, country }))
+      .catch(() => {});
+
     return ok({ tracked: true });
   } catch (error) {
     return handleApiError(error);

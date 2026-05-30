@@ -1,6 +1,11 @@
 import { db } from "@/lib/db/client";
 import type { Block, DbBlockType } from "@/types/db.types";
 
+function safeJson<T>(val: unknown, fallback: T): T {
+  if (typeof val !== "string") return (val as T) ?? fallback;
+  try { return JSON.parse(val) as T; } catch { return fallback; }
+}
+
 function parseBlock(row: Record<string, unknown>): Block {
   return {
     id: row.id as string,
@@ -10,7 +15,7 @@ function parseBlock(row: Record<string, unknown>): Block {
     url: row.url as string | null,
     position: row.position as number,
     isEnabled: Boolean(row.isEnabled),
-    config: typeof row.config === "string" ? JSON.parse(row.config) : (row.config ?? {}),
+    config: safeJson(row.config, {}),
     clickCount: row.clickCount as number,
     createdAt: row.createdAt as Date,
     updatedAt: row.updatedAt as Date,
