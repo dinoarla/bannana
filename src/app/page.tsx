@@ -55,7 +55,6 @@ export default async function LandingPage() {
         </Link>
         <ul className="navbar-links">
           <li><a href="#features">Fitur</a></li>
-          <li><a href="#blocks">Blok</a></li>
           <li><Link href="/blog">Blog</Link></li>
           <li><Link href="/pricing">Pricing</Link></li>
         </ul>
@@ -228,9 +227,9 @@ export default async function LandingPage() {
                 pain: "50K followers, tapi link-nya berantakan",
               },
               {
-                avatar: "https://i.pravatar.cc/80?img=33",
-                name: "Budi",
-                role: "Affiliator marketplace, Surabaya",
+                avatar: "https://i.pravatar.cc/80?img=47",
+                name: "Dhuha Sabila",
+                role: "Affiliator Marketplace, Indramayu",
                 color: "#FEE2E2",
                 story: "6 bulan jadi affiliator, sebarkan 10 link beda. Tapi nggak pernah tahu link mana yang paling laku. Feeling terus. Pernah promosi keras-kerasan, ternyata link yang viral bukan yang dia push. Data kosong, strategi buta.",
                 pain: "Nggak ada data, semua feeling",

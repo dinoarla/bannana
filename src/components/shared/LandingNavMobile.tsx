@@ -22,7 +22,6 @@ export function LandingNavMobile({ isLoggedIn }: { isLoggedIn: boolean }) {
 
       <div className={`mob-nav-menu${open ? " open" : ""}`} role="navigation">
         <a href="#features" className="mob-nav-link" onClick={() => setOpen(false)}>Fitur</a>
-        <a href="#blocks" className="mob-nav-link" onClick={() => setOpen(false)}>Blok</a>
         <a href="#themes" className="mob-nav-link" onClick={() => setOpen(false)}>Tema</a>
         <Link href="/pricing" className="mob-nav-link" onClick={() => setOpen(false)}>Pricing</Link>
         <div className="mob-nav-divider" />
