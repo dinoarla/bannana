@@ -227,7 +227,7 @@ export default async function LandingPage() {
                 pain: "50K followers, tapi link-nya berantakan",
               },
               {
-                avatar: "https://i.pravatar.cc/80?img=47",
+                avatar: "/dhuha-sabila.png",
                 name: "Dhuha Sabila",
                 role: "Affiliator Marketplace, Indramayu",
                 color: "#FEE2E2",

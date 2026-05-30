@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function LoginClient() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -11,6 +11,8 @@ export function LoginClient() {
   const [pwStrength, setPwStrength] = useState<{ bars: number; label: string; cls: string } | null>(null);
   const [showPw, setShowPw] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+  const [unameStatus, setUnameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const unameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -34,9 +36,29 @@ export function LoginClient() {
     setPwStrength({ bars: s, label, cls });
   }
 
+  function handleUnameChange(val: string) {
+    setSlugPreview(val || "kreator_kamu");
+    if (unameTimer.current) clearTimeout(unameTimer.current);
+    if (val.length < 3) { setUnameStatus("idle"); return; }
+    setUnameStatus("checking");
+    unameTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/check-username?u=${encodeURIComponent(val)}`);
+        const json = await res.json();
+        setUnameStatus(json.data?.available ? "available" : "taken");
+      } catch {
+        setUnameStatus("idle");
+      }
+    }, 500);
+  }
+
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    if (mode === "register" && unameStatus === "taken") {
+      setError("Username sudah dipakai, coba yang lain.");
+      return;
+    }
     setLoading(true);
     const fd = new FormData(e.currentTarget);
 
@@ -212,9 +234,33 @@ export function LoginClient() {
                   <label className="form-label">Username</label>
                   <div className="input-icon-wrap">
                     <i className="ico fa-solid fa-at" />
-                    <input className="input" type="text" name="username" placeholder="kreator_kamu" onChange={(e) => setSlugPreview(e.target.value || "kreator_kamu")} required pattern="[a-zA-Z0-9_\-]+" minLength={3} maxLength={32} />
+                    <input
+                      className="input"
+                      type="text"
+                      name="username"
+                      placeholder="kreator_kamu"
+                      onChange={(e) => handleUnameChange(e.target.value)}
+                      required
+                      pattern="[a-zA-Z0-9_\-]+"
+                      minLength={3}
+                      maxLength={32}
+                    />
                   </div>
-                  <div className="form-hint"><i className="fa-solid fa-circle-info" /> bannana.id/<strong>{slugPreview}</strong></div>
+                  {unameStatus === "taken" ? (
+                    <div className="form-hint" style={{ color: "var(--danger-600)" }}>
+                      <i className="fa-solid fa-circle-xmark" /> Username sudah dipakai
+                    </div>
+                  ) : unameStatus === "available" ? (
+                    <div className="form-hint" style={{ color: "#16A34A" }}>
+                      <i className="fa-solid fa-circle-check" /> bannana.id/<strong>{slugPreview}</strong> — tersedia!
+                    </div>
+                  ) : (
+                    <div className="form-hint">
+                      {unameStatus === "checking"
+                        ? <><i className="fa-solid fa-spinner fa-spin" /> Mengecek...</>
+                        : <><i className="fa-solid fa-circle-info" /> bannana.id/<strong>{slugPreview}</strong></>}
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
                   <label className="form-label">Email</label>
