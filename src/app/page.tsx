@@ -203,7 +203,7 @@ export default async function LandingPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "1.5rem", marginTop: "3rem" }}>
             {[
               {
-                avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+                avatar: "https://i.pravatar.cc/80?img=47",
                 name: "Ibu Tini",
                 role: "Pemilik usaha keripik, Malang",
                 color: "#FEF3C7",
@@ -211,7 +211,7 @@ export default async function LandingPage() {
                 pain: "Rp 1,2jt habis, website nggak jadi",
               },
               {
-                avatar: "https://randomuser.me/api/portraits/men/27.jpg",
+                avatar: "https://i.pravatar.cc/80?img=11",
                 name: "Aldo",
                 role: "Fresh grad freelance designer, Bandung",
                 color: "#EDE9FE",
@@ -219,7 +219,7 @@ export default async function LandingPage() {
                 pain: "Portfolio bagus, tapi terkesan amatir",
               },
               {
-                avatar: "https://randomuser.me/api/portraits/women/31.jpg",
+                avatar: "https://i.pravatar.cc/80?img=20",
                 name: "Rara",
                 role: "Content creator 50K followers, Semarang",
                 color: "#DCFCE7",
@@ -235,7 +235,7 @@ export default async function LandingPage() {
                 pain: "Nggak ada data, semua feeling",
               },
               {
-                avatar: "https://randomuser.me/api/portraits/men/50.jpg",
+                avatar: "https://i.pravatar.cc/80?img=52",
                 name: "Pak Hendra",
                 role: "Pemilik catering & kue, Bekasi",
                 color: "#FEE2D5",
@@ -243,7 +243,7 @@ export default async function LandingPage() {
                 pain: "Promosi habis, tapi susah dihubungi",
               },
               {
-                avatar: "https://randomuser.me/api/portraits/women/12.jpg",
+                avatar: "https://i.pravatar.cc/80?img=5",
                 name: "Dewi",
                 role: "Yoga & wellness coach, Bali",
                 color: "#E0F2FE",
