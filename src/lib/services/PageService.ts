@@ -21,7 +21,7 @@ export class PageService {
     return this.pages.create(userId, { title: input.title, slug });
   }
 
-  async update(id: string, input: { title?: string; bio?: string | null; slug?: string; theme?: string; customCss?: string; avatarUrl?: string | null; isPublished?: boolean }) {
+  async update(id: string, input: { title?: string; bio?: string | null; slug?: string; theme?: string; customCss?: string; avatarUrl?: string | null; isPublished?: boolean; displayName?: string | null; website?: string | null; socialLinks?: Array<{ label: string; url: string; icon: string; color?: string }> | null }) {
     if (input.slug) {
       const existing = await this.pages.findBySlug(slugify(input.slug));
       if (existing && existing.id !== id) throw errors.conflict("Slug sudah dipakai.");

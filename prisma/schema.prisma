@@ -54,6 +54,9 @@ model Page {
   customCss      String?  @db.Text
   viewCount      Int      @default(0)
   uniqueVisitors Int      @default(0)
+  displayName    String?
+  website        String?
+  socialLinks    String?  @db.Text
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

@@ -45,7 +45,9 @@ export default async function PublicProfilePage({ params }: Props) {
   try {
     const page = await new PublicPageService().getByUsername(username);
     const profile = page.user.profile;
-    const name = profile?.displayName ?? page.user.username;
+    const name = page.displayName ?? profile?.displayName ?? page.user.username;
+    const effectiveWebsite = page.website ?? profile?.website ?? null;
+    const effectiveSocialLinks = page.socialLinks ?? profile?.socialLinks ?? null;
 
     return (
       <div className={`pub-page t-${page.theme}`} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -60,14 +62,14 @@ export default async function PublicProfilePage({ params }: Props) {
             <div className="prof-name">{name}</div>
             <div className="prof-handle">@{page.user.username} · bannana.id/{page.slug}</div>
             {(page.bio ?? profile?.bio) && <div className="prof-bio">{page.bio ?? profile?.bio}</div>}
-            {profile?.website && (
-              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="prof-website">
-                <i className="fa-solid fa-globe" /> {profile.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+            {effectiveWebsite && (
+              <a href={effectiveWebsite} target="_blank" rel="noopener noreferrer" className="prof-website">
+                <i className="fa-solid fa-globe" /> {effectiveWebsite.replace(/^https?:\/\//, "").replace(/\/$/, "")}
               </a>
             )}
-            {profile?.socialLinks && profile.socialLinks.length > 0 && (
+            {effectiveSocialLinks && effectiveSocialLinks.length > 0 && (
               <div className="social-row">
-                {profile.socialLinks.map((s) => {
+                {effectiveSocialLinks.map((s) => {
                   const iconMap: Record<string, { fa: string; color: string }> = {
                     Instagram: { fa: "fa-brands fa-instagram", color: "#E1306C" },
                     Twitter:   { fa: "fa-brands fa-x-twitter",  color: "#000000" },

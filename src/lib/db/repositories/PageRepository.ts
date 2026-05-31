@@ -35,6 +35,9 @@ function parsePage(row: Record<string, unknown>): Page {
     avatarUrl: (row.avatarUrl as string | null) ?? null,
     viewCount: row.viewCount as number,
     uniqueVisitors: row.uniqueVisitors as number,
+    displayName: (row.displayName as string | null) ?? null,
+    website: (row.website as string | null) ?? null,
+    socialLinks: safeJson(row.socialLinks, null),
     createdAt: row.createdAt as Date,
     updatedAt: row.updatedAt as Date,
   };
@@ -232,10 +235,10 @@ export class PageRepository {
       position: 1, isEnabled: true, config: { subtitle: "Tulis sapaan singkat di sini" },
       clickCount: 0, createdAt: now, updatedAt: now,
     };
-    return { id, userId, title: input.title, bio: null, slug: input.slug, theme: "classic", isPublished: false, customCss: null, avatarUrl: null, viewCount: 0, uniqueVisitors: 0, createdAt: now, updatedAt: now, blocks: [block] };
+    return { id, userId, title: input.title, bio: null, slug: input.slug, theme: "classic", isPublished: false, customCss: null, avatarUrl: null, viewCount: 0, uniqueVisitors: 0, displayName: null, website: null, socialLinks: null, createdAt: now, updatedAt: now, blocks: [block] };
   }
 
-  async update(id: string, data: { title?: string; bio?: string | null; slug?: string; theme?: string; customCss?: string; avatarUrl?: string | null; isPublished?: boolean }): Promise<PageWithBlocks | null> {
+  async update(id: string, data: { title?: string; bio?: string | null; slug?: string; theme?: string; customCss?: string; avatarUrl?: string | null; isPublished?: boolean; displayName?: string | null; website?: string | null; socialLinks?: Array<{ label: string; url: string; icon: string; color?: string }> | null }): Promise<PageWithBlocks | null> {
     const updates: string[] = [];
     const vals: unknown[] = [];
     if (data.title !== undefined) { updates.push("title = ?"); vals.push(data.title); }
@@ -245,6 +248,9 @@ export class PageRepository {
     if (data.customCss !== undefined) { updates.push("customCss = ?"); vals.push(data.customCss); }
     if (data.avatarUrl !== undefined) { updates.push("avatarUrl = ?"); vals.push(data.avatarUrl); }
     if (data.isPublished !== undefined) { updates.push("isPublished = ?"); vals.push(data.isPublished ? 1 : 0); }
+    if (data.displayName !== undefined) { updates.push("displayName = ?"); vals.push(data.displayName); }
+    if (data.website !== undefined) { updates.push("website = ?"); vals.push(data.website); }
+    if (data.socialLinks !== undefined) { updates.push("socialLinks = ?"); vals.push(data.socialLinks === null ? null : JSON.stringify(data.socialLinks)); }
     const now = new Date();
     updates.push("updatedAt = ?"); vals.push(now);
     vals.push(id);

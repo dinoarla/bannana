@@ -42,6 +42,9 @@ export type Page = {
   avatarUrl: string | null;
   viewCount: number;
   uniqueVisitors: number;
+  displayName: string | null;
+  website: string | null;
+  socialLinks: Array<{ label: string; url: string; icon: string; color?: string }> | null;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -32,6 +32,9 @@ type PageState = {
   theme: string;
   avatarUrl: string | null;
   isPublished: boolean;
+  displayName: string | null;
+  website: string | null;
+  socialLinks: Array<{ icon: string; label: string; url: string }> | null;
   blocks: PublicBlock[];
 };
 
@@ -135,6 +138,10 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialPage.avatarUrl);
   const [bioVal, setBioVal] = useState(initialPage.bio ?? "");
+  // Per-page Pro overrides
+  const [pageDisplayName, setPageDisplayName] = useState(initialPage.displayName ?? "");
+  const [pageWebsite, setPageWebsite] = useState(initialPage.website ?? "");
+  const [pageSocialLinks, setPageSocialLinks] = useState<Array<{ icon: string; label: string; url: string }>>(initialPage.socialLinks ?? []);
   // Tema tab state
   const [themeApplying, setThemeApplying] = useState(false);
   // Page switcher
@@ -333,11 +340,17 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
     try {
       const title = String(fd.get("pageTitle") ?? "");
       const bioRaw = bioVal.trim();
+      const payload: Record<string, unknown> = { title, slug: slugVal, bio: bioRaw || null, avatarUrl: avatarPreview };
+      if (isPro) {
+        payload.displayName = pageDisplayName.trim() || null;
+        payload.website = pageWebsite.trim() || null;
+        payload.socialLinks = pageSocialLinks.length > 0 ? pageSocialLinks : null;
+      }
       const updated = await mutate<PageState>(`/api/pages/${page.id}`, {
         method: "PUT",
-        body: JSON.stringify({ title, slug: slugVal, bio: bioRaw || null, avatarUrl: avatarPreview }),
+        body: JSON.stringify(payload),
       });
-      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, bio: updated.bio, avatarUrl: updated.avatarUrl }));
+      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, bio: updated.bio, avatarUrl: updated.avatarUrl, displayName: updated.displayName, website: updated.website, socialLinks: updated.socialLinks }));
       setBioVal(updated.bio ?? "");
       setSlugStatus("idle");
       showSave("Halaman disimpan ✓");
@@ -999,6 +1012,89 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                     <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatarPick} />
                     <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".25rem" }}>Maks 300KB. Default dari foto profil di Pengaturan.</div>
                   </div>
+                  {isPro ? (
+                    <>
+                      <div style={{ borderTop: "1px solid var(--n-100)", marginTop: ".25rem", paddingTop: "1rem" }}>
+                        <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Nama Tampilan Halaman</div>
+                        <input
+                          className="form-inp"
+                          type="text"
+                          value={pageDisplayName}
+                          onChange={(e) => setPageDisplayName(e.target.value.slice(0, 100))}
+                          placeholder={page.title}
+                        />
+                        <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".2rem" }}>
+                          Override nama yang tampil di halaman publik.
+                        </div>
+                      </div>
+                      <div>
+                        <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Website Halaman</div>
+                        <input
+                          className="form-inp"
+                          type="url"
+                          value={pageWebsite}
+                          onChange={(e) => setPageWebsite(e.target.value.slice(0, 255))}
+                          placeholder="https://example.com"
+                        />
+                        <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".2rem" }}>
+                          Kosongkan untuk pakai website dari Pengaturan.
+                        </div>
+                      </div>
+                      <div>
+                        <div className="form-lbl" style={{ marginBottom: ".5rem" }}>Social Media Halaman</div>
+                        {pageSocialLinks.map((s, idx) => (
+                          <div key={idx} style={{ display: "flex", gap: ".4rem", marginBottom: ".4rem", alignItems: "center" }}>
+                            <select
+                              className="form-inp"
+                              style={{ width: 110, flexShrink: 0 }}
+                              value={s.icon}
+                              onChange={(e) => setPageSocialLinks((prev) => prev.map((x, i) => i === idx ? { ...x, icon: e.target.value, label: e.target.value } : x))}
+                            >
+                              {["Instagram","Twitter","Youtube","LinkedIn","TikTok","Facebook","GitHub"].map((pl) => (
+                                <option key={pl} value={pl}>{pl}</option>
+                              ))}
+                            </select>
+                            <input
+                              className="form-inp"
+                              type="url"
+                              style={{ flex: 1 }}
+                              value={s.url}
+                              onChange={(e) => setPageSocialLinks((prev) => prev.map((x, i) => i === idx ? { ...x, url: e.target.value } : x))}
+                              placeholder="https://..."
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setPageSocialLinks((prev) => prev.filter((_, i) => i !== idx))}
+                              style={{ border: "none", background: "none", color: "var(--n-400)", cursor: "pointer", fontSize: ".85rem", flexShrink: 0 }}
+                            >
+                              <i className="fa-solid fa-xmark" />
+                            </button>
+                          </div>
+                        ))}
+                        {pageSocialLinks.length < 10 && (
+                          <button
+                            type="button"
+                            onClick={() => setPageSocialLinks((prev) => [...prev, { icon: "Instagram", label: "Instagram", url: "" }])}
+                            style={{ width: "100%", padding: "6px", borderRadius: 8, border: "1.5px dashed var(--b-300)", background: "var(--b-50)", color: "var(--b-700)", fontSize: ".75rem", fontWeight: 700, cursor: "pointer" }}
+                          >
+                            <i className="fa-solid fa-plus" /> Tambah Social Media
+                          </button>
+                        )}
+                        <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".35rem" }}>
+                          Kosongkan untuk pakai social media dari Pengaturan.
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: ".5rem", padding: ".75rem", background: "var(--b-50)", borderRadius: 10, border: "1.5px solid var(--b-200)" }}>
+                      <i className="fa-solid fa-star" style={{ color: "var(--b-500)", fontSize: ".85rem" }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: ".75rem", fontWeight: 700, color: "var(--b-800)" }}>Custom nama, website & social media per halaman</div>
+                        <div style={{ fontSize: ".65rem", color: "var(--n-500)", marginTop: ".15rem" }}>Tersedia di paket Pro.</div>
+                      </div>
+                      <a href="/langganan" style={{ fontSize: ".7rem", fontWeight: 700, color: "var(--b-700)", textDecoration: "none", background: "var(--b-200)", padding: "4px 10px", borderRadius: 20 }}>Upgrade</a>
+                    </div>
+                  )}
                 </form>
               </div>
               <div>

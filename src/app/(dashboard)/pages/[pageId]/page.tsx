@@ -67,6 +67,9 @@ export default async function EditorPage({ params }: Props) {
           theme: page.theme ?? "classic",
           avatarUrl: page.avatarUrl ?? null,
           isPublished: page.isPublished,
+          displayName: page.displayName ?? null,
+          website: page.website ?? null,
+          socialLinks: page.socialLinks ?? null,
           blocks: (page.blocks ?? []) as unknown as PublicBlock[],
         }}
         csrfToken={csrfToken}
