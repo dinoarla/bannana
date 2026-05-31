@@ -416,6 +416,12 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
 /* ─── DASHBOARD CONTENT GRIDS ─── */
 .dash-stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem; }
 .dash-bottom-grid { display:grid; grid-template-columns:1fr 320px; gap:1.5rem; align-items:stretch; }
+.page-scroll-strip { display:flex; gap:.75rem; overflow-x:auto; padding-bottom:.5rem; margin-bottom:2rem; scroll-snap-type:x mandatory; }
+.page-scroll-strip > * { scroll-snap-align:start; }
+.page-scroll-strip::-webkit-scrollbar { height:4px; }
+.page-scroll-strip::-webkit-scrollbar-track { background:var(--n-100); border-radius:2px; }
+.page-scroll-strip::-webkit-scrollbar-thumb { background:var(--b-300); border-radius:2px; }
+.page-strip-add { background:var(--b-50); border:2px dashed var(--b-200); border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.625rem; padding:1.25rem; text-decoration:none; flex-shrink:0; width:196px; min-height:188px; }
 
 /* ─── MOBILE EDITOR TABS ─── */
 .mob-editor-tabs { display:none; gap:.375rem; padding:.375rem .625rem .5rem; background:var(--n-0); border-top:1.5px solid var(--n-200); flex-shrink:0; }

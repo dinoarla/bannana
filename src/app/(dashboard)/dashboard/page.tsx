@@ -108,38 +108,38 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
           <h2 style={{ fontFamily: "var(--fd)", fontSize: "1.15rem", fontWeight: 700, color: "var(--b-900)", display: "flex", alignItems: "center", gap: 7, margin: 0 }}>
             <i className="fa-solid fa-table-columns" style={{ color: "var(--b-500)", fontSize: ".95rem" }} /> Halaman Saya
+            {pages.length > 0 && (
+              <span style={{ fontSize: ".72rem", fontWeight: 700, background: "var(--b-100)", color: "var(--b-700)", padding: "1px 8px", borderRadius: 99 }}>
+                {pages.length}
+              </span>
+            )}
           </h2>
           <Link href="/pages" style={{ fontSize: ".8rem", color: "var(--b-700)", fontWeight: 600, display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}>
             Lihat semua <i className="fa-solid fa-chevron-right" />
           </Link>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(272px,1fr))", gap: "1rem", marginBottom: "2rem" }}>
-          {pages.slice(0, 2).map((page) => (
-            <PageCard key={page.id} page={page} avatarUrl={user.profile?.avatarUrl ?? null} username={user.username} />
+        <div className="page-scroll-strip">
+          {pages.map((page) => (
+            <CompactPageCard key={page.id} page={page} avatarUrl={user.profile?.avatarUrl ?? null} username={user.username} />
           ))}
           {canCreatePage ? (
-            <Link href="/pages/new"
-              style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220 }}
-            >
-              <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--b-100)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-500)", fontSize: "1.2rem" }}>
+            <Link href="/pages/new" className="page-strip-add">
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--b-100)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-500)", fontSize: "1.1rem" }}>
                 <i className="fa-solid fa-plus" />
               </div>
-              <div style={{ fontFamily: "var(--fd)", fontSize: ".95rem", fontWeight: 700, color: "var(--b-700)" }}>Buat Halaman Baru</div>
-              <div style={{ fontSize: ".75rem", color: "var(--n-500)", textAlign: "center" }}>Link page, about me, portofolio — bebas!</div>
+              <div style={{ fontFamily: "var(--fd)", fontSize: ".88rem", fontWeight: 700, color: "var(--b-700)", textAlign: "center" }}>Buat Halaman Baru</div>
+              <div style={{ fontSize: ".72rem", color: "var(--n-500)", textAlign: "center" }}>Link page, about me, portofolio — bebas!</div>
             </Link>
           ) : (
-            <Link href="/langganan"
-              style={{ background: "var(--b-50)", border: "2px dashed var(--b-200)", borderRadius: 20, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".75rem", padding: "2.25rem", textDecoration: "none", minHeight: 220, position: "relative", overflow: "hidden" }}
-            >
+            <Link href="/langganan" className="page-strip-add" style={{ position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0, backdropFilter: "blur(3px)", background: "rgba(255,251,235,.65)", zIndex: 1, borderRadius: 18 }} />
-              <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: ".6rem" }}>
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--b-200)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-600)", fontSize: "1.2rem" }}>
+              <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: ".5rem" }}>
+                <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--b-200)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-600)", fontSize: "1.1rem" }}>
                   <i className="fa-solid fa-crown" />
                 </div>
-                <div style={{ fontFamily: "var(--fd)", fontSize: ".95rem", fontWeight: 700, color: "var(--b-800)" }}>Upgrade ke Pro</div>
-                <div style={{ fontSize: ".75rem", color: "var(--b-700)", textAlign: "center", fontWeight: 600 }}>Buat halaman tak terbatas</div>
-                <div style={{ fontSize: ".7rem", color: "var(--n-500)", textAlign: "center" }}>Paket Gratis hanya 1 halaman</div>
+                <div style={{ fontFamily: "var(--fd)", fontSize: ".88rem", fontWeight: 700, color: "var(--b-800)", textAlign: "center" }}>Upgrade ke Pro</div>
+                <div style={{ fontSize: ".72rem", color: "var(--b-700)", textAlign: "center", fontWeight: 600 }}>Buat halaman tak terbatas</div>
               </div>
             </Link>
           )}
@@ -298,47 +298,40 @@ function StatCard({ icon, iconBg, iconColor, value, label, fillGradient }: {
   );
 }
 
-function PageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarUrl: string | null; username: string }) {
+function CompactPageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarUrl: string | null; username: string }) {
   const displayAvatar = page.avatarUrl ?? avatarUrl;
   return (
-    <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 20, overflow: "hidden" }}>
-      <div style={{ height: 112, background: "linear-gradient(160deg,var(--b-50),#fff)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 5 }}>
-        <div style={{ position: "absolute", top: 9, right: 9, borderRadius: "9999px", padding: "2px 9px", fontSize: ".62rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 4, background: page.isPublished ? "var(--success-100)" : "var(--n-200)", color: page.isPublished ? "var(--success-700)" : "var(--n-500)" }}>
-          {page.isPublished && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
+    <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 18, overflow: "hidden", flexShrink: 0, width: 196 }}>
+      {/* Preview header */}
+      <div style={{ height: 90, background: "linear-gradient(160deg,var(--b-50),#fff)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 3 }}>
+        <div style={{ position: "absolute", top: 7, right: 7, borderRadius: "9999px", padding: "2px 7px", fontSize: ".58rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 3, background: page.isPublished ? "var(--success-100)" : "var(--n-200)", color: page.isPublished ? "var(--success-700)" : "var(--n-500)" }}>
+          {page.isPublished && <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--success-600)", display: "inline-block" }} />}
           {page.isPublished ? "Live" : "Draft"}
         </div>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1.2rem", overflow: "hidden", padding: displayAvatar ? 0 : undefined }}>
+        <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,var(--b-400),var(--b-600))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--b-950)", fontSize: "1rem", overflow: "hidden", padding: displayAvatar ? 0 : undefined }}>
           {displayAvatar
             ? <img src={displayAvatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : <i className="fa-solid fa-user" />}
         </div>
-        <div style={{ fontFamily: "var(--fd)", fontSize: ".78rem", fontWeight: 700, color: "var(--b-900)" }}>@{username}</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", padding: "0 14px" }}>
-          <div style={{ height: 7, background: "var(--b-300)", borderRadius: 4, width: "82%" }} />
-          <div style={{ height: 7, background: "var(--b-200)", borderRadius: 4, width: "66%" }} />
-          <div style={{ height: 7, background: "var(--b-100)", borderRadius: 4, width: "55%" }} />
+        <div style={{ fontFamily: "var(--fd)", fontSize: ".65rem", fontWeight: 700, color: "var(--b-900)" }}>@{username}</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 2, width: "100%", padding: "0 10px" }}>
+          <div style={{ height: 5, background: "var(--b-300)", borderRadius: 3, width: "80%" }} />
+          <div style={{ height: 5, background: "var(--b-200)", borderRadius: 3, width: "60%" }} />
         </div>
       </div>
-      <div style={{ padding: "1rem" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: ".75rem", marginBottom: ".875rem" }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: ".92rem", color: "var(--b-900)", marginBottom: ".3rem" }}>
-              {page.title}
-            </div>
-            <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".5rem" }}>bannana.id/{page.slug}</div>
-            <div style={{ display: "flex", gap: ".875rem", fontSize: ".72rem", color: "var(--n-500)" }}>
-              <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
-            </div>
-          </div>
-          <a href={`/api/qr/${page.id}?card=1`} download={`qr-${page.slug}.svg`} title="Unduh QR Code" style={{ flexShrink: 0 }}>
-            <img src={`/api/qr/${page.id}`} alt="QR" width={64} height={64} style={{ borderRadius: 8, border: "1.5px solid var(--n-200)", display: "block" }} />
-          </a>
+      {/* Info */}
+      <div style={{ padding: ".75rem" }}>
+        <div style={{ fontWeight: 700, fontSize: ".82rem", color: "var(--b-900)", marginBottom: ".15rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {page.title}
         </div>
-        <div style={{ display: "flex", gap: ".5rem" }}>
-          <Link href={`/pages/${page.id}`} style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--b-500)", color: "var(--b-950)", textDecoration: "none" }}>
+        <div style={{ fontFamily: "var(--fm)", fontSize: ".62rem", color: "var(--n-400)", marginBottom: ".5rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          bannana.id/{page.slug}
+        </div>
+        <div style={{ display: "flex", gap: ".375rem" }}>
+          <Link href={`/pages/${page.id}`} style={{ flex: 1, height: 27, borderRadius: 7, fontSize: ".7rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 4, background: "var(--b-500)", color: "var(--b-950)", textDecoration: "none" }}>
             <i className="fa-solid fa-pen-to-square" /> Edit
           </Link>
-          <Link href={`/${page.slug}`} target="_blank" style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--n-100)", color: "var(--n-700)", border: "1.5px solid var(--n-200)", textDecoration: "none" }}>
+          <Link href={`/${page.slug}`} target="_blank" style={{ flex: 1, height: 27, borderRadius: 7, fontSize: ".7rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 4, background: "var(--n-100)", color: "var(--n-700)", border: "1.5px solid var(--n-200)", textDecoration: "none" }}>
             <i className="fa-solid fa-eye" /> Lihat
           </Link>
         </div>
