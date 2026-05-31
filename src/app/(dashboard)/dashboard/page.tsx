@@ -32,13 +32,27 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const rawRange = sp.range as "7d" | "30d" | "90d" | undefined;
   const range = (!isPro && (rawRange === "30d" || rawRange === "90d")) ? "7d" : (rawRange ?? "30d");
 
-  const report = pages[0]
-    ? await new AnalyticsService().report(pages[0].id, range).catch(() => null)
-    : null;
+  const reports = await Promise.all(
+    pages.map((p) => new AnalyticsService().report(p.id, range).catch(() => null))
+  );
 
-  const totalViews = report?.totals.views ?? 0;
-  const totalClicks = report?.totals.clicks ?? 0;
+  const totalViews = reports.reduce((s, r) => s + (r?.totals.views ?? 0), 0);
+  const totalClicks = reports.reduce((s, r) => s + (r?.totals.clicks ?? 0), 0);
+  const totalUniqueVisitors = reports.reduce((s, r) => s + (r?.totals.uniqueVisitors ?? 0), 0);
   const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : "0.0";
+
+  // Aggregate trend by day index (all reports share the same range/length)
+  const firstTrend = reports.find((r) => r?.trend?.length)?.trend ?? [];
+  const aggregatedTrend = firstTrend.map((d, i) => ({
+    ...d,
+    views: reports.reduce((s, r) => s + (r?.trend?.[i]?.views ?? 0), 0),
+  }));
+
+  // Aggregate top links across all pages, re-sort by clicks
+  const aggregatedTopLinks = reports
+    .flatMap((r) => r?.topLinks ?? [])
+    .sort((a, b) => b.clickCount - a.clickCount)
+    .slice(0, 4);
 
   return (
     <>
@@ -84,7 +98,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           />
           <StatCard
             icon="fa-users" iconBg="#FCE7F3" iconColor="#9D174D"
-            value={report?.totals.uniqueVisitors ? String(report.totals.uniqueVisitors) : "0"}
+            value={totalUniqueVisitors > 0 ? String(totalUniqueVisitors) : "0"}
             label="Pengunjung Unik"
             fillGradient="linear-gradient(90deg,#F9A8D4,#EC4899)"
           />
@@ -168,8 +182,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 </div>
               </div>
               <div style={{ flex: 1, minHeight: 120, display: "flex", alignItems: "flex-end", gap: 4, marginBottom: ".875rem" }}>
-                {(report?.trend && report.trend.length > 0
-                  ? report.trend.map((d) => d.views)
+                {(aggregatedTrend.length > 0
+                  ? aggregatedTrend.map((d) => d.views)
                   : [35, 48, 42, 65, 55, 88, 74, 60, 78, 88, 72, 100, 91, 85]
                 ).map((h, i, arr) => {
                   const max = Math.max(...arr, 1);
@@ -183,7 +197,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 {[
                   { val: totalViews > 1000 ? `${(totalViews / 1000).toFixed(1)}K` : String(totalViews), lbl: "Views" },
                   { val: totalClicks > 1000 ? `${(totalClicks / 1000).toFixed(1)}K` : String(totalClicks), lbl: "Klik" },
-                  { val: report?.totals.uniqueVisitors ? String(report.totals.uniqueVisitors) : "0", lbl: "Pengunjung" },
+                  { val: totalUniqueVisitors > 0 ? String(totalUniqueVisitors) : "0", lbl: "Pengunjung" },
                 ].map((s) => (
                   <div key={s.lbl}>
                     <span style={{ fontFamily: "var(--fd)", fontSize: "1.25rem", fontWeight: 700, color: "var(--b-700)", display: "block", textAlign: "center" }}>{s.val}</span>
@@ -203,7 +217,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 </div>
                 <Link href="/analytics" style={{ fontSize: ".8rem", color: "var(--b-700)", fontWeight: 600, textDecoration: "none" }}>Lihat semua</Link>
               </div>
-              {report?.topLinks && report.topLinks.length > 0 ? report.topLinks.slice(0, 4).map((link, i) => {
+              {aggregatedTopLinks.length > 0 ? aggregatedTopLinks.map((link, i) => {
                 const colors = [
                   { bg: "var(--b-100)", color: "var(--b-700)", icon: "fa-star" },
                   { bg: "#FEE2D5", color: "#C05621", icon: "fa-youtube" },
@@ -211,7 +225,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                   { bg: "#E0F2FE", color: "#0369A1", icon: "fa-x-twitter" },
                 ];
                 const c = colors[i % colors.length];
-                const maxClicks = report.topLinks[0]?.clickCount ?? 1;
+                const maxClicks = aggregatedTopLinks[0]?.clickCount ?? 1;
                 return (
                   <div key={link.id} style={{ display: "flex", alignItems: "center", gap: 9, fontSize: ".82rem", marginBottom: ".625rem" }}>
                     <div style={{ width: 28, height: 28, borderRadius: 7, background: c.bg, color: c.color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: ".7rem" }}>
@@ -306,12 +320,19 @@ function PageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarU
         </div>
       </div>
       <div style={{ padding: "1rem" }}>
-        <div style={{ fontWeight: 700, fontSize: ".92rem", color: "var(--b-900)", marginBottom: ".3rem" }}>
-          {page.title}
-        </div>
-        <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".75rem" }}>bannana.id/{page.slug}</div>
-        <div style={{ display: "flex", gap: ".875rem", fontSize: ".72rem", color: "var(--n-500)", marginBottom: ".875rem" }}>
-          <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: ".75rem", marginBottom: ".875rem" }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: ".92rem", color: "var(--b-900)", marginBottom: ".3rem" }}>
+              {page.title}
+            </div>
+            <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".5rem" }}>bannana.id/{page.slug}</div>
+            <div style={{ display: "flex", gap: ".875rem", fontSize: ".72rem", color: "var(--n-500)" }}>
+              <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
+            </div>
+          </div>
+          <a href={`/api/qr/${page.id}`} download={`qr-${page.slug}.png`} title="Unduh QR Code" style={{ flexShrink: 0 }}>
+            <img src={`/api/qr/${page.id}`} alt="QR" width={64} height={64} style={{ borderRadius: 8, border: "1.5px solid var(--n-200)", display: "block" }} />
+          </a>
         </div>
         <div style={{ display: "flex", gap: ".5rem" }}>
           <Link href={`/pages/${page.id}`} style={{ flex: 1, height: 33, borderRadius: 9, fontSize: ".78rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, background: "var(--b-500)", color: "var(--b-950)", textDecoration: "none" }}>

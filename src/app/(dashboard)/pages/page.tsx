@@ -78,15 +78,22 @@ export default async function PagesPage() {
 
                 {/* Info */}
                 <div style={{ padding: "1rem" }}>
-                  <div style={{ fontWeight: 700, fontSize: ".92rem", color: "var(--b-900)", marginBottom: ".3rem" }}>
-                    {page.title}
-                  </div>
-                  <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".5rem" }}>
-                    bannana.id/{page.slug}
-                  </div>
-                  <div style={{ display: "flex", gap: ".875rem", fontSize: ".72rem", color: "var(--n-500)", marginBottom: ".875rem" }}>
-                    <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
-                    <span><i className="fa-solid fa-eye" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.viewCount} views</span>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: ".75rem", marginBottom: ".875rem" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: ".92rem", color: "var(--b-900)", marginBottom: ".3rem" }}>
+                        {page.title}
+                      </div>
+                      <div style={{ fontFamily: "var(--fm)", fontSize: ".7rem", color: "var(--n-500)", marginBottom: ".5rem" }}>
+                        bannana.id/{page.slug}
+                      </div>
+                      <div style={{ display: "flex", gap: ".875rem", fontSize: ".72rem", color: "var(--n-500)" }}>
+                        <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
+                        <span><i className="fa-solid fa-eye" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.viewCount} views</span>
+                      </div>
+                    </div>
+                    <a href={`/api/qr/${page.id}`} download={`qr-${page.slug}.png`} title="Unduh QR Code" style={{ flexShrink: 0 }}>
+                      <img src={`/api/qr/${page.id}`} alt="QR" width={64} height={64} style={{ borderRadius: 8, border: "1.5px solid var(--n-200)", display: "block" }} />
+                    </a>
                   </div>
 
                   {/* Edit + View row */}
