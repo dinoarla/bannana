@@ -443,7 +443,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
             </button>
           </div>
           <Link href={`/${page.slug}`} target="_blank" className="et-btn et-ghost">
-            <i className="fa-solid fa-eye" /> Preview
+            <i className="fa-solid fa-eye" /><span className="hide-mobile"> Preview</span>
           </Link>
           <button
             className={`et-btn ${page.isPublished ? "et-ghost" : "et-primary"}`}
@@ -451,7 +451,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
             disabled={saving}
           >
             <i className={`fa-solid ${page.isPublished ? "fa-eye-slash" : "fa-upload"}`} />
-            {page.isPublished ? "Unpublish" : "Publish"}
+            <span className="hide-mobile">{page.isPublished ? " Unpublish" : " Publish"}</span>
           </button>
         </div>
       </div>

@@ -602,7 +602,7 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
   .anl-page-select { max-width:130px; font-size:.8rem; padding:0 8px; }
 
   /* Editor topbar — hide non-essential elements */
-  .editor-top { padding:0 .5rem; gap:.25rem; overflow:hidden; }
+  .editor-top { padding:0 .5rem; gap:.25rem; overflow:visible; }
   .et-saved { display:none; }
   .pv-toggle { display:none; }
   .et-divider { display:none; }
@@ -1311,6 +1311,9 @@ body { font-family:var(--fb); background:var(--n-50); color:var(--n-700); overfl
   .tb-search-btn { display:flex !important; }
   /* Chart header: stack title + controls vertically */
   .chart-head { flex-direction:column; align-items:flex-start; gap:.625rem; }
+  .chart-head > div:last-child { width:100%; flex-wrap:wrap; }
+  .rng-btns { flex-wrap:wrap; }
+  .main-chart-card { overflow:hidden; }
   /* Docs layout */
   .docs-layout { grid-template-columns:1fr; gap:2rem; }
   .docs-sidebar { position:static; border:1.5px solid var(--n-200); border-radius:14px; padding:1.25rem; }

@@ -140,7 +140,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
         <div className="main-chart-card">
           <div className="chart-head">
             <div className="chart-title"><i className="fa-solid fa-chart-area" /> Tren Kunjungan &amp; Klik</div>
-            <div style={{ display: "flex", gap: ".75rem", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: ".75rem", alignItems: "center", flexWrap: "wrap" }}>
               <div style={{ display: "flex", gap: ".875rem", fontSize: ".75rem" }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
                   <span style={{ width: 10, height: 10, borderRadius: 2, background: "var(--b-500)", display: "inline-block" }} /> Views
@@ -170,9 +170,9 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
                 {trend.map((d, i) => (
                   <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2, alignItems: "stretch" }}>
                     {d.clicks > 0 && (
-                      <div style={{ height: `${Math.max(3, (d.clicks / trendMax) * 50)}px`, background: "var(--b-200)", borderRadius: "2px 2px 0 0" }} title={`${d.label}: ${d.clicks} klik`} />
+                      <div style={{ height: `${Math.max(3, (d.clicks / trendMax) * 35)}px`, background: "var(--b-200)", borderRadius: "2px 2px 0 0" }} title={`${d.label}: ${d.clicks} klik`} />
                     )}
-                    <div className={`cbar${d.views >= trendMax ? " hi" : ""}`} style={{ height: `${Math.max(4, (d.views / trendMax) * 100)}%` }} title={`${d.label}: ${d.views} views`} />
+                    <div className={`cbar${d.views >= trendMax ? " hi" : ""}`} style={{ height: `${Math.max(4, (d.views / trendMax) * 80)}px` }} title={`${d.label}: ${d.views} views`} />
                   </div>
                 ))}
               </div>

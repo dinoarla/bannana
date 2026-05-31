@@ -149,11 +149,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         <div className="dash-bottom-grid">
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 18, padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: ".5rem" }}>
                 <div style={{ fontFamily: "var(--fd)", fontSize: "1rem", fontWeight: 700, color: "var(--b-900)", display: "flex", alignItems: "center", gap: 7 }}>
                   <i className="fa-solid fa-chart-area" style={{ color: "var(--b-500)" }} /> Tren Kunjungan
                 </div>
-                <div style={{ display: "flex", gap: ".4rem" }}>
+                <div style={{ display: "flex", gap: ".4rem", flexWrap: "wrap" }}>
                   {(["7d", "30d", "90d"] as const).map((r) => {
                     const locked = !isPro && r !== "7d";
                     const label = r === "7d" ? "7h" : r === "30d" ? "30h" : "90h";
