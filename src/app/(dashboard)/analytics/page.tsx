@@ -172,7 +172,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Se
                     {d.clicks > 0 && (
                       <div style={{ height: `${Math.max(3, (d.clicks / trendMax) * 35)}px`, background: "var(--b-200)", borderRadius: "2px 2px 0 0" }} title={`${d.label}: ${d.clicks} klik`} />
                     )}
-                    <div className={`cbar${d.views >= trendMax ? " hi" : ""}`} style={{ height: `${Math.max(4, (d.views / trendMax) * 80)}px` }} title={`${d.label}: ${d.views} views`} />
+                    <div className={`cbar${d.views >= trendMax ? " hi" : ""}`} style={{ height: `${Math.max(4, (d.views / trendMax) * 80)}px`, flex: "none" }} title={`${d.label}: ${d.views} views`} />
                   </div>
                 ))}
               </div>

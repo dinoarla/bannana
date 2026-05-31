@@ -100,7 +100,7 @@ export function DashboardTopbar({ pages, username, avatarUrl, csrfToken, canCrea
   const [notifications, setNotifications] = useState<NotifItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifPos, setNotifPos] = useState<{ top: number; right: number }>({ top: 70, right: 16 });
+  const [notifPos, setNotifPos] = useState<{ top: number; left: number }>({ top: 70, left: 16 });
   const notifRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -128,7 +128,10 @@ export function DashboardTopbar({ pages, username, avatarUrl, csrfToken, canCrea
   function openNotif() {
     if (notifRef.current) {
       const rect = notifRef.current.getBoundingClientRect();
-      setNotifPos({ top: rect.bottom + 10, right: window.innerWidth - rect.right });
+      const dropWidth = 340;
+      const idealLeft = rect.right - dropWidth;
+      const left = Math.max(8, Math.min(window.innerWidth - dropWidth - 8, idealLeft));
+      setNotifPos({ top: rect.bottom + 10, left });
     }
     setNotifOpen(true);
     markRead();
@@ -181,7 +184,7 @@ export function DashboardTopbar({ pages, username, avatarUrl, csrfToken, canCrea
 
             {notifOpen && (
               <div className="notif-dropdown" style={{
-                position: "fixed", top: notifPos.top, right: notifPos.right, width: 340, maxWidth: "calc(100vw - 2rem)", zIndex: 1000,
+                position: "fixed", top: notifPos.top, left: notifPos.left, width: 340, maxWidth: "calc(100vw - 1rem)", zIndex: 1000,
                 background: "var(--n-0)", border: "1.5px solid var(--n-200)", borderRadius: 16,
                 boxShadow: "0 8px 32px rgba(0,0,0,.12)", overflow: "hidden",
               }}>

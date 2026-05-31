@@ -147,8 +147,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
         {/* BOTTOM 2-COL */}
         <div className="dash-bottom-grid">
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 18, padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+            <div style={{ background: "var(--n-0)", border: "2px solid var(--n-200)", borderRadius: 18, padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: ".5rem" }}>
                 <div style={{ fontFamily: "var(--fd)", fontSize: "1rem", fontWeight: 700, color: "var(--b-900)", display: "flex", alignItems: "center", gap: 7 }}>
                   <i className="fa-solid fa-chart-area" style={{ color: "var(--b-500)" }} /> Tren Kunjungan
@@ -181,15 +181,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                   })}
                 </div>
               </div>
-              <div style={{ flex: 1, minHeight: 120, display: "flex", alignItems: "flex-end", gap: 4, marginBottom: ".875rem" }}>
+              <div style={{ height: 120, display: "flex", alignItems: "flex-end", gap: 4, marginBottom: ".875rem" }}>
                 {(aggregatedTrend.length > 0
                   ? aggregatedTrend.map((d) => d.views)
                   : [35, 48, 42, 65, 55, 88, 74, 60, 78, 88, 72, 100, 91, 85]
                 ).map((h, i, arr) => {
                   const max = Math.max(...arr, 1);
-                  const pct = Math.round((h / max) * 100);
+                  const px = Math.max(4, Math.round((h / max) * 110));
                   return (
-                    <div key={i} style={{ flex: 1, height: `${Math.max(4, pct)}%`, borderRadius: "4px 4px 0 0", background: pct === 100 ? "linear-gradient(180deg,var(--b-500),var(--b-700))" : "linear-gradient(180deg,var(--b-300),var(--b-400))" }} />
+                    <div key={i} style={{ flex: 1, height: `${px}px`, borderRadius: "4px 4px 0 0", background: px >= 110 ? "linear-gradient(180deg,var(--b-500),var(--b-700))" : "linear-gradient(180deg,var(--b-300),var(--b-400))" }} />
                   );
                 })}
               </div>
