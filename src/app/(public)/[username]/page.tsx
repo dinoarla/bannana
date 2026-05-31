@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://bannana.id";
   try {
     const page = await new PublicPageService().getByUsername(username);
-    const name = page.user.profile?.displayName ?? page.user.username;
-    const description = page.user.profile?.bio ?? `Lihat semua link ${name} di bannana.id`;
+    const name = page.displayName ?? page.user.profile?.displayName ?? page.user.username;
+    const description = page.bio ?? page.user.profile?.bio ?? `Lihat semua link ${name} di bannana.id`;
     const ogImage = `${baseUrl}/api/og/${username}`;
     return {
       title: `${name} — bannana.id`,
@@ -60,7 +60,7 @@ export default async function PublicProfilePage({ params }: Props) {
                 : <i className="fa-solid fa-user" />}
             </div>
             <div className="prof-name">{name}</div>
-            <div className="prof-handle">@{page.user.username} · bannana.id/{page.slug}</div>
+            <div className="prof-handle">@{page.slug} · bannana.id/{page.slug}</div>
             {(page.bio ?? profile?.bio) && <div className="prof-bio">{page.bio ?? profile?.bio}</div>}
             {effectiveWebsite && (
               <a href={effectiveWebsite} target="_blank" rel="noopener noreferrer" className="prof-website">

@@ -9,11 +9,17 @@ export async function GET(_req: Request, { params }: { params: Params }) {
 
   try {
     const [rows] = await db.query(
-      "SELECT p.avatarUrl FROM User u LEFT JOIN Profile p ON p.userId = u.id WHERE u.username = ? LIMIT 1",
+      `SELECT pg.avatarUrl AS pageAvatarUrl, p.avatarUrl AS profileAvatarUrl
+       FROM User u
+       LEFT JOIN Profile p ON p.userId = u.id
+       LEFT JOIN Page pg ON pg.userId = u.id AND pg.isPublished = 1
+       WHERE u.username = ?
+       ORDER BY CASE WHEN pg.slug = u.username THEN 0 ELSE 1 END, pg.createdAt ASC
+       LIMIT 1`,
       [username]
     );
     const row = (rows as Record<string, unknown>[])[0];
-    const avatarUrl = row?.avatarUrl as string | null;
+    const avatarUrl = (row?.pageAvatarUrl ?? row?.profileAvatarUrl) as string | null;
 
     if (avatarUrl && avatarUrl.startsWith("data:image/")) {
       const [meta, base64] = avatarUrl.split(",");
