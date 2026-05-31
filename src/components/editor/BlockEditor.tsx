@@ -947,8 +947,8 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                       />
                       <div style={{ display: "flex", flexDirection: "column", gap: ".4rem" }}>
                         <a
-                          href={`/api/qr/${page.id}`}
-                          download={`qr-${page.slug}.png`}
+                          href={`/api/qr/${page.id}?card=1`}
+                          download={`qr-${page.slug}.svg`}
                           style={{ display: "inline-flex", alignItems: "center", gap: ".4rem", background: "var(--b-100)", color: "var(--b-800)", borderRadius: 8, padding: "6px 12px", fontSize: ".75rem", fontWeight: 700, textDecoration: "none" }}
                         >
                           <i className="fa-solid fa-download" /> Unduh QR

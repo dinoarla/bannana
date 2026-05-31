@@ -91,7 +91,7 @@ export default async function PagesPage() {
                         <span><i className="fa-solid fa-eye" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.viewCount} views</span>
                       </div>
                     </div>
-                    <a href={`/api/qr/${page.id}`} download={`qr-${page.slug}.png`} title="Unduh QR Code" style={{ flexShrink: 0 }}>
+                    <a href={`/api/qr/${page.id}?card=1`} download={`qr-${page.slug}.svg`} title="Unduh QR Code" style={{ flexShrink: 0 }}>
                       <img src={`/api/qr/${page.id}`} alt="QR" width={64} height={64} style={{ borderRadius: 8, border: "1.5px solid var(--n-200)", display: "block" }} />
                     </a>
                   </div>

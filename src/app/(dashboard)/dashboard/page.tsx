@@ -330,7 +330,7 @@ function PageCard({ page, avatarUrl, username }: { page: PageWithBlocks; avatarU
               <span><i className="fa-solid fa-puzzle-piece" style={{ color: "var(--b-500)", fontSize: ".65rem" }} /> {page.blocks.length} blok</span>
             </div>
           </div>
-          <a href={`/api/qr/${page.id}`} download={`qr-${page.slug}.png`} title="Unduh QR Code" style={{ flexShrink: 0 }}>
+          <a href={`/api/qr/${page.id}?card=1`} download={`qr-${page.slug}.svg`} title="Unduh QR Code" style={{ flexShrink: 0 }}>
             <img src={`/api/qr/${page.id}`} alt="QR" width={64} height={64} style={{ borderRadius: 8, border: "1.5px solid var(--n-200)", display: "block" }} />
           </a>
         </div>
