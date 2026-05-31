@@ -80,6 +80,7 @@ const BLOCK_TYPES: { type: PublicBlock["type"]; label: string; icon: string; des
   { type: "PRODUCT",   label: "Produk",      icon: "fa-solid fa-bag-shopping",    desc: "Gambar + harga + tombol beli",     section: "Interaksi" },
   { type: "FAQ",       label: "FAQ",         icon: "fa-solid fa-circle-question", desc: "Pertanyaan yang sering ditanyakan",section: "Interaksi" },
   { type: "COUNTDOWN", label: "Hitung Mundur",icon: "fa-solid fa-hourglass-half", desc: "Timer mundur ke tanggal tertentu", section: "Interaksi" },
+  { type: "QUOTE",     label: "Kutipan",      icon: "fa-solid fa-quote-left",     desc: "Blockquote dengan nama penulis",   section: "Dasar" },
 ];
 
 const BLOCK_ICONS: Record<PublicBlock["type"], string> = {
@@ -97,6 +98,7 @@ const BLOCK_ICONS: Record<PublicBlock["type"], string> = {
   COUNTDOWN: "fa-solid fa-hourglass-half",
   MAP:       "fa-solid fa-map-location-dot",
   FORM:      "fa-solid fa-clipboard-list",
+  QUOTE:     "fa-solid fa-quote-left",
 };
 
 const BLOCK_LABELS: Record<PublicBlock["type"], string> = {
@@ -114,6 +116,7 @@ const BLOCK_LABELS: Record<PublicBlock["type"], string> = {
   COUNTDOWN: "Hitung Mundur",
   MAP:       "Peta",
   FORM:      "Formulir",
+  QUOTE:     "Kutipan",
 };
 
 const SECTIONS = ["Dasar", "Media", "Interaksi"] as const;
@@ -142,6 +145,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
   const [pageDisplayName, setPageDisplayName] = useState(initialPage.displayName ?? "");
   const [pageWebsite, setPageWebsite] = useState(initialPage.website ?? "");
   const [pageSocialLinks, setPageSocialLinks] = useState<Array<{ icon: string; label: string; url: string }>>(initialPage.socialLinks ?? []);
+  const [selectedAlign, setSelectedAlign] = useState<string>("left");
   // Tema tab state
   const [themeApplying, setThemeApplying] = useState(false);
   // Page switcher
@@ -154,6 +158,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
     if (selected?.type === "FAQ") {
       setFaqItems((selected.config.items ?? []) as Array<{ q: string; a: string }>);
     }
+    setSelectedAlign(String(selected?.config.align ?? "left"));
   }, [selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sensors = useSensors(
@@ -262,10 +267,15 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
         const pending = imageData[selected.id];
         if (pending !== undefined) config.imageUrl = pending;
       }
-      if (selected.type === "HEADER") config.align = String(fd.get("align") ?? "center");
+      if (selected.type === "HEADER") config.align = selectedAlign;
       if (selected.type === "TEXT") {
         config.content = String(fd.get("content") ?? "");
-        config.align = String(fd.get("align") ?? "left");
+        config.align = selectedAlign;
+      }
+      if (selected.type === "QUOTE") {
+        config.content = String(fd.get("content") ?? "");
+        config.author = String(fd.get("author") ?? "");
+        config.align = selectedAlign;
       }
       if (selected.type === "COUNTDOWN") config.targetDate = String(fd.get("targetDate") ?? "");
       if (selected.type === "CONTACT") {
@@ -682,7 +692,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                             <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Posisi Teks</div>
                             <div className="align-row">
                               {(["left", "center", "right"] as const).map((a) => (
-                                <button key={a} type="button" className={`align-btn${(selected.config.align ?? "center") === a ? " act" : ""}`}>
+                                <button key={a} type="button" onClick={() => setSelectedAlign(a)} className={`align-btn${selectedAlign === a ? " act" : ""}`}>
                                   <i className={`fa-solid fa-align-${a}`} />
                                 </button>
                               ))}
@@ -701,7 +711,30 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                             <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Rata Teks</div>
                             <div className="align-row">
                               {(["left", "center", "right"] as const).map((a) => (
-                                <button key={a} type="button" className={`align-btn${(selected.config.align ?? "left") === a ? " act" : ""}`}>
+                                <button key={a} type="button" onClick={() => setSelectedAlign(a)} className={`align-btn${selectedAlign === a ? " act" : ""}`}>
+                                  <i className={`fa-solid fa-align-${a}`} />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {selected.type === "QUOTE" && (
+                        <>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Kutipan</div>
+                            <textarea key={`content-${selected.id}`} name="content" className="form-inp form-ta" style={{ minHeight: 90, fontStyle: "italic" }} defaultValue={String(selected.config.content ?? "")} placeholder="Tulis kutipan di sini..." />
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Sumber / Penulis</div>
+                            <input key={`author-${selected.id}`} name="author" className="form-inp" type="text" defaultValue={String(selected.config.author ?? "")} placeholder="Nama penulis (opsional)" />
+                          </div>
+                          <div>
+                            <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Posisi Teks</div>
+                            <div className="align-row">
+                              {(["left", "center", "right"] as const).map((a) => (
+                                <button key={a} type="button" onClick={() => setSelectedAlign(a)} className={`align-btn${selectedAlign === a ? " act" : ""}`}>
                                   <i className={`fa-solid fa-align-${a}`} />
                                 </button>
                               ))}
@@ -1400,6 +1433,14 @@ function BlockPreview({ block }: { block: PublicBlock }) {
       </div>
     );
   }
+  if (block.type === "QUOTE") {
+    return (
+      <div className="text-prev">
+        <i className="fa-solid fa-quote-left" style={{ color: "var(--b-400)", marginRight: ".35rem", flexShrink: 0 }} />
+        <span style={{ fontStyle: "italic" }}>{String(block.config.content ?? block.title ?? "Kutipan").slice(0, 60)}</span>
+      </div>
+    );
+  }
   if (block.type === "BANNER") {
     return (
       <div className="banner-prev" style={{ background: String(block.config.bg ?? "#FEF3C7"), color: String(block.config.color ?? "#92400E") }}>
@@ -1601,5 +1642,6 @@ function defaultConfig(type: PublicBlock["type"]): Record<string, unknown> {
   if (type === "COUNTDOWN") return { targetDate: "" };
   if (type === "MAP")       return { embedUrl: "", height: 300 };
   if (type === "FORM")      return { buttonText: "Isi Formulir", subtitle: "" };
+  if (type === "QUOTE")     return { content: "", author: "", align: "center" };
   return {};
 }

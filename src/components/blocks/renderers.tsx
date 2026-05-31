@@ -156,6 +156,21 @@ export function TextBlock({ block, style }: Props) {
   );
 }
 
+export function QuoteBlock({ block, style }: Props) {
+  const content = (block.config.content as string | undefined) ?? block.title ?? "";
+  const author = (block.config.author as string | undefined) ?? "";
+  const align = block.config.align ?? "center";
+  return (
+    <div className="block-item" style={style}>
+      <div style={{ textAlign: align, padding: ".5rem 1.25rem", borderLeft: align === "left" ? "3px solid var(--b-300)" : "none", borderRight: align === "right" ? "3px solid var(--b-300)" : "none" }}>
+        <div style={{ fontSize: "2rem", lineHeight: 1, color: "var(--b-300)", fontFamily: "Georgia, serif", marginBottom: "-.25rem" }}>"</div>
+        <div style={{ fontSize: ".95rem", fontStyle: "italic", lineHeight: 1.7, color: "var(--n-700)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{content}</div>
+        {author && <div style={{ fontSize: ".8rem", fontWeight: 600, color: "var(--n-500)", marginTop: ".5rem" }}>— {author}</div>}
+      </div>
+    </div>
+  );
+}
+
 export function BannerBlock({ block, style }: Props) {
   const bg = (block.config.bg as string | undefined) ?? "#FEF3C7";
   const color = (block.config.color as string | undefined) ?? "#92400E";

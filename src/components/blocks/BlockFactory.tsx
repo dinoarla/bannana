@@ -2,7 +2,7 @@ import type { PublicBlock } from "@/types";
 import {
   BannerBlock, ContactBlock, CountdownBlock, DividerBlock, EmbedBlock,
   FaqBlock, FormBlock, HeaderBlock, ImageBlock, LinkBlock, MapBlock,
-  ProductBlock, SocialBlock, TextBlock,
+  ProductBlock, QuoteBlock, SocialBlock, TextBlock,
 } from "./renderers";
 
 export function BlockFactory({ block, index = 0 }: { block: PublicBlock; index?: number }) {
@@ -20,5 +20,6 @@ export function BlockFactory({ block, index = 0 }: { block: PublicBlock; index?:
   if (block.type === "COUNTDOWN") return <CountdownBlock block={block} style={style} />;
   if (block.type === "MAP")       return <MapBlock block={block} style={style} />;
   if (block.type === "FORM")      return <FormBlock block={block} style={style} />;
+  if (block.type === "QUOTE")     return <QuoteBlock block={block} style={style} />;
   return <LinkBlock block={block} style={style} />;
 }

@@ -1,6 +1,6 @@
 export type BlockType =
   | "LINK" | "HEADER" | "SOCIAL" | "EMBED" | "IMAGE" | "DIVIDER"
-  | "TEXT" | "COUNTDOWN" | "FAQ" | "CONTACT" | "PRODUCT" | "BANNER" | "MAP" | "FORM";
+  | "TEXT" | "COUNTDOWN" | "FAQ" | "CONTACT" | "PRODUCT" | "BANNER" | "MAP" | "FORM" | "QUOTE";
 
 export type FaqItem = { q: string; a: string };
 export type ContactPlatform = "whatsapp" | "telegram" | "line" | "email";
@@ -14,6 +14,7 @@ export type BlockConfig = {
   imageUrl?: string;
   socials?: Array<{ label: string; url: string; icon: string; color?: string }>;
   content?: string;
+  author?: string;
   targetDate?: string;
   items?: FaqItem[];
   platform?: ContactPlatform;
