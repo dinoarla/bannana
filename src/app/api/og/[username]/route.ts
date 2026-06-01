@@ -21,17 +21,26 @@ export async function GET(_req: Request, { params }: { params: Params }) {
     const row = (rows as Record<string, unknown>[])[0];
     const avatarUrl = (row?.pageAvatarUrl ?? row?.profileAvatarUrl) as string | null;
 
-    if (avatarUrl && avatarUrl.startsWith("data:image/")) {
-      const [meta, base64] = avatarUrl.split(",");
-      const mimeMatch = meta.match(/data:(image\/[a-z+]+);/);
-      const mime = mimeMatch?.[1] ?? "image/jpeg";
-      const buffer = Buffer.from(base64, "base64");
-      return new Response(buffer, {
-        headers: {
-          "Content-Type": mime,
-          "Cache-Control": "public, max-age=86400",
-        },
-      });
+    if (avatarUrl) {
+      if (avatarUrl.startsWith("data:image/")) {
+        const [meta, base64] = avatarUrl.split(",");
+        const mimeMatch = meta.match(/data:(image\/[a-z+]+);/);
+        const mime = mimeMatch?.[1] ?? "image/jpeg";
+        const buffer = Buffer.from(base64, "base64");
+        return new Response(buffer, {
+          headers: { "Content-Type": mime, "Cache-Control": "public, max-age=86400" },
+        });
+      } else if (avatarUrl.startsWith("http")) {
+        // Fetch and proxy so social scrapers don't have to follow redirects
+        const res = await fetch(avatarUrl, { headers: { "User-Agent": "bannana-og/1.0" } });
+        if (res.ok) {
+          const buf = await res.arrayBuffer();
+          const ct = res.headers.get("content-type") ?? "image/jpeg";
+          return new Response(buf, {
+            headers: { "Content-Type": ct, "Cache-Control": "public, max-age=86400" },
+          });
+        }
+      }
     }
   } catch {
     // fall through to default

@@ -313,7 +313,7 @@ function CompactPageCard({ page, avatarUrl, username }: { page: PageWithBlocks; 
             ? <img src={displayAvatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : <i className="fa-solid fa-user" />}
         </div>
-        <div style={{ fontFamily: "var(--fd)", fontSize: ".65rem", fontWeight: 700, color: "var(--b-900)" }}>@{username}</div>
+        <div style={{ fontFamily: "var(--fd)", fontSize: ".65rem", fontWeight: 700, color: "var(--b-900)" }}>@{page.slug}</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 2, width: "100%", padding: "0 10px" }}>
           <div style={{ height: 5, background: "var(--b-300)", borderRadius: 3, width: "80%" }} />
           <div style={{ height: 5, background: "var(--b-200)", borderRadius: 3, width: "60%" }} />
