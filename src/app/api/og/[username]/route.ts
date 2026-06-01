@@ -9,17 +9,24 @@ export async function GET(_req: Request, { params }: { params: Params }) {
 
   try {
     const [rows] = await db.query(
-      `SELECT pg.avatarUrl AS pageAvatarUrl, p.avatarUrl AS profileAvatarUrl
+      `SELECT pg.avatarUrl AS pageAvatarUrl, p.avatarUrl AS profileAvatarUrl,
+              sub.plan AS subPlan
        FROM Page pg
        JOIN User u ON u.id = pg.userId
        LEFT JOIN Profile p ON p.userId = u.id
+       LEFT JOIN Subscription sub ON sub.userId = u.id AND sub.status = 'active'
        WHERE pg.isPublished = 1 AND (pg.slug = ? OR u.username = ?)
        ORDER BY CASE WHEN pg.slug = ? THEN 0 ELSE 1 END
        LIMIT 1`,
       [username, username, username]
     );
     const row = (rows as Record<string, unknown>[])[0];
-    const avatarUrl = (row?.pageAvatarUrl ?? row?.profileAvatarUrl) as string | null;
+    const isPro = row?.subPlan === "pro";
+    // Pro: page avatar → profile avatar → default
+    // Free: profile avatar (from Pengaturan) → default
+    const avatarUrl = isPro
+      ? ((row?.pageAvatarUrl ?? row?.profileAvatarUrl) as string | null)
+      : (row?.profileAvatarUrl as string | null);
 
     if (avatarUrl) {
       if (avatarUrl.startsWith("data:image/")) {
