@@ -28,7 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const page = await new PublicPageService().getByUsername(username);
     const name = page.title;
-    const description = page.bio ?? page.user.profile?.bio ?? `Lihat semua link ${name} di bannana.id`;
+    const rawDesc = page.bio ?? page.user.profile?.bio ?? `Lihat semua link ${name} di bannana.id`;
+    const description = rawDesc.length > 160 ? rawDesc.slice(0, 157) + "…" : rawDesc;
     const ogImage = `${baseUrl}/api/og/${username}`;
     return {
       title: `${name} — bannana.id`,

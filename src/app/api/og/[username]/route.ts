@@ -10,13 +10,13 @@ export async function GET(_req: Request, { params }: { params: Params }) {
   try {
     const [rows] = await db.query(
       `SELECT pg.avatarUrl AS pageAvatarUrl, p.avatarUrl AS profileAvatarUrl
-       FROM User u
+       FROM Page pg
+       JOIN User u ON u.id = pg.userId
        LEFT JOIN Profile p ON p.userId = u.id
-       LEFT JOIN Page pg ON pg.userId = u.id AND pg.isPublished = 1
-       WHERE u.username = ?
-       ORDER BY CASE WHEN pg.slug = u.username THEN 0 ELSE 1 END, pg.createdAt ASC
+       WHERE pg.isPublished = 1 AND (pg.slug = ? OR u.username = ?)
+       ORDER BY CASE WHEN pg.slug = ? THEN 0 ELSE 1 END
        LIMIT 1`,
-      [username]
+      [username, username, username]
     );
     const row = (rows as Record<string, unknown>[])[0];
     const avatarUrl = (row?.pageAvatarUrl ?? row?.profileAvatarUrl) as string | null;
