@@ -3,18 +3,31 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import { BlockFactory } from "@/components/blocks/BlockFactory";
 import { PublicPageService } from "@/lib/services/PublicPageService";
+import { db } from "@/lib/db/client";
 import type { PublicBlock } from "@/types";
 import { ShareFab } from "./ShareFab";
 import { Tracker } from "./Tracker";
 
 type Props = { params: Promise<{ username: string }> };
 
+async function isProUser(userId: string): Promise<boolean> {
+  try {
+    const [rows] = await db.query(
+      "SELECT plan FROM Subscription WHERE userId = ? AND status = 'active' LIMIT 1",
+      [userId]
+    );
+    return (rows as Record<string, unknown>[])[0]?.plan === "pro";
+  } catch {
+    return false;
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://bannana.id";
   try {
     const page = await new PublicPageService().getByUsername(username);
-    const name = page.displayName ?? page.user.profile?.displayName ?? page.user.username;
+    const name = page.title;
     const description = page.bio ?? page.user.profile?.bio ?? `Lihat semua link ${name} di bannana.id`;
     const ogImage = `${baseUrl}/api/og/${username}`;
     return {
@@ -45,9 +58,15 @@ export default async function PublicProfilePage({ params }: Props) {
   try {
     const page = await new PublicPageService().getByUsername(username);
     const profile = page.user.profile;
-    const name = page.displayName ?? profile?.displayName ?? page.user.username;
+    const isPro = await isProUser(page.user.id);
+
+    const name = page.title;
     const effectiveWebsite = page.website ?? profile?.website ?? null;
-    const effectiveSocialLinks = page.socialLinks ?? profile?.socialLinks ?? null;
+    // Pro: page-level social links only (no fallback to profile)
+    // Free: profile social links from Pengaturan
+    const effectiveSocialLinks = isPro
+      ? (page.socialLinks ?? null)
+      : (profile?.socialLinks ?? null);
 
     return (
       <div className={`pub-page t-${page.theme}`} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>

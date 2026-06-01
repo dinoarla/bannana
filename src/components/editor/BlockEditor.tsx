@@ -142,7 +142,6 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialPage.avatarUrl);
   const [bioVal, setBioVal] = useState(initialPage.bio ?? "");
   // Per-page Pro overrides
-  const [pageDisplayName, setPageDisplayName] = useState(initialPage.displayName ?? "");
   const [pageWebsite, setPageWebsite] = useState(initialPage.website ?? "");
   const [pageSocialLinks, setPageSocialLinks] = useState<Array<{ icon: string; label: string; url: string }>>(initialPage.socialLinks ?? []);
   const [selectedAlign, setSelectedAlign] = useState<string>("left");
@@ -352,7 +351,6 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
       const bioRaw = bioVal.trim();
       const payload: Record<string, unknown> = { title, slug: slugVal, bio: bioRaw || null, avatarUrl: avatarPreview };
       if (isPro) {
-        payload.displayName = pageDisplayName.trim() || null;
         payload.website = pageWebsite.trim() || null;
         payload.socialLinks = pageSocialLinks.length > 0 ? pageSocialLinks : null;
       }
@@ -360,7 +358,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
         method: "PUT",
         body: JSON.stringify(payload),
       });
-      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, bio: updated.bio, avatarUrl: updated.avatarUrl, displayName: updated.displayName, website: updated.website, socialLinks: updated.socialLinks }));
+      setPage((p) => ({ ...p, title: updated.title, slug: updated.slug, bio: updated.bio, avatarUrl: updated.avatarUrl, website: updated.website, socialLinks: updated.socialLinks }));
       setBioVal(updated.bio ?? "");
       setSlugStatus("idle");
       showSave("Halaman disimpan ✓");
@@ -962,6 +960,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                   <div>
                     <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Nama Tampilan</div>
                     <input name="pageTitle" className="form-inp" type="text" defaultValue={page.title} />
+                    <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".2rem" }}>Nama yang tampil di halaman publik dan judul browser.</div>
                   </div>
                   <div>
                     <div className="form-lbl" style={{ marginBottom: ".3rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -1048,19 +1047,6 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                   {isPro ? (
                     <>
                       <div style={{ borderTop: "1px solid var(--n-100)", marginTop: ".25rem", paddingTop: "1rem" }}>
-                        <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Nama Tampilan Halaman</div>
-                        <input
-                          className="form-inp"
-                          type="text"
-                          value={pageDisplayName}
-                          onChange={(e) => setPageDisplayName(e.target.value.slice(0, 100))}
-                          placeholder={page.title}
-                        />
-                        <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".2rem" }}>
-                          Override nama yang tampil di halaman publik.
-                        </div>
-                      </div>
-                      <div>
                         <div className="form-lbl" style={{ marginBottom: ".3rem" }}>Website Halaman</div>
                         <input
                           className="form-inp"
@@ -1114,7 +1100,7 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                           </button>
                         )}
                         <div style={{ fontSize: ".62rem", color: "var(--n-400)", marginTop: ".35rem" }}>
-                          Kosongkan untuk pakai social media dari Pengaturan.
+                          Social media khusus halaman ini. Jika kosong, ikon sosial tidak ditampilkan.
                         </div>
                       </div>
                     </>
@@ -1122,8 +1108,8 @@ export function BlockEditor({ initialPage, csrfToken, username, bio, profileAvat
                     <div style={{ display: "flex", alignItems: "center", gap: ".5rem", padding: ".75rem", background: "var(--b-50)", borderRadius: 10, border: "1.5px solid var(--b-200)" }}>
                       <i className="fa-solid fa-star" style={{ color: "var(--b-500)", fontSize: ".85rem" }} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: ".75rem", fontWeight: 700, color: "var(--b-800)" }}>Custom nama, website & social media per halaman</div>
-                        <div style={{ fontSize: ".65rem", color: "var(--n-500)", marginTop: ".15rem" }}>Tersedia di paket Pro.</div>
+                        <div style={{ fontSize: ".75rem", fontWeight: 700, color: "var(--b-800)" }}>Website & social media per halaman</div>
+                        <div style={{ fontSize: ".65rem", color: "var(--n-500)", marginTop: ".15rem" }}>Tersedia di paket Pro. Versi gratis memakai social media dari Pengaturan.</div>
                       </div>
                       <a href="/langganan" style={{ fontSize: ".7rem", fontWeight: 700, color: "var(--b-700)", textDecoration: "none", background: "var(--b-200)", padding: "4px 10px", borderRadius: 20 }}>Upgrade</a>
                     </div>
