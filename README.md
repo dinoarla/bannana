@@ -9,7 +9,7 @@
 ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝    ╚═╝╚═════╝
 ```
 
-🍌 **satu link, semua tempat — flexible & mudah!** 🍌
+🍌 **satu link, semua tempat — murah, simple & mudah!** 🍌
 
 🍌 **Product Requirements Document (PRD)** 🍌
 
